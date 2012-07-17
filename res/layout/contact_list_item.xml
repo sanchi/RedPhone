@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="fill_parent"
+              android:layout_height="fill_parent"
+              android:orientation="vertical"
+              android:layout_marginLeft="16dip"
+              android:layout_marginRight="16dip">
+
+    <ImageView android:id="@+id/divider"
+               android:layout_width="fill_parent"
+               android:layout_height="1px"
+               android:src="@drawable/contacts_list_divider" />
+
+    <TextView android:id="@+id/section_label"
+              android:layout_width="fill_parent"
+              android:layout_height="wrap_content"
+              android:visibility="gone"
+              android:textColor="#ff00ddff"
+              android:textAppearance="?android:attr/textAppearanceLarge"/>
+
+    <ImageView android:id="@+id/section_divider"
+               android:layout_width="fill_parent"
+               android:layout_height="1px"
+               android:visibility="gone"
+               android:layout_marginBottom="1dip"
+               android:src="@drawable/contacts_list_section_divider" />
+
+    <LinearLayout android:layout_width="fill_parent"
+                  android:layout_height="fill_parent"
+                  android:orientation="horizontal">
+
+        <QuickContactBadge android:id="@+id/contact_photo"
+                   android:layout_width="64dp"
+                   android:layout_height="64dp"
+                   android:cropToPadding="true"
+                   android:scaleType="centerCrop"
+                   android:layout_gravity="center_vertical"
+                   android:layout_marginRight="4dip" />
+
+        <LinearLayout android:layout_width="fill_parent"
+                      android:layout_height="fill_parent"
+                      android:orientation="vertical">
+
+          <TextView android:id="@+id/name"
+                    android:layout_marginTop="5dip"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:singleLine="true"
+                    android:ellipsize="end"
+                    android:layout_gravity="center_vertical"
+                    android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+          <RelativeLayout android:layout_width="fill_parent"
+                          android:layout_height="fill_parent">
+
+               <TextView android:id="@+id/number"
+                         android:layout_width="wrap_content"
+                         android:layout_height="wrap_content"
+                         android:layout_alignParentLeft="true"
+                         android:singleLine="true"
+                         android:ellipsize="end"
+                         android:textAppearance="?android:attr/textAppearanceSmall"
+                         android:textColor="?android:attr/textColorSecondary"/>
+
+               <TextView android:id="@+id/type"
+                         android:layout_width="wrap_content"
+                         android:layout_height="wrap_content"
+                         android:layout_alignParentRight="true"
+                         android:singleLine="true"
+                         android:ellipsize="end"
+                         android:textAppearance="?android:attr/textAppearanceSmall"
+                         android:textColor="?android:attr/textColorSecondary"/>
+
+            </RelativeLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+<!--     <TableLayout android:layout_width="fill_parent" -->
+<!--                  android:layout_height="fill_parent" -->
+<!--                  android:orientation="horizontal" -->
+<!--                  android:stretchColumns="1"> -->
+
+<!--         <TableRow> -->
+
+<!--             <QuickContactBadge android:id="@+id/contact_photo" -->
+<!--                                android:layout_width="64dp" -->
+<!--                                android:layout_height="64dp" -->
+<!--                                android:cropToPadding="true" -->
+<!--                                android:scaleType="centerCrop" -->
+<!--                                android:layout_gravity="center_vertical" -->
+<!--                                android:layout_marginLeft="4dip" -->
+<!--                                android:layout_marginRight="4dip" /> -->
+
+<!--             <TextView android:id="@+id/name" -->
+<!--                     android:layout_width="fill_parent" -->
+<!--                     android:layout_height="wrap_content" -->
+<!--                     android:layout_marginLeft="10dip" -->
+<!--                     android:singleLine="true" -->
+<!--                     android:ellipsize="end" -->
+<!--                     android:layout_gravity="center_vertical" -->
+<!--                     android:textAppearance="?android:attr/textAppearanceMedium"/> -->
+
+<!--         </TableRow> -->
+
+<!--     </TableLayout> -->
+
+</LinearLayout>
+
+<!--<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--    android:layout_width="fill_parent"-->
+<!--    android:layout_height="wrap_content">-->
+<!---->
+<!--    <ImageView android:id="@+id/divider"-->
+<!--    		   android:layout_width="fill_parent"-->
+<!--    		   android:layout_height="1px"-->
+<!--    		   android:layout_alignParentTop="true"-->
+<!--    		   android:src="@drawable/contacts_list_divider" />-->
+<!---->
+<!--	<TextView android:id="@+id/section_label"-->
+<!--			  android:layout_width="fill_parent"-->
+<!--			  android:layout_height="wrap_content"-->
+<!--			  android:layout_marginBottom="10dip"-->
+<!--			  android:visibility="gone"-->
+<!--			  android:layout_below="@id/divider"-->
+<!--			  android:background="#333333"-->
+<!--			  android:textColor="#ffffff"-->
+<!--			  android:textColorHighlight="#ffffff" />-->
+<!---->
+<!--	<ImageView android:id="@+id/contact_photo"-->
+<!--			   android:layout_width="60dp"-->
+<!--			   android:layout_height="60dp"-->
+<!--			   android:layout_below="@id/section_label"-->
+<!--			   android:cropToPadding="true"-->
+<!--			   android:scaleType="centerCrop"-->
+<!--			   android:layout_alignParentLeft="true"-->
+<!--			   android:layout_marginTop="5dip"-->
+<!--			   android:paddingBottom="5dip"-->
+<!--			   android:layout_marginLeft="5dip" />-->
+<!---->
+<!--    <ImageView android:id="@+id/listed"-->
+<!--    		   android:layout_width="wrap_content"-->
+<!--    		   android:layout_height="wrap_content"-->
+<!--    		   android:layout_alignParentRight="true"-->
+<!--    		   android:layout_marginRight="4dip"-->
+<!--    		   android:visibility="gone"-->
+<!--    		   android:-->
+<!--    		   android:layout_below="@id/section_label"-->
+<!--    		   android:src="@drawable/redphone_icon" />-->
+<!-- -->
+<!--    <TextView android:id="@+id/name"-->
+<!--        android:layout_width="fill_parent"-->
+<!--        android:layout_height="fill_parent"-->
+<!--        android:layout_alignWithParentIfMissing="true"-->
+<!--        android:layout_toRightOf="@id/contact_photo"-->
+<!--        android:layout_alignTop="@id/contact_photo"-->
+<!--        android:paddingTop="10dip"-->
+<!--        android:layout_marginLeft="10dip"-->
+<!--        android:layout_toLeftOf="@id/listed"-->
+<!---->
+<!--        android:singleLine="true"-->
+<!--        android:ellipsize="marquee"-->
+<!--        android:gravity="center_vertical|left"-->
+<!--        android:textAppearance="?android:attr/textAppearanceLarge"-->
+<!--    />-->
+<!--    -->
+<!--    -->
+<!--</RelativeLayout>-->

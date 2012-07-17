@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+  xmlns:android="http://schemas.android.com/apk/res/android">
+  <PreferenceCategory android:title="Debug Settings">
+    <CheckBoxPreference android:defaultValue="false"
+    					android:key="pref_loopback"
+    					android:title="Loopback Test Mode"
+    					android:summary="No network, audio feedback only" />
+	<CheckBoxPreference android:defaultValue="false"
+    					android:key="pref_debugview"
+    					android:title="Show Debug info"
+    					android:summary="Display on-screen debugging information during calls" />
+    					    					
+   <CheckBoxPreference android:defaultValue="false"
+    				   android:key="pref_simulate_packet_loss"
+    				   android:title="Simulate packet loss"
+    				   android:summary="Drop packets randomly" />    				  
+</PreferenceCategory>     
+</PreferenceScreen>

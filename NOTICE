@@ -1,0 +1,19 @@
+redphone is an application that provides encrypted voice calls for Android
+Copyright 2012 Whisper Systems
+
+We modified some Android code in the 'com.android.internal.widget.multiwaveview' package.
+
+Third Party Dependences:
+
+GSON
+Apache Public License 2.0
+http://code.google.com/p/google-gson/
+
+protobuf
+New BSD License
+http://code.google.com/p/protobuf/
+
+ActionBarSherlock
+Apache Public License 2.0
+https://github.com/JakeWharton/ActionBarSherlock
+
