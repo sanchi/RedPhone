@@ -40,7 +40,7 @@
   <PreferenceCategory android:title="Audio Settings">
     <CheckBoxPreference android:defaultValue="false"
                       android:key="pref_audio_compat"
-                      android:summary="Enable Audio Compatibility Mode [higer latency]"
+                      android:summary="Enable Audio Compatibility Mode [higher latency]"
                       android:title="Compatibility Mode" />
     <CheckBoxPreference android:defaultValue="false"
     					android:key="pref_speaker_incall"
