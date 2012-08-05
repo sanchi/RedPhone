@@ -105,8 +105,7 @@ public class LowLatencySocketConnector {
     try {
       return channel.finishConnect();
     } catch (IOException ioe) {
-      Log.w("LowLatencySocketConnector",
-            "Connection failed: " + channel.socket().getInetAddress().getHostAddress());
+      Log.w("LowLatencySocketConnector", ioe);
       return false;
     }
   }
