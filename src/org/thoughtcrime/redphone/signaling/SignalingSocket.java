@@ -43,6 +43,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.net.SocketException;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -279,6 +280,21 @@ public class SignalingSocket {
       this.outputStream.write("HTTP/1.0 200 OK\r\nContent-Length: 0\r\n\r\n".getBytes());
     } catch (IOException ioe) {
       throw new SignalingException(ioe);
+    }
+  }
+
+  public boolean waitForSignal() throws SignalingException {
+    try {
+      socket.setSoTimeout(500);
+      return lineReader.waitForAvailable();
+    } catch (IOException ioe) {
+      throw new SignalingException(ioe);
+    } finally {
+      try {
+        socket.setSoTimeout(0);
+      } catch (SocketException e) {
+        Log.w("SignalingSocket", e);
+      }
     }
   }
 

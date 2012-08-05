@@ -22,7 +22,6 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -33,7 +32,6 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
-import android.provider.CallLog.Calls;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
@@ -50,6 +48,7 @@ import org.thoughtcrime.redphone.ui.ApplicationPreferencesActivity;
 import org.thoughtcrime.redphone.ui.DialerActivity;
 import org.thoughtcrime.redphone.ui.StatusBarManager;
 import org.thoughtcrime.redphone.util.Base64;
+import org.thoughtcrime.redphone.util.CallLogger;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
@@ -67,6 +66,13 @@ import java.util.List;
  *
  */
 public class RedPhoneService extends Service implements CallStateListener {
+
+  public static final String ACTION_INCOMING_CALL = "org.thoughtcrime.redphone.RedPhoneService.INCOMING_CALL";
+  public static final String ACTION_OUTGOING_CALL = "org.thoughtcrime.redphone.RedPhoneService.OUTGOING_CALL";
+  public static final String ACTION_ANSWER_CALL   = "org.thoughtcrime.redphone.RedPhoneService.ANSWER_CALL";
+  public static final String ACTION_DENY_CALL     = "org.thoughtcrime.redphone.RedPhoneService.DENYU_CALL";
+  public static final String ACTION_HANGUP_CALL   = "org.thoughtcrime.redphone.RedPhoneService.HANGUP";
+
   private final List<Message> bufferedEvents = new LinkedList<Message>();
   private final IBinder binder               = new RedPhoneServiceBinder();
 
@@ -102,32 +108,8 @@ public class RedPhoneService extends Service implements CallStateListener {
   @Override
   public void onStart(Intent intent, int startId) {
     if (Release.DEBUG) Log.w("RedPhoneService", "Service onStart() called...");
-
-    SessionDescriptor session = (SessionDescriptor)intent.getParcelableExtra(Constants.SESSION);
-    remoteNumber              = extractRemoteNumber(intent);
-
-    if      (session != null && isBusy())      handleBusyCall(remoteNumber, session);
-    else if (session != null)                  startIncomingCall(remoteNumber, session);
-    else if (remoteNumber != null && isIdle()) startOutgoingCall(remoteNumber);
-  }
-
-  private boolean isBusy() {
-    TelephonyManager telephonyManager = (TelephonyManager)getSystemService(TELEPHONY_SERVICE);
-    return ((currentCallManager != null && state != RedPhone.STATE_IDLE) ||
-             telephonyManager.getCallState() != TelephonyManager.CALL_STATE_IDLE);
-
-  }
-
-  private boolean isIdle() {
-    return state == RedPhone.STATE_IDLE;
-  }
-
-  public int getState() {
-    return state;
-  }
-
-  public PersonInfo getRemotePersonInfo() {
-    return PersonInfo.getInstance(this, remoteNumber);
+    if (intent == null) return;
+    new Thread(new IntentRunnable(intent)).start();
   }
 
   @Override
@@ -139,6 +121,19 @@ public class RedPhoneService extends Service implements CallStateListener {
   public void onDestroy() {
     statusBarManager.setCallEnded();
   }
+
+  private void onIntentReceived(Intent intent) {
+    Log.w("RedPhoneService", "Received Intent: " + intent.getAction());
+
+    if      (intent.getAction().equals(ACTION_INCOMING_CALL) && isBusy()) handleBusyCall(intent);
+    else if (intent.getAction().equals(ACTION_INCOMING_CALL))             handleIncomingCall(intent);
+    else if (intent.getAction().equals(ACTION_OUTGOING_CALL) && isIdle()) handleOutgoingCall(intent);
+    else if (intent.getAction().equals(ACTION_ANSWER_CALL))               handleAnswerCall(intent);
+    else if (intent.getAction().equals(ACTION_DENY_CALL))                 handleDenyCall(intent);
+    else if (intent.getAction().equals(ACTION_HANGUP_CALL))               handleHangupCall(intent);
+  }
+
+  ///// Initializers
 
   private void initializeAudio() {
     AudioManager am = (AudioManager) getSystemService(AUDIO_SERVICE);
@@ -185,13 +180,49 @@ public class RedPhoneService extends Service implements CallStateListener {
     this.statusBarManager = new StatusBarManager(this);
   }
 
-  private void handleBusyCall(String remoteNumber, SessionDescriptor session) {
-    handleMissedCall(remoteNumber, System.currentTimeMillis());
+  /// Intent Handlers
+
+  private void handleIncomingCall(Intent intent) {
+    SessionDescriptor session = (SessionDescriptor)intent.getParcelableExtra(Constants.SESSION);
+    remoteNumber              = extractRemoteNumber(intent);
+    state                     = RedPhone.STATE_RINGING;
+
+    fullWakeLock.acquire();
+
+    this.currentCallManager = new ResponderCallManager(this, remoteNumber, localNumber,
+                                                       password, session, zid);
+    this.currentCallManager.start();
+  }
+
+  private void handleOutgoingCall(Intent intent) {
+    remoteNumber = extractRemoteNumber(intent);
+
+    sendMessage(RedPhone.HANDLE_OUTGOING_CALL, remoteNumber);
+
+    state = RedPhone.STATE_DIALING;
+
+    fullWakeLock.acquire();
+    keyGuardLock.disableKeyguard();
+    keyguardDisabled = true;
+
+    this.currentCallManager = new InitiatingCallManager(this, localNumber, password,
+                                                        remoteNumber, zid);
+    this.currentCallManager.start();
+
+    statusBarManager.setCallInProgress();
+
+    CallLogger.logOutgoingCall(this, remoteNumber);
+  }
+
+  private void handleBusyCall(Intent intent) {
+    SessionDescriptor session = (SessionDescriptor)intent.getParcelableExtra(Constants.SESSION);
+
+    handleMissedCall(extractRemoteNumber(intent), System.currentTimeMillis());
     currentCallManager.sendBusySignal(remoteNumber, session.sessionId);
   }
 
   private void handleMissedCall(String remoteNumber, long timestamp) {
-    logMissedCall(remoteNumber, timestamp);
+    CallLogger.logMissedCall(this, remoteNumber, timestamp);
 
     Intent intent                           = new Intent(this, DialerActivity.class);
     NotificationManager notificationManager = (NotificationManager)this.getSystemService(NOTIFICATION_SERVICE);
@@ -203,69 +234,41 @@ public class RedPhoneService extends Service implements CallStateListener {
     notificationManager.notify(DialerActivity.MISSED_CALL, notification);
   }
 
-  private void startIncomingCall(String remoteNumber, SessionDescriptor session) {
-    Log.w("RedPhoneService", "Service startIncomingCall() called...");
-    state = RedPhone.STATE_RINGING;
-
-    fullWakeLock.acquire();
-
-    this.currentCallManager = new ResponderCallManager(this, remoteNumber, localNumber,
-                                                       password, session, zid);
-    this.currentCallManager.start();
+  private void handleAnswerCall(Intent intent) {
+    state = RedPhone.STATE_ANSWERING;
+    incomingRinger.stop();
+    ((ResponderCallManager)this.currentCallManager).answer(true);
   }
 
-  private void startOutgoingCall(String remoteNumber) {
-    Log.w("RedPhoneService", "Service startOutgoingCall() called...");
-    sendMessage(RedPhone.HANDLE_OUTGOING_CALL, remoteNumber);
-
-    state = RedPhone.STATE_DIALING;
-    fullWakeLock.acquire();
-
-    keyGuardLock.disableKeyguard();
-    keyguardDisabled = true;
-
-    this.currentCallManager = new InitiatingCallManager(this, localNumber, password,
-                                                        remoteNumber, zid);
-    this.currentCallManager.start();
-
-    statusBarManager.setCallInProgress();
-    logOutgoingCall(remoteNumber);
+  private void handleDenyCall(Intent intent) {
+    state = RedPhone.STATE_IDLE;
+    incomingRinger.stop();
+    ((ResponderCallManager)this.currentCallManager).answer(false);
+    this.terminate();
   }
 
-  private ContentValues getCallLogContentValues(String number, long timestamp) {
-    PersonInfo pi = PersonInfo.getInstance( this, number );
-    ContentValues values = new ContentValues();
-    values.put(Calls.DATE, System.currentTimeMillis());
-    values.put(Calls.NUMBER, number);
-    values.put(Calls.CACHED_NAME, pi.getName() );
-    values.put(Calls.TYPE, pi.getType() );
-    return values;
+  private void handleHangupCall(Intent intent) {
+    this.terminate();
   }
 
-  private ContentValues getCallLogContentValues(String number) {
-    return getCallLogContentValues(number, System.currentTimeMillis());
+  /// Helper Methods
+
+  private boolean isBusy() {
+    TelephonyManager telephonyManager = (TelephonyManager)getSystemService(TELEPHONY_SERVICE);
+    return ((currentCallManager != null && state != RedPhone.STATE_IDLE) ||
+             telephonyManager.getCallState() != TelephonyManager.CALL_STATE_IDLE);
   }
 
-  private void logMissedCall(String number, long timestamp) {
-    ContentValues values = getCallLogContentValues(number, timestamp);
-    values.put(Calls.TYPE, Calls.MISSED_TYPE);
-    getContentResolver().insert(Calls.CONTENT_URI, values);
+  private boolean isIdle() {
+    return state == RedPhone.STATE_IDLE;
   }
 
-  private void logOutgoingCall(String number) {
-    ContentValues values = getCallLogContentValues(number);
-    values.put(Calls.TYPE, Calls.OUTGOING_TYPE);
-    try{
-      getContentResolver().insert(Calls.CONTENT_URI, values);
-    } catch (IllegalArgumentException e ) {
-      Log.w("RedPhoneService", "Failed call log insert", e );
-    }
+  public int getState() {
+    return state;
   }
 
-  private void logIncomingCall(String number) {
-    ContentValues values = getCallLogContentValues(number);
-    values.put(Calls.TYPE, Calls.INCOMING_TYPE);
-    getContentResolver().insert(Calls.CONTENT_URI, values);
+  public PersonInfo getRemotePersonInfo() {
+    return PersonInfo.getInstance(this, remoteNumber);
   }
 
   private byte[] getZID() {
@@ -315,7 +318,7 @@ public class RedPhoneService extends Service implements CallStateListener {
     startActivity(activityIntent);
   }
 
-  public synchronized void terminate() {
+  private synchronized void terminate() {
     Log.w("RedPhoneService", "terminate() called");
     Log.w("RedPhoneService", "termination stack", new Exception() );
     statusBarManager.setCallEnded();
@@ -357,6 +360,8 @@ public class RedPhoneService extends Service implements CallStateListener {
     }
   }
 
+  ///////// CallStateListener Implementation
+
   public void notifyCallStale() {
     Log.w("RedPhoneService", "Got a stale call, probably an old SMS...");
     handleMissedCall(remoteNumber, System.currentTimeMillis());
@@ -374,20 +379,7 @@ public class RedPhoneService extends Service implements CallStateListener {
     keyguardDisabled = true;
 
     statusBarManager.setCallInProgress();
-    logIncomingCall(remoteNumber);
-  }
-
-  public void handleAnswerCall() {
-    state = RedPhone.STATE_ANSWERING;
-    incomingRinger.stop();
-    ((ResponderCallManager)this.currentCallManager).answer(true);
-  }
-
-  public void handleDenyCall() {
-    state = RedPhone.STATE_IDLE;
-    incomingRinger.stop();
-    ((ResponderCallManager)this.currentCallManager).answer(false);
-    this.terminate();
+    CallLogger.logIncomingCall(this, remoteNumber);
   }
 
   public void notifyBusy() {
@@ -505,6 +497,18 @@ public class RedPhoneService extends Service implements CallStateListener {
 
     if (handler != null) handler.sendMessage(message);
     else    			       bufferedEvents.add(message);
+  }
+
+  private class IntentRunnable implements Runnable {
+    private final Intent intent;
+
+    public IntentRunnable(Intent intent) {
+      this.intent = intent;
+    }
+
+    public void run() {
+      onIntentReceived(intent);
+    }
   }
 
   public class RedPhoneServiceBinder extends Binder {

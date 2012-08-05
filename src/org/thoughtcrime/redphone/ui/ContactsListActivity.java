@@ -126,6 +126,7 @@ public class ContactsListActivity extends SherlockListFragment
     String number                   = contactItemView.getNumber();
     Intent intent                   = new Intent(getActivity(), RedPhoneService.class);
 
+    intent.setAction(RedPhoneService.ACTION_OUTGOING_CALL);
     intent.putExtra(Constants.REMOTE_NUMBER, number );
     getActivity().startService(intent);
 

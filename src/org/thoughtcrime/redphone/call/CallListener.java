@@ -50,6 +50,7 @@ public class CallListener extends BroadcastReceiver {
     setResultData(null);
 
     intent.setClass(context, RedPhoneService.class);
+    intent.setAction(RedPhoneService.ACTION_OUTGOING_CALL);
 
     String destNumber = phoneNumber.substring(0, phoneNumber.length()-1);
     intent.putExtra(Constants.REMOTE_NUMBER, destNumber );

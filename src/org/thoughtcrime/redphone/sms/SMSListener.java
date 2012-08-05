@@ -49,6 +49,7 @@ public class SMSListener extends BroadcastReceiver {
 
     abortBroadcast();
     intent.setClass(context, RedPhoneService.class);
+    intent.setAction(RedPhoneService.ACTION_INCOMING_CALL);
     intent.putExtra(Constants.REMOTE_NUMBER, call.getInitiator());
     intent.putExtra(Constants.SESSION, new SessionDescriptor(call.getHost(),
                                                              call.getPort(),

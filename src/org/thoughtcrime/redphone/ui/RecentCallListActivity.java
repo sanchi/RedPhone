@@ -162,13 +162,12 @@ public class RecentCallListActivity extends SherlockListFragment
 
   @Override
   public void onListItemClick(ListView l, View v, int position, long id) {
-    Intent intent = new Intent();
-    intent.setClass(getActivity(), RedPhoneService.class);
+    Intent intent = new Intent(getActivity(), RedPhoneService.class);
+    intent.setAction(RedPhoneService.ACTION_OUTGOING_CALL);
     intent.putExtra(Constants.REMOTE_NUMBER, ((CallItemView)v).getNumber());
     getActivity().startService(intent);
 
-    Intent activityIntent = new Intent();
-    activityIntent.setClass(getActivity(), RedPhone.class);
+    Intent activityIntent = new Intent(getActivity(), RedPhone.class);
     activityIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
     startActivity(activityIntent);
 

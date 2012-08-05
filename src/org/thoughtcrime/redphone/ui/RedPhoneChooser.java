@@ -56,8 +56,8 @@ public class RedPhoneChooser extends Activity {
 
     builder.setPositiveButton("Secure Call", new DialogInterface.OnClickListener() {
       public void onClick(DialogInterface dialog, int which) {
-        Intent intent = new Intent();
-        intent.setClass(RedPhoneChooser.this, RedPhoneService.class);
+        Intent intent = new Intent(RedPhoneChooser.this, RedPhoneService.class);
+        intent.setAction(RedPhoneService.ACTION_OUTGOING_CALL);
         intent.putExtra(Constants.REMOTE_NUMBER, number);
         startService(intent);
 

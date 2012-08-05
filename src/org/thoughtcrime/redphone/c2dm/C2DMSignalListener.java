@@ -51,6 +51,7 @@ public class C2DMSignalListener extends BroadcastReceiver {
 
     if (callDetails != null) {
       intent.setClass(context, RedPhoneService.class);
+      intent.setAction(RedPhoneService.ACTION_INCOMING_CALL);
       intent.putExtra(Constants.REMOTE_NUMBER, callDetails.getInitiator());
       intent.putExtra(Constants.SESSION, new SessionDescriptor(callDetails.getHost(),
                                                                callDetails.getPort(),

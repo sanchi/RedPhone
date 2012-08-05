@@ -91,7 +91,6 @@ public class RedPhone extends Activity {
 
   private final HandlerThread backgroundTaskThread = new HandlerThread("BackgroundUITasks");
   private final Handler callStateHandler           = new CallStateHandler();
-  private       Handler backgroundTaskHandler;
 
   private int state;
   private boolean deliveringTimingData = false;
@@ -162,9 +161,6 @@ public class RedPhone extends Activity {
     callScreen = (CallScreen)findViewById(R.id.callScreen);
     state      = STATE_IDLE;
 
-    backgroundTaskThread.start();
-    backgroundTaskHandler = new Handler(backgroundTaskThread.getLooper());
-
     callScreen.setHangupButtonListener(new HangupButtonListener());
     callScreen.setIncomingCallActionListener(new IncomingCallActionListener());
 
@@ -183,20 +179,18 @@ public class RedPhone extends Activity {
   private void handleAnswerCall() {
     state = STATE_ANSWERING;
     callScreen.setActiveCall(redPhoneService.getRemotePersonInfo(), "Answering...");
-    backgroundTaskHandler.post(new Runnable() {
-      public void run() {
-        redPhoneService.handleAnswerCall();
-      }
-    });
+    Intent intent = new Intent(this, RedPhoneService.class);
+    intent.setAction(RedPhoneService.ACTION_ANSWER_CALL);
+    startService(intent);
   }
 
   private void handleDenyCall() {
     state = STATE_IDLE;
-    backgroundTaskHandler.post(new Runnable() {
-      public void run() {
-        redPhoneService.handleDenyCall();
-      }
-    });
+
+    Intent intent = new Intent(this, RedPhoneService.class);
+    intent.setAction(RedPhoneService.ACTION_DENY_CALL);
+    startService(intent);
+
     callScreen.setActiveCall(redPhoneService.getRemotePersonInfo(), "Ending call");
     delayedFinish();
   }
@@ -388,11 +382,10 @@ public class RedPhone extends Activity {
   private class HangupButtonListener implements CallControls.HangupButtonListener {
     public void onClick() {
       Log.w("RedPhone", "Hangup pressed, handling termination now...");
-      backgroundTaskHandler.post(new Runnable() {
-        public void run() {
-          redPhoneService.terminate();
-        }
-      });
+      Intent intent = new Intent(RedPhone.this, RedPhoneService.class);
+      intent.setAction(RedPhoneService.ACTION_HANGUP_CALL);
+      startService(intent);
+
       RedPhone.this.handleTerminate( LOCAL_TERMINATE );
     }
   }

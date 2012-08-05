@@ -22,6 +22,7 @@ import android.util.Log;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InterruptedIOException;
 
 /**
  *
@@ -64,6 +65,18 @@ public class LineReader {
     }
 
     return -1;
+  }
+
+  public boolean waitForAvailable() throws IOException {
+    try {
+      byte[] buffer = new byte[4096];
+      int read      = in.read(buffer);
+
+      baos.write(buffer, 0, read);
+      return true;
+    } catch (InterruptedIOException iie) {
+      return false;
+    }
   }
 
   public String readLine() throws IOException {

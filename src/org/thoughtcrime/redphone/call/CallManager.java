@@ -35,9 +35,7 @@ import org.thoughtcrime.redphone.crypto.zrtp.RecipientUnavailableException;
 import org.thoughtcrime.redphone.crypto.zrtp.SASCalculator;
 import org.thoughtcrime.redphone.crypto.zrtp.ZRTPSocket;
 import org.thoughtcrime.redphone.signaling.SessionDescriptor;
-import org.thoughtcrime.redphone.signaling.SignalingException;
 import org.thoughtcrime.redphone.signaling.SignalingSocket;
-import org.thoughtcrime.redphone.signaling.signals.ServerSignal;
 import org.thoughtcrime.redphone.ui.ApplicationPreferencesActivity;
 
 import java.util.Date;
@@ -60,6 +58,7 @@ public abstract class CallManager extends Thread {
   private boolean loopbackMode;
   private CallAudioManager callAudioManager;
   private Context context;
+  private SignalManager signalManager;
 
   protected SessionDescriptor sessionDescriptor;
   protected ZRTPSocket zrtpSocket;
@@ -68,10 +67,10 @@ public abstract class CallManager extends Thread {
 
   public CallManager(String remoteNumber, String threadName, Context context) {
     super(threadName);
-    this.remoteNumber = remoteNumber;
-    this.terminated   = false;
-    this.context      = context;
-    this.loopbackMode = ApplicationPreferencesActivity.getLoopbackEnabled(context);
+    this.remoteNumber    = remoteNumber;
+    this.terminated      = false;
+    this.context         = context;
+    this.loopbackMode    = ApplicationPreferencesActivity.getLoopbackEnabled(context);
 
     printInitDebug();
   }
@@ -102,20 +101,10 @@ public abstract class CallManager extends Thread {
       Log.w("CallManager", nfe);
       if (!terminated) callStateListener.notifyHandshakeFailed();
     }
-
-    if (terminated)
-      handleTermination();
-
   }
 
   public void sendBusySignal(String remoteNumber, long sessionId) {
-    try {
-      if (signalingSocket != null) {
-        signalingSocket.setBusy(sessionId);
-      }
-    } catch (SignalingException se) {
-      Log.w("CallManager", se);
-    }
+    signalManager.sendBusySignal(remoteNumber, sessionId);
   }
 
   public void terminate() {
@@ -124,54 +113,16 @@ public abstract class CallManager extends Thread {
     if (callAudioManager != null)
       callAudioManager.terminate();
 
-    if (signalingSocket != null) {
-//      if (sessionDescriptor != null)
-//        signalingSocket.setHangup(sessionDescriptor.sessionId);
-      signalingSocket.close();
-    }
-
-    if (zrtpSocket != null)
-      zrtpSocket.close();
-
-  }
-
-  private void handleTermination() {
-    if (callAudioManager != null)
-      callAudioManager.terminate();
-
-    if (signalingSocket != null) {
-//      if (sessionDescriptor.sessionId != -1)
-//        signalingSocket.setHangup(sessionDescriptor.sessionId);
-      signalingSocket.close();
-    }
+    if (signalManager != null)
+      signalManager.terminate();
 
     if (zrtpSocket != null)
       zrtpSocket.close();
   }
 
   protected void processSignals() {
-    new Thread("SignalingSocket Processor Thread") {
-      @Override
-      public void run() {
-        CallStateListener callStateListener = ApplicationContext.getInstance().getCallStateListener();
-        try {
-          while (true) {
-            ServerSignal signal = signalingSocket.readSignal();
-            long sessionId      = sessionDescriptor.sessionId;
-
-            if      (signal.isHangup(sessionId))  callStateListener.notifyCallDisconnected();
-            else if (signal.isRinging(sessionId)) callStateListener.notifyCallRinging();
-            else if (signal.isBusy(sessionId))    callStateListener.notifyBusy();
-            else if (signal.isKeepAlive())        Log.w("CallManager", "Received keep-alive...");
-
-            signalingSocket.sendOkResponse();
-          }
-        } catch (SignalingException e) {
-          Log.w("CallManager", e);
-          callStateListener.notifyCallDisconnected();
-        }
-      }
-    }.start();
+    Log.w("CallManager", "Starting signal processing loop...");
+    this.signalManager = new SignalManager(signalingSocket, sessionDescriptor);
   }
 
   protected abstract void setSecureSocketKeys(MasterSecret masterSecret);
