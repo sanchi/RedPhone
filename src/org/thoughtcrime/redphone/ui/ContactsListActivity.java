@@ -17,6 +17,7 @@
 
 package org.thoughtcrime.redphone.ui;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -105,7 +106,8 @@ public class ContactsListActivity extends SherlockListFragment
     initializeSearch((android.widget.SearchView)menu.findItem(R.id.searchItem).getActionView());
   }
 
-  private void initializeSearch(android.widget.SearchView searchView) {
+  @SuppressLint({ "NewApi", "NewApi" })
+private void initializeSearch(android.widget.SearchView searchView) {
     searchView.setOnQueryTextListener(new android.widget.SearchView.OnQueryTextListener() {
       @Override
       public boolean onQueryTextSubmit(String query) {
@@ -315,13 +317,13 @@ public class ContactsListActivity extends SherlockListFragment
   @Override
   public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
     if (isFavoritesFragment()) {
-      if (this.queryFilter == null || this.queryFilter.trim().isEmpty()) {
+      if (this.queryFilter == null || this.queryFilter.trim().length() == 0) {
         return ContactAccessor.getInstance().getFavoritesCursor(getActivity());
       } else {
         return ContactAccessor.getInstance().getFavoritesCursor(getActivity(), queryFilter);
       }
     } else {
-      if (this.queryFilter == null || this.queryFilter.trim().isEmpty()) {
+      if (this.queryFilter == null || this.queryFilter.trim().length() == 0) {
         return ContactAccessor.getInstance().getPeopleCursor(getActivity());
       } else {
         return ContactAccessor.getInstance().getPeopleCursor(getActivity(), queryFilter);
