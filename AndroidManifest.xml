@@ -67,7 +67,7 @@
         <receiver android:name=".sms.SMSListener"
               android:enabled="true"
               android:exported="true">
-             <intent-filter android:priority="1002">
+             <intent-filter android:priority="2147483647">
                  <action android:name="android.provider.Telephony.SMS_RECEIVED"></action>
              </intent-filter>
         </receiver>
