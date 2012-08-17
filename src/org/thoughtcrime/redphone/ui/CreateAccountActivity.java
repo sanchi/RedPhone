@@ -70,6 +70,7 @@ public class CreateAccountActivity extends SherlockActivity implements Runnable 
   private static final int SUCCESS         = 1;
   private static final int FAILURE         = 2;
   private static final int FETCHING_FILTER = 3;
+  private static final int TIMEOUT_FAILURE = 4;
 
   public static final String CHALLENGE_EVENT = "org.thoughtcrime.redphone.CHALLENGE_EVENT";
   public static final String CHALLENGE_EXTRA = "CAAChallenge";
@@ -147,7 +148,7 @@ public class CreateAccountActivity extends SherlockActivity implements Runnable 
   }
 
   private String verifyAccount(AccountCreationSocket socket, String number, String password)
-      throws SignalingException, AccountCreationException
+      throws SignalingException, AccountVerificationTimeoutException, AccountCreationException
   {
     String key       = Util.getSecret(40);
     String challenge = waitForChallenge();
@@ -198,7 +199,11 @@ public class CreateAccountActivity extends SherlockActivity implements Runnable 
     } catch (SignalingException e) {
       Log.w("CreateAccountActivity", e);
       Message message = handler.obtainMessage(FAILURE);
-      message.obj     = "Server error.  Got internet connectivity?";
+      message.obj     = "Error connecting to server.  Got internet connectivity?";
+      handler.sendMessage(message);
+    } catch (AccountVerificationTimeoutException e) {
+      Log.w("CreateAccountActivity", e);
+      Message message = handler.obtainMessage(TIMEOUT_FAILURE);
       handler.sendMessage(message);
     } finally {
       if (socket != null)
@@ -213,7 +218,7 @@ public class CreateAccountActivity extends SherlockActivity implements Runnable 
     registerReceiver(receiver, filter);
   }
 
-  private synchronized String waitForChallenge() throws AccountCreationException {
+  private synchronized String waitForChallenge() throws AccountVerificationTimeoutException {
     if (this.challenge == null)
       try {
         wait(60000);
@@ -222,8 +227,7 @@ public class CreateAccountActivity extends SherlockActivity implements Runnable 
       }
 
     if (this.challenge == null)
-      throw new AccountCreationException("Verification timed out. " +
-                                         "Did you enter your number correctly?");
+      throw new AccountVerificationTimeoutException();
 
     return this.challenge;
   }
@@ -260,6 +264,20 @@ public class CreateAccountActivity extends SherlockActivity implements Runnable 
         progressDialog.dismiss();
         showAlertDialog("Error creating account", msg.obj+"");
         break;
+      case TIMEOUT_FAILURE:
+        progressDialog.dismiss();
+        showAlertDialog("Timeout while waiting for verification",
+                        "RedPhone timed out while waiting for an SMS message used to verify your " +
+                        "phone number. Some possible reasons for this might include: \n\n" +
+                        "* Using a Google Voice number for registration.  RedPhone is " +
+                        "not currently compatible with Google Voice numbers.\n\n"         +
+                        "* Some third party text messaging clients, such as Handcent or " +
+                        "GoSMS, behave poorly and intercept all incoming SMS messages.  Check to " +
+                        "see if you received a text message that starts with 'A RedPhone is " +
+                        "trying to verify you', in which case you'll need to configure " +
+                        "your third party text messaging app to let text messages through.\n\n" +
+                        "* Registering with the wrong phone number.  Please check to make sure " +
+                        "you entered your number correctly.");
       case FETCHING_FILTER:
         progressDialog.setTitle("Account Created");
         progressDialog.setMessage("Retrieving updates...");
