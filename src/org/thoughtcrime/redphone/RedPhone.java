@@ -215,7 +215,7 @@ public class RedPhone extends Activity {
       } else {
         callScreen.setActiveCall(redPhoneService.getRemotePersonInfo(), "Call rejected");
       }
-    } else {
+    } else if (state != STATE_IDLE) {
       callScreen.setActiveCall(redPhoneService.getRemotePersonInfo(), "Ending call");
     }
 
@@ -229,6 +229,8 @@ public class RedPhone extends Activity {
 
   private void handleCallBusy() {
     callScreen.setActiveCall(redPhoneService.getRemotePersonInfo(), "Busy...");
+
+    state = STATE_IDLE;
     delayedFinish();
   }
 

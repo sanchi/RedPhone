@@ -103,10 +103,6 @@ public abstract class CallManager extends Thread {
     }
   }
 
-  public void sendBusySignal(String remoteNumber, long sessionId) {
-    signalManager.sendBusySignal(remoteNumber, sessionId);
-  }
-
   public void terminate() {
     this.terminated = true;
 

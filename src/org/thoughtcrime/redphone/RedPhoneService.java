@@ -43,7 +43,10 @@ import org.thoughtcrime.redphone.call.InitiatingCallManager;
 import org.thoughtcrime.redphone.call.ResponderCallManager;
 import org.thoughtcrime.redphone.codec.CodecSetupException;
 import org.thoughtcrime.redphone.contacts.PersonInfo;
+import org.thoughtcrime.redphone.signaling.OtpCounterProvider;
 import org.thoughtcrime.redphone.signaling.SessionDescriptor;
+import org.thoughtcrime.redphone.signaling.SignalingException;
+import org.thoughtcrime.redphone.signaling.SignalingSocket;
 import org.thoughtcrime.redphone.ui.ApplicationPreferencesActivity;
 import org.thoughtcrime.redphone.ui.DialerActivity;
 import org.thoughtcrime.redphone.ui.StatusBarManager;
@@ -218,7 +221,18 @@ public class RedPhoneService extends Service implements CallStateListener {
     SessionDescriptor session = (SessionDescriptor)intent.getParcelableExtra(Constants.SESSION);
 
     handleMissedCall(extractRemoteNumber(intent), System.currentTimeMillis());
-    currentCallManager.sendBusySignal(remoteNumber, session.sessionId);
+
+    try {
+      SignalingSocket signalingSocket = new SignalingSocket(this, session.getFullServerName(),
+                                                            Release.SERVER_PORT,
+                                                            localNumber, password,
+                                                            OtpCounterProvider.getInstance());
+
+      signalingSocket.setBusy(session.sessionId);
+      signalingSocket.close();
+    } catch (SignalingException e) {
+      Log.w("RedPhoneService", e);
+    }
   }
 
   private void handleMissedCall(String remoteNumber, long timestamp) {
@@ -383,6 +397,7 @@ public class RedPhoneService extends Service implements CallStateListener {
   }
 
   public void notifyBusy() {
+    Log.w("RedPhoneService", "Got busy signal from responder!");
     sendMessage(RedPhone.HANDLE_CALL_BUSY, null);
     this.terminate();
   }
