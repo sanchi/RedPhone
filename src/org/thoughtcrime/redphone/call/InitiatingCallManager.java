@@ -80,12 +80,14 @@ public class InitiatingCallManager extends CallManager {
 
       sessionDescriptor = signalingSocket.initiateConnection(remoteNumber);
 
-      int localPort = new NetworkConnector(sessionDescriptor.sessionId, Release.RELAY_SERVER_HOST,
+      int localPort = new NetworkConnector(sessionDescriptor.sessionId,
+                                           sessionDescriptor.getFullServerName(),
                                            sessionDescriptor.relayPort).makeConnection();
 
       secureSocket  = new SecureRtpSocket(new RtpSocket(localPort,
-                                          new InetSocketAddress(Release.RELAY_SERVER_HOST,
-                                          sessionDescriptor.relayPort)));
+                                          new InetSocketAddress(sessionDescriptor.getFullServerName(),
+                                                                sessionDescriptor.relayPort)));
+
       zrtpSocket    = new ZRTPInitiatorSocket(secureSocket, zid);
 
       processSignals();

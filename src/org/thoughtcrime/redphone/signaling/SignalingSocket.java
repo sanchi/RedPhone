@@ -146,6 +146,9 @@ public class SignalingSocket {
   {
     InetAddress[] addresses      = InetAddress.getAllByName(host);
     Socket stagedSocket          = LowLatencySocketConnector.connect(addresses, port);
+
+    Log.w("SignalingSocket", "Connected to: " + stagedSocket.getInetAddress().getHostAddress());
+
     SocketConnectMonitor monitor = new SocketConnectMonitor(stagedSocket);
 
     monitor.start();
