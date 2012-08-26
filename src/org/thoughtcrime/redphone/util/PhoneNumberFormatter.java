@@ -33,7 +33,7 @@ public class PhoneNumberFormatter {
 
   public static boolean isValidNumber(String number) {
     return number.startsWith("+") && !number.contains(".") &&
-          !number.contains("-") && !number.contains(" ") && number.length() >= 12;
+          !number.contains("-") && !number.contains(" ") && number.length() >= 11;
   }
 
   public static String formatNumber(Context context, String number) {
