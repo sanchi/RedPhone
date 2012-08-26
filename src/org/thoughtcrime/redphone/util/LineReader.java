@@ -72,6 +72,9 @@ public class LineReader {
       byte[] buffer = new byte[4096];
       int read      = in.read(buffer);
 
+      if (read <= 0)
+        return false;
+
       baos.write(buffer, 0, read);
       return true;
     } catch (InterruptedIOException iie) {

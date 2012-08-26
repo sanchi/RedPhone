@@ -79,8 +79,6 @@ public class ResponderCallManager extends CallManager {
       processSignals();
 
       if (!waitForAnswer()) {
-//        signalingSocket.setHangup(sessionDescriptor.sessionId);
-        signalingSocket.close();
         return;
       }
 
