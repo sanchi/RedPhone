@@ -116,6 +116,10 @@ public abstract class CallManager extends Thread {
       zrtpSocket.close();
   }
 
+  public SessionDescriptor getSessionDescriptor() {
+    return this.sessionDescriptor;
+  }
+
   protected void processSignals() {
     Log.w("CallManager", "Starting signal processing loop...");
     this.signalManager = new SignalManager(signalingSocket, sessionDescriptor);

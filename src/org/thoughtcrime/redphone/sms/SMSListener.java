@@ -22,6 +22,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.telephony.SmsMessage;
 import android.util.Log;
 
 import org.thoughtcrime.redphone.Constants;
@@ -40,15 +41,17 @@ import org.thoughtcrime.redphone.ui.CreateAccountActivity;
 
 public class SMSListener extends BroadcastReceiver {
 
-  public static final String SMS_RECEIVED_ACTION  = "android.provider.Telephony.SMS_RECEIVED";
+  public static final String SMS_RECEIVED_ACTION = "android.provider.Telephony.SMS_RECEIVED";
+  public static final String GV_RECEIVED_ACTION  = "com.google.android.apps.googlevoice.SMS_RECEIVED";
 
-  private void checkForIncomingCallSMS(Context context, Intent intent) {
-    IncomingCallDetails call = SMSProcessor.checkMessagesForInitiate(context, intent.getExtras());
+  private void checkForIncomingCallSMS(Context context, String[] messages) {
+    IncomingCallDetails call = SMSProcessor.checkMessagesForInitiate(context, messages);
     Log.w("SMSListener", "Incoming call details: " + call);
     if (call == null) return;
 
     abortBroadcast();
-    intent.setClass(context, RedPhoneService.class);
+
+    Intent intent = new Intent(context, RedPhoneService.class);
     intent.setAction(RedPhoneService.ACTION_INCOMING_CALL);
     intent.putExtra(Constants.REMOTE_NUMBER, call.getInitiator());
     intent.putExtra(Constants.SESSION, new SessionDescriptor(call.getHost(),
@@ -57,8 +60,8 @@ public class SMSListener extends BroadcastReceiver {
     context.startService(intent);
   }
 
-  private void checkForVerificationSMS(Context context, Intent intent) {
-    String challenge = SMSProcessor.checkMessagesForVerification(intent.getExtras());
+  private void checkForVerificationSMS(Context context, String[] messages) {
+    String challenge = SMSProcessor.checkMessagesForVerification(messages);
 
     if (challenge == null) return;
 
@@ -69,22 +72,46 @@ public class SMSListener extends BroadcastReceiver {
     context.sendBroadcast(challengeIntent);
   }
 
+  private String[] parseSmsMessages(Intent intent) {
+    Object[] pdus     = (Object[])intent.getExtras().get("pdus");
+    String[] messages = new String[pdus.length];
+
+    for (int i=0;i<pdus.length;i++) {
+      messages[i] = SmsMessage.createFromPdu((byte[])pdus[i]).getDisplayMessageBody();
+    }
+
+    return messages;
+  }
+
+  private String[] parseGvMessages(Intent intent) {
+    String body = intent.getStringExtra("com.google.android.apps.googlevoice.TEXT");
+    return new String[] {body};
+  }
+
+
   @Override
   public void onReceive(Context context, Intent intent) {
-    Log.w("SMSListener", "Got SMS broadcast...");
+    Log.w("SMSListener", "Got broadcast...");
 
     SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+    String[] messages             = null;
 
-    if( !SMS_RECEIVED_ACTION.equals( intent.getAction() ) ) {
-      Log.w( "RedPhone", "Unexpected action in SMSListener: " + intent.getAction() );
+    if (intent.getAction().equals(SMS_RECEIVED_ACTION)) {
+      Log.w("SMSListener", "Got SMS message...");
+      messages = parseSmsMessages(intent);
+    } else if (intent.getAction().equals(GV_RECEIVED_ACTION)) {
+      Log.w("SMSListener", "Got GV message...");
+      messages = parseGvMessages(intent);
+    } else {
+      Log.w("RedPhone", "Unexpected action in SMSListener: " + intent.getAction());
       return;
     }
 
     if (preferences.getBoolean("REGISTERED", false)) {
-      checkForIncomingCallSMS(context, intent);
+      checkForIncomingCallSMS(context, messages);
     }
 
-    checkForVerificationSMS(context, intent);
+    checkForVerificationSMS(context, messages);
   }
 
 }

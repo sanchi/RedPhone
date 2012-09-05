@@ -54,6 +54,23 @@ public class SessionDescriptor implements Parcelable {
   }
 
   @Override
+  public boolean equals(Object other) {
+    if (other == null)                         return false;
+    if (!(other instanceof SessionDescriptor)) return false;
+
+    SessionDescriptor that = (SessionDescriptor)other;
+
+    return this.relayPort == that.relayPort &&
+           this.sessionId == that.sessionId &&
+           this.serverName.equals(that.serverName);
+  }
+
+  @Override
+  public int hashCode() {
+    return this.relayPort ^ ((int)this.sessionId) ^ this.serverName.hashCode();
+  }
+
+  @Override
   public int describeContents() {
     return 0;
   }

@@ -17,8 +17,6 @@
 
 package org.thoughtcrime.redphone.sms;
 
-import android.util.Log;
-
 import org.thoughtcrime.redphone.util.Base64;
 
 import java.security.MessageDigest;
@@ -58,14 +56,9 @@ public abstract class WirePrefix {
     String prefix           = message.substring(0, PREFIX_SIZE);
     message                 = message.substring(PREFIX_SIZE);
 
-    Log.w("Prefix", "Calculating on message: " + message + "**");
-
     String calculatedPrefix = calculatePrefix((prefixType + message).getBytes(), PREFIX_BYTES);
 
     assert(calculatedPrefix.length() == PREFIX_SIZE);
-
-    Log.w("Prefix", "Received prefix: " + prefix);
-    Log.w("Prefix", "Calculated prefix: " + calculatedPrefix);
 
     return prefix.equals(calculatedPrefix);
   }

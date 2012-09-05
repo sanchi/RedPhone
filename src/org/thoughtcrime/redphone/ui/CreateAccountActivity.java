@@ -268,16 +268,17 @@ public class CreateAccountActivity extends SherlockActivity implements Runnable 
         progressDialog.dismiss();
         showAlertDialog("Timeout while waiting for verification",
                         "RedPhone timed out while waiting for an SMS message used to verify your " +
-                        "phone number. Some possible reasons for this might include: \n\n" +
-                        "* Using a Google Voice number for registration.  RedPhone is " +
-                        "not currently compatible with Google Voice numbers.\n\n"         +
+                        "phone number. Possible reasons for this might include: \n\n" +
                         "* Some third party text messaging clients, such as Handcent or " +
                         "GoSMS, behave poorly and intercept all incoming SMS messages.  Check to " +
                         "see if you received a text message that starts with 'A RedPhone is " +
                         "trying to verify you', in which case you'll need to configure " +
                         "your third party text messaging app to let text messages through.\n\n" +
                         "* Registering with the wrong phone number.  Please check to make sure " +
-                        "you entered your number correctly.");
+                        "you entered your number correctly.\n\n" +
+                        "* Using a Google Voice number for registration with an older version " +
+                        "of GoogleVoice installed.  RedPhone is now compatible with Google Voice " +
+                        "numbers, but only with recent versions of Google Voice installed.");
       case FETCHING_FILTER:
         progressDialog.setTitle("Account Created");
         progressDialog.setMessage("Retrieving updates...");

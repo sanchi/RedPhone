@@ -125,7 +125,7 @@ public class RedPhoneService extends Service implements CallStateListener {
     statusBarManager.setCallEnded();
   }
 
-  private void onIntentReceived(Intent intent) {
+  private synchronized void onIntentReceived(Intent intent) {
     Log.w("RedPhoneService", "Received Intent: " + intent.getAction());
 
     if      (intent.getAction().equals(ACTION_INCOMING_CALL) && isBusy()) handleBusyCall(intent);
@@ -219,6 +219,11 @@ public class RedPhoneService extends Service implements CallStateListener {
 
   private void handleBusyCall(Intent intent) {
     SessionDescriptor session = (SessionDescriptor)intent.getParcelableExtra(Constants.SESSION);
+
+    if (currentCallManager != null && session.equals(currentCallManager.getSessionDescriptor())) {
+      Log.w("RedPhoneService", "Duplicate incoming call signal, ignoring...");
+      return;
+    }
 
     handleMissedCall(extractRemoteNumber(intent), System.currentTimeMillis());
 
