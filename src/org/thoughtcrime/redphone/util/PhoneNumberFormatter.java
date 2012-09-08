@@ -20,6 +20,12 @@ package org.thoughtcrime.redphone.util;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.util.Log;
+
+import com.google.i18n.phonenumbers.NumberParseException;
+import com.google.i18n.phonenumbers.PhoneNumberUtil;
+import com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberFormat;
+import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber;
 
 import org.thoughtcrime.redphone.ApplicationContext;
 
@@ -36,10 +42,8 @@ public class PhoneNumberFormatter {
           !number.contains("-") && !number.contains(" ") && number.length() >= 11;
   }
 
-  public static String formatNumber(Context context, String number) {
-    SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
-    String localNumber            = preferences.getString("Number", "No Stored Number");
-    number                        = number.replaceAll("[^0-9+]", "");
+  private static String impreciseFormatNumber(String number, String localNumber) {
+    number = number.replaceAll("[^0-9+]", "");
 
     if (number.charAt(0) == '+')
       return number;
@@ -53,6 +57,29 @@ public class PhoneNumberFormatter {
     int difference = localNumber.length() - number.length();
 
     return "+" + localNumber.substring(0, difference) + number;
+  }
+
+  public static String formatNumber(Context context, String number) {
+    SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+    String localNumber            = preferences.getString("Number", "No Stored Number");
+    number                        = number.replaceAll("[^0-9+]", "");
+
+    if (number.charAt(0) == '+')
+      return number;
+
+    try {
+      PhoneNumberUtil util          = PhoneNumberUtil.getInstance();
+      PhoneNumber localNumberObject = util.parse(localNumber, null);
+
+      String localCountryCode       = util.getRegionCodeForNumber(localNumberObject);
+      Log.w("PhoneNumberFormatter", "Got local CC: " + localCountryCode);
+
+      PhoneNumber numberObject      = util.parse(number, localCountryCode);
+      return util.format(numberObject, PhoneNumberFormat.E164);
+    } catch (NumberParseException e) {
+      Log.w("PhoneNumberFormatter", e);
+      return impreciseFormatNumber(number, localNumber);
+    }
   }
 
   public static String formatNumber(String number) {
