@@ -5,3 +5,5 @@ project.properties
 bin/
 gen/
 .idea
+RedPhone.iml
+out/
