@@ -17,9 +17,14 @@
 
 package org.thoughtcrime.redphone.audio;
 
+import java.io.IOException;
+
+import org.thoughtcrime.redphone.R;
+
 import android.content.Context;
+import android.content.res.AssetFileDescriptor;
 import android.media.AudioManager;
-import android.media.Ringtone;
+import android.media.MediaPlayer;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Vibrator;
@@ -32,24 +37,35 @@ import android.util.Log;
  * @author Stuart O. Anderson
  */
 public class IncomingRinger {
-
+  private static final String TAG = IncomingRinger.class.getName();
   private static final long[] VIBRATE_PATTERN = {0, 1000, 1000};
-
   private final Context context;
-  private Ringer ringer;
   private final Vibrator vibrator;
+  private final MediaPlayer player;
 
   public IncomingRinger(Context context) {
     this.context  = context;
-    Uri rtURI = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
-    Ringtone ringtone = RingtoneManager.getRingtone(context, rtURI);
-    this.vibrator = (Vibrator)context.getSystemService(Context.VIBRATOR_SERVICE);
+    vibrator = (Vibrator)context.getSystemService(Context.VIBRATOR_SERVICE);
+    player = createPlayer(context);
+  }
 
-    if( ringtone != null ) {
-      ringer = new Ringer( ringtone );
-    } else {
-      Log.e("IncomingRinger", "Couldn't find a ringtone for URI: " + rtURI.toString() );
+  private MediaPlayer createPlayer(Context context) {
+    MediaPlayer newPlayer = new MediaPlayer();
+    try {
+      Uri ringtoneUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
+      newPlayer.setDataSource(context, ringtoneUri);
+    } catch (IOException e) {
+      try {
+        AssetFileDescriptor afd = context.getResources().openRawResourceFd(R.raw.incoming_fallback_ringtone);
+        newPlayer.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getDeclaredLength());
+      } catch (IOException e2){
+        Log.e(TAG, "Failed to create player for incoming call ringer");
+        return null;
+      }
     }
+    newPlayer.setLooping(true);
+    newPlayer.setAudioStreamType(AudioManager.STREAM_RING);
+    return newPlayer;
   }
 
   public void start() {
@@ -62,65 +78,38 @@ public class IncomingRinger {
     //audioManager).requestAudioFocus( )
 
     if (ringerMode == AudioManager.RINGER_MODE_VIBRATE ||
-       (ringerMode == AudioManager.RINGER_MODE_NORMAL && vibrateSetting == AudioManager.VIBRATE_SETTING_ON))
-    {
+       (ringerMode == AudioManager.RINGER_MODE_NORMAL && vibrateSetting == AudioManager.VIBRATE_SETTING_ON)) {
+      Log.i(TAG, "Starting vibration");
       vibrator.vibrate(VIBRATE_PATTERN, 1);
     }
 
-    if (ringer != null && ringerMode == AudioManager.RINGER_MODE_NORMAL ) {
-      //audioManager.setStreamVolume(AudioManager.STREAM_RING, audioManager.getStreamMaxVolume(AudioManager.STREAM_RING),0);
-      audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)*0,0);
-      audioManager.setMode( AudioManager.MODE_RINGTONE );
-      ringer.start();
+    if (player != null && ringerMode == AudioManager.RINGER_MODE_NORMAL ) {
+      audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 0, 0);
+      audioManager.setMode(AudioManager.MODE_RINGTONE);
+      try {
+        if(!player.isPlaying()) {
+          player.prepare();
+          player.start();
+          Log.d(TAG, "Playing ringtone now...");
+        } else {
+          Log.d(TAG, "Ringtone is already playing, declining to restart.");
+        }
+      } catch (IllegalStateException e) {
+        Log.w(TAG, e);
+      } catch (IOException e) {
+        Log.w(TAG, e);
+      }
+    } else {
+      Log.d(TAG, " mode: " + ringerMode);
     }
-
   }
 
   public void stop() {
-    if( ringer != null ) {
-      ringer.stopPlaying();
-      ringer = null;
+    if (player != null) {
+      Log.d(TAG, "Stopping ringer");
+      player.stop();
     }
-      Log.d("IncomingRinger", "Cancelling vibrator" );
-      vibrator.cancel();
-  }
-
-  private class Ringer extends Thread{
-    private Ringtone myTone;
-    private boolean terminate = false;
-    public Ringer( Ringtone tone ) {
-      super( "Ringer" );
-      myTone = tone;
-    }
-    @Override
-    public void run() {
-      while( true ) {
-        synchronized( this ) {
-          if( terminate ) {
-            myTone.stop();
-            Log.d( "Ringer", "Done playing...");
-            return;
-          }
-          if( !myTone.isPlaying() ) {
-            Log.d( "Ringer", "Playing..." );
-            myTone.play();
-          }
-          try {
-            wait(500);
-          }
-          catch (InterruptedException e) {
-          }
-        }
-
-      }
-      //Log.d( "Ringer", "SHOULDN'T BE HERE...");
-    }
-
-    public void stopPlaying() {
-      terminate = true;
-      synchronized(this) {
-        notify();
-      }
-    }
+    Log.d(TAG, "Cancelling vibrator" );
+    vibrator.cancel();
   }
 }
