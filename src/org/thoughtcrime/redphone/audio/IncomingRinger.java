@@ -95,7 +95,7 @@ public class IncomingRinger {
       myTone = tone;
     }
 
-    public synchronized void start(){
+    public void start(){
       terminate = false;
       Thread thread = new Thread(new Runnable() {
         @Override
