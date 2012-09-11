@@ -36,7 +36,7 @@ public class IncomingRinger {
   private static final long[] VIBRATE_PATTERN = {0, 1000, 1000};
 
   private final Context context;
-  private Ringer ringer;
+  private final Ringer ringer;
   private final Vibrator vibrator;
 
   public IncomingRinger(Context context) {
@@ -49,6 +49,7 @@ public class IncomingRinger {
       ringer = new Ringer( ringtone );
     } else {
       Log.e("IncomingRinger", "Couldn't find a ringtone for URI: " + rtURI.toString() );
+      ringer = null;
     }
   }
 
@@ -62,65 +63,69 @@ public class IncomingRinger {
     //audioManager).requestAudioFocus( )
 
     if (ringerMode == AudioManager.RINGER_MODE_VIBRATE ||
-       (ringerMode == AudioManager.RINGER_MODE_NORMAL && vibrateSetting == AudioManager.VIBRATE_SETTING_ON))
-    {
+       (ringerMode == AudioManager.RINGER_MODE_NORMAL && vibrateSetting == AudioManager.VIBRATE_SETTING_ON)) {
+      Log.w("IncomingRinger", "Starting Vibration");
       vibrator.vibrate(VIBRATE_PATTERN, 1);
     }
 
     if (ringer != null && ringerMode == AudioManager.RINGER_MODE_NORMAL ) {
       //audioManager.setStreamVolume(AudioManager.STREAM_RING, audioManager.getStreamMaxVolume(AudioManager.STREAM_RING),0);
-      audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)*0,0);
-      audioManager.setMode( AudioManager.MODE_RINGTONE );
+      audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 0, 0);
+      audioManager.setMode(AudioManager.MODE_RINGTONE);
       ringer.start();
+    } else {
+      Log.w("IncomingRinger", ringer + " mode: " + ringerMode);
     }
 
   }
 
   public void stop() {
     if( ringer != null ) {
-      ringer.stopPlaying();
-      ringer = null;
+      ringer.stop();
     }
-      Log.d("IncomingRinger", "Cancelling vibrator" );
-      vibrator.cancel();
+    Log.d("IncomingRinger", "Cancelling vibrator" );
+    vibrator.cancel();
   }
 
-  private class Ringer extends Thread{
-    private Ringtone myTone;
-    private boolean terminate = false;
+  private class Ringer {
+    private final Ringtone myTone;
+    private volatile boolean terminate = false;
+
     public Ringer( Ringtone tone ) {
-      super( "Ringer" );
       myTone = tone;
     }
-    @Override
-    public void run() {
-      while( true ) {
-        synchronized( this ) {
-          if( terminate ) {
-            myTone.stop();
-            Log.d( "Ringer", "Done playing...");
-            return;
-          }
-          if( !myTone.isPlaying() ) {
-            Log.d( "Ringer", "Playing..." );
-            myTone.play();
-          }
-          try {
-            wait(500);
-          }
-          catch (InterruptedException e) {
+
+    public synchronized void start(){
+      terminate = false;
+      Thread thread = new Thread(new Runnable() {
+        @Override
+        public void run() {
+          while(true) {
+            if(terminate) {
+              myTone.stop();
+              Log.d( "Ringer", "Done playing...");
+              return;
+            }
+            if (!myTone.isPlaying()) {
+              Log.d( "Ringer", "Playing..." );
+              myTone.play();
+            }
+            try {
+              synchronized (Ringer.this) {
+                Ringer.this.wait(500);
+              }
+            } catch (InterruptedException e) {
+            }
           }
         }
-
-      }
-      //Log.d( "Ringer", "SHOULDN'T BE HERE...");
+      });
+      thread.setName("Ringer");
+      thread.start();
     }
 
-    public void stopPlaying() {
+    public synchronized void stop() {
       terminate = true;
-      synchronized(this) {
-        notify();
-      }
+      notify();
     }
   }
 }
