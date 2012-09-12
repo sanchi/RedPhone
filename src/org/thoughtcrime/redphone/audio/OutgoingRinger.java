@@ -48,23 +48,27 @@ public class OutgoingRinger implements MediaPlayer.OnCompletionListener,
   }
 
   public void playSonar() {
-    start( R.raw.sonarping );
+    start(R.raw.sonarping);
   }
 
   public void playHandshake() {
-    start( R.raw.handshake );
+    start(R.raw.handshake);
   }
 
   public void playRing() {
-    start( R.raw.outring );
+    start(R.raw.outring);
   }
 
   public void playComplete() {
-    stop( R.raw.completed );
+    stop(R.raw.completed);
   }
 
   public void playFailure() {
-    stop( R.raw.failure );
+    stop(R.raw.failure);
+  }
+
+  public void playBusy() {
+    start(R.raw.busy);
   }
 
   private void setSound( int soundID ) {

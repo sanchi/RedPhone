@@ -70,6 +70,9 @@ public class RedPhone extends Activity {
   public static final int STATE_ANSWERING = 4;
   public static final int STATE_CONNECTED = 5;
 
+  private static final int STANDARD_DELAY_FINISH    = 3000;
+  public  static final int BUSY_SIGNAL_DELAY_FINISH = 5500;
+
   public static final int HANDLE_CALL_CONNECTED          = 0;
   public static final int HANDLE_WAITING_FOR_RESPONDER   = 1;
   public static final int HANDLE_SERVER_FAILURE          = 2;
@@ -231,7 +234,7 @@ public class RedPhone extends Activity {
     callScreen.setActiveCall(redPhoneService.getRemotePersonInfo(), "Busy...");
 
     state = STATE_IDLE;
-    delayedFinish();
+    delayedFinish(BUSY_SIGNAL_DELAY_FINISH);
   }
 
   private void handleCallConnected(String sas) {
@@ -339,6 +342,10 @@ public class RedPhone extends Activity {
   }
 
   private void delayedFinish() {
+    delayedFinish(STANDARD_DELAY_FINISH);
+  }
+
+  private void delayedFinish(int delayMillis) {
     callStateHandler.postDelayed(new Runnable() {
 
     public void run() {
@@ -352,7 +359,7 @@ public class RedPhone extends Activity {
       } else {
         RedPhone.this.finish();
       }
-    }}, 3000);
+    }}, delayMillis);
   }
 
   private class CallStateHandler extends Handler {

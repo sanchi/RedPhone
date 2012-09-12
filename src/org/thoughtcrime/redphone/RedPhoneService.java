@@ -78,6 +78,7 @@ public class RedPhoneService extends Service implements CallStateListener {
 
   private final List<Message> bufferedEvents = new LinkedList<Message>();
   private final IBinder binder               = new RedPhoneServiceBinder();
+  private final Handler serviceHandler       = new Handler();
 
   private OutgoingRinger outgoingRinger;
   private IncomingRinger incomingRinger;
@@ -96,6 +97,7 @@ public class RedPhoneService extends Service implements CallStateListener {
 
   private StatusBarManager statusBarManager;
   private Handler handler;
+
 
   @Override
   public void onCreate() {
@@ -150,8 +152,6 @@ public class RedPhoneService extends Service implements CallStateListener {
     am.setStreamVolume(AudioManager.STREAM_VOICE_CALL,
                        am.getStreamMaxVolume(AudioManager.STREAM_VOICE_CALL), 0 );
     //TODO(Stuart Anderson): I suspect we can safely remove everything before this line...
-
-
     this.outgoingRinger = new OutgoingRinger(this);
     this.incomingRinger = new IncomingRinger(this);
   }
@@ -406,7 +406,13 @@ public class RedPhoneService extends Service implements CallStateListener {
   public void notifyBusy() {
     Log.w("RedPhoneService", "Got busy signal from responder!");
     sendMessage(RedPhone.HANDLE_CALL_BUSY, null);
-    this.terminate();
+    outgoingRinger.playBusy();
+    serviceHandler.postDelayed(new Runnable() {
+      @Override
+      public void run() {
+        RedPhoneService.this.terminate();
+      }
+    }, RedPhone.BUSY_SIGNAL_DELAY_FINISH);
   }
 
   public void notifyCallRinging() {
