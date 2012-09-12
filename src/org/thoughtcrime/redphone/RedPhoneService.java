@@ -76,6 +76,8 @@ public class RedPhoneService extends Service implements CallStateListener {
   public static final String ACTION_DENY_CALL     = "org.thoughtcrime.redphone.RedPhoneService.DENYU_CALL";
   public static final String ACTION_HANGUP_CALL   = "org.thoughtcrime.redphone.RedPhoneService.HANGUP";
 
+  private static final long BUSY_TONE_DURATION = 3000;
+
   private final List<Message> bufferedEvents = new LinkedList<Message>();
   private final IBinder binder               = new RedPhoneServiceBinder();
 
@@ -96,6 +98,7 @@ public class RedPhoneService extends Service implements CallStateListener {
 
   private StatusBarManager statusBarManager;
   private Handler handler;
+  private Handler serviceHandler;
 
   @Override
   public void onCreate() {
@@ -150,8 +153,6 @@ public class RedPhoneService extends Service implements CallStateListener {
     am.setStreamVolume(AudioManager.STREAM_VOICE_CALL,
                        am.getStreamMaxVolume(AudioManager.STREAM_VOICE_CALL), 0 );
     //TODO(Stuart Anderson): I suspect we can safely remove everything before this line...
-
-
     this.outgoingRinger = new OutgoingRinger(this);
     this.incomingRinger = new IncomingRinger(this);
   }
@@ -183,6 +184,7 @@ public class RedPhoneService extends Service implements CallStateListener {
                               .newKeyguardLock("RedPhone");
 
     this.statusBarManager = new StatusBarManager(this);
+    this.serviceHandler   = new Handler();
   }
 
   /// Intent Handlers
@@ -406,7 +408,13 @@ public class RedPhoneService extends Service implements CallStateListener {
   public void notifyBusy() {
     Log.w("RedPhoneService", "Got busy signal from responder!");
     sendMessage(RedPhone.HANDLE_CALL_BUSY, null);
-    this.terminate();
+    outgoingRinger.playBusy();
+    serviceHandler.postDelayed(new Runnable() {
+      @Override
+      public void run() {
+        RedPhoneService.this.terminate();
+      }
+    }, BUSY_TONE_DURATION);
   }
 
   public void notifyCallRinging() {
