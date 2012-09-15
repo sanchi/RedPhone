@@ -30,7 +30,6 @@ import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.Message;
 import android.telephony.SmsManager;
@@ -92,8 +91,7 @@ public class RedPhone extends Activity {
   public static final int HANDLE_DEBUG_INFO              = 16;
   public static final int HANDLE_NO_SUCH_USER            = 17;
 
-  private final HandlerThread backgroundTaskThread = new HandlerThread("BackgroundUITasks");
-  private final Handler callStateHandler           = new CallStateHandler();
+  private final Handler callStateHandler = new CallStateHandler();
 
   private int state;
   private boolean deliveringTimingData = false;
