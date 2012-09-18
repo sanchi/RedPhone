@@ -54,18 +54,13 @@ public class IncomingRinger {
     try {
       Uri ringtoneUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
       newPlayer.setDataSource(context, ringtoneUri);
+      newPlayer.setLooping(true);
+      newPlayer.setAudioStreamType(AudioManager.STREAM_RING);
+      return newPlayer;
     } catch (IOException e) {
-      try {
-        AssetFileDescriptor afd = context.getResources().openRawResourceFd(R.raw.incoming_fallback_ringtone);
-        newPlayer.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getDeclaredLength());
-      } catch (IOException e2){
-        Log.e(TAG, "Failed to create player for incoming call ringer");
-        return null;
-      }
+      Log.e(TAG, "Failed to create player for incoming call ringer");
+      return null;
     }
-    newPlayer.setLooping(true);
-    newPlayer.setAudioStreamType(AudioManager.STREAM_RING);
-    return newPlayer;
   }
 
   public void start() {
@@ -77,8 +72,9 @@ public class IncomingRinger {
     //TODO request audio gain here
     //audioManager).requestAudioFocus( )
 
-    if (ringerMode == AudioManager.RINGER_MODE_VIBRATE ||
-       (ringerMode == AudioManager.RINGER_MODE_NORMAL && vibrateSetting == AudioManager.VIBRATE_SETTING_ON)) {
+    if (ringerMode == AudioManager.RINGER_MODE_VIBRATE
+        || (ringerMode == AudioManager.RINGER_MODE_NORMAL && vibrateSetting == AudioManager.VIBRATE_SETTING_ON)
+        || (player == null)) {
       Log.i(TAG, "Starting vibration");
       vibrator.vibrate(VIBRATE_PATTERN, 1);
     }
