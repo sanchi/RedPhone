@@ -152,7 +152,7 @@ public class RedPhone extends Activity {
   }
 
   private void initializeServiceBinding() {
-    Log.w("RedPHone", "Binding to RedPhoneService...");
+    Log.w("RedPhone", "Binding to RedPhoneService...");
     Intent bindIntent = new Intent(this, RedPhoneService.class);
     bindService(bindIntent, serviceConnection, Context.BIND_AUTO_CREATE);
   }
