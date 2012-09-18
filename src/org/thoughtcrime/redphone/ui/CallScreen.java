@@ -63,7 +63,7 @@ public class CallScreen extends FrameLayout {
   }
 
   public void setIncomingCall(PersonInfo personInfo) {
-    callCard.setCard(personInfo, "Incoming call...");
+    callCard.setCard(personInfo, getContext().getString(R.string.CallScreen_incoming_call));
     callControls.setIncomingCall();
   }
 

@@ -40,11 +40,12 @@ public class AboutActivity extends SherlockActivity {
     super.onCreate(icicle);
     setContentView(R.layout.about_activity);
 
-    getSupportActionBar().setTitle("About RedPhone");
+    getSupportActionBar().setTitle(R.string.AboutActivity_about_redphone);
     getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
     TextView versionTextView = (TextView)findViewById(R.id.versionText);
-    versionTextView.setText("RedPhone Beta " + getCurrentVersion());
+    versionTextView.setText(String.format(getString(R.string.AboutActivity_redphone_beta_s),
+                                                    getCurrentVersion()));
   }
 
   @Override

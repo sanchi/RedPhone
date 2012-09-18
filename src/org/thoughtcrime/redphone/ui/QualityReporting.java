@@ -24,6 +24,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 
+import org.thoughtcrime.redphone.R;
 import org.thoughtcrime.redphone.audio.CallLogger;
 import org.thoughtcrime.redphone.profiling.PacketLogger;
 import org.thoughtcrime.redphone.util.LogUtil;
@@ -39,27 +40,26 @@ public class QualityReporting {
   public static void sendDiagnosticData(final Activity ctx) {
 
     AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
-    builder.setMessage( "Would you like to send diagnostic information " +
-                        "about this call to Whisper Systems?" );
+    builder.setMessage( R.string.QualityReporting_would_you_like_to_send_diagnostic_information_about_this_call_to_whisper_systems );
     builder.setCancelable(false);
-    builder.setNegativeButton( "Never", new DialogInterface.OnClickListener() {
+    builder.setNegativeButton( R.string.QualityReporting_never, new DialogInterface.OnClickListener() {
       public void onClick(DialogInterface dialog, int which) {
         ApplicationPreferencesActivity.setAskUserToSendDiagnosticData( ctx, false );
         ctx.finish();
       }
     });
-    builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+    builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
       public void onClick(DialogInterface dialog, int which) {
         deliverTimingData(ctx);
         ctx.finish();
       }
     });
-    builder.setNeutralButton("No",new DialogInterface.OnClickListener() {
+    builder.setNeutralButton(android.R.string.no, new DialogInterface.OnClickListener() {
       public void onClick(DialogInterface dialog, int which) {
         ctx.finish();
       }
     });
-    builder.setTitle( "Send Diagnostics?" );
+    builder.setTitle( R.string.QualityReporting_send_diagnostics );
     builder.setIcon( android.R.drawable.ic_dialog_alert );
     builder.show();
   }

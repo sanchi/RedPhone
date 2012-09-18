@@ -60,9 +60,9 @@ public class Util {
     }
   }
 
-  public static void dieWithError(String msg) {
-    ApplicationContext.getInstance().getCallStateListener().notifyClientError( msg );
-    Log.d("RedPhone:AC", "Dying with error:" + msg);
+  public static void dieWithError(int msgId) {
+    ApplicationContext.getInstance().getCallStateListener().notifyClientError( msgId );
+    Log.d("RedPhone:AC", "Dying with error.");
   }
 
   public static void dieWithError(Exception e) {

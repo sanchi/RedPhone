@@ -50,11 +50,10 @@ public class RedPhoneChooser extends Activity {
 
     AlertDialog.Builder builder = new AlertDialog.Builder(this);
     builder.setIcon(R.drawable.redphone_icon);
-    builder.setTitle("Upgrade to RedPhone?");
-    builder.setMessage("This contact also uses RedPhone. " +
-                       "Would you like to upgrade to a secure call?");
+    builder.setTitle(R.string.RedPhoneChooser_upgrade_to_redphone);
+    builder.setMessage(R.string.RedPhoneChooser_this_contact_also_uses_redphone_would_you_like_to_upgrade_to_a_secure_call);
 
-    builder.setPositiveButton("Secure Call", new DialogInterface.OnClickListener() {
+    builder.setPositiveButton(R.string.RedPhoneChooser_secure_call, new DialogInterface.OnClickListener() {
       public void onClick(DialogInterface dialog, int which) {
         Intent intent = new Intent(RedPhoneChooser.this, RedPhoneService.class);
         intent.setAction(RedPhoneService.ACTION_OUTGOING_CALL);
@@ -70,7 +69,7 @@ public class RedPhoneChooser extends Activity {
       }
     });
 
-    builder.setNegativeButton("Insecure Call", new DialogInterface.OnClickListener() {
+    builder.setNegativeButton(R.string.RedPhoneChooser_insecure_call, new DialogInterface.OnClickListener() {
       public void onClick(DialogInterface dialog, int which) {
         Intent intent = new Intent("android.intent.action.CALL",
                                    Uri.fromParts("tel", getIntent()

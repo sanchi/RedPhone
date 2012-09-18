@@ -247,10 +247,13 @@ public class RedPhoneService extends Service implements CallStateListener {
 
     Intent intent                           = new Intent(this, DialerActivity.class);
     NotificationManager notificationManager = (NotificationManager)this.getSystemService(NOTIFICATION_SERVICE);
-    Notification notification               = new Notification(android.R.drawable.stat_notify_missed_call, "Missed RedPhone Call", timestamp);
+    Notification notification               = new Notification(android.R.drawable.stat_notify_missed_call, getString(R.string.RedPhoneService_missed_redphone_call), timestamp);
     PendingIntent launchIntent              = PendingIntent.getActivity(this, 0, intent, 0);
 
-    notification.setLatestEventInfo(this, "Missed RedPhone Call", "Missed RedPhone Call", launchIntent);
+    notification.setLatestEventInfo(this, getString(R.string.RedPhoneService_missed_redphone_call),
+                                    getString(R.string.RedPhoneService_missed_redphone_call),
+                                    launchIntent);
+
     notification.defaults |= Notification.DEFAULT_VIBRATE;
     notificationManager.notify(DialerActivity.MISSED_CALL, notification);
   }
@@ -510,6 +513,10 @@ public class RedPhoneService extends Service implements CallStateListener {
   public void notifyClientError(String msg) {
     sendMessage(RedPhone.HANDLE_CLIENT_FAILURE,msg);
     this.terminate();
+  }
+
+  public void notifyClientError(int messageId) {
+    notifyClientError(getString(messageId));
   }
 
   public void notifyCallConnecting() {

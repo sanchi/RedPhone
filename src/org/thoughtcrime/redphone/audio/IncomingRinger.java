@@ -17,10 +17,6 @@
 
 package org.thoughtcrime.redphone.audio;
 
-import java.io.IOException;
-
-import org.thoughtcrime.redphone.R;
-
 import android.content.Context;
 import android.content.res.AssetFileDescriptor;
 import android.media.AudioManager;
@@ -29,6 +25,10 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Vibrator;
 import android.util.Log;
+
+import org.thoughtcrime.redphone.R;
+
+import java.io.IOException;
 
 /**
  * Plays the 'incoming call' ringtone and manages the audio player state associated with this

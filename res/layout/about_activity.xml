@@ -22,22 +22,22 @@
                   android:textAppearance="?android:attr/textAppearanceMedium"
                   android:layout_marginBottom="20dip"
                   android:layout_marginTop="20dip"
-                  android:text="Additional information:"/>
+                  android:text="@string/about_activity__additional_information"/>
 
         <TextView android:layout_width="fill_parent"
                   android:layout_height="fill_parent"
-                  android:text="@string/aboutText"/>
+                  android:text="@string/about_activity__aboutText"/>
 
         <TextView android:layout_width="fill_parent"
                   android:layout_height="wrap_content"
                   android:textAppearance="?android:attr/textAppearanceMedium"
                   android:layout_marginBottom="20dip"
                   android:layout_marginTop="20dip"
-                  android:text="Attribution:"/>
+                  android:text="@string/about_activity__attribution"/>
 
         <TextView android:layout_width="fill_parent"
                   android:layout_height="fill_parent"
-                  android:text="@string/attributionText"/>
+                  android:text="@string/about_activity__attributionText"/>
 
     </LinearLayout>
 </ScrollView>
