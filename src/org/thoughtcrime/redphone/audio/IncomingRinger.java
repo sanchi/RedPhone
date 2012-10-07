@@ -23,10 +23,14 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Vibrator;
+import android.provider.Settings;
 import android.util.Log;
 
+import org.thoughtcrime.redphone.ApplicationContext;
 import org.thoughtcrime.redphone.R;
+import org.thoughtcrime.redphone.ui.ApplicationPreferencesActivity;
 
 import java.io.IOException;
 
@@ -41,18 +45,27 @@ public class IncomingRinger {
   private static final long[] VIBRATE_PATTERN = {0, 1000, 1000};
   private final Context context;
   private final Vibrator vibrator;
-  private final MediaPlayer player;
+  private MediaPlayer player;
+  private final MediaPlayer.OnErrorListener playerErrorListener =
+      new MediaPlayer.OnErrorListener() {
+        @Override
+        public boolean onError(MediaPlayer mediaPlayer, int i, int i1) {
+          player = null;
+          return false;
+        }
+      };
 
   public IncomingRinger(Context context) {
-    this.context  = context;
+    this.context = context.getApplicationContext();
     vibrator = (Vibrator)context.getSystemService(Context.VIBRATOR_SERVICE);
-    player = createPlayer(context);
+    player = createPlayer();
   }
 
-  private MediaPlayer createPlayer(Context context) {
+  private MediaPlayer createPlayer() {
     MediaPlayer newPlayer = new MediaPlayer();
     try {
       Uri ringtoneUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
+      newPlayer.setOnErrorListener(playerErrorListener);
       newPlayer.setDataSource(context, ringtoneUri);
       newPlayer.setLooping(true);
       newPlayer.setAudioStreamType(AudioManager.STREAM_RING);
@@ -64,17 +77,18 @@ public class IncomingRinger {
   }
 
   public void start() {
-    AudioManager audioManager = (AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
-
-    int ringerMode            = audioManager.getRingerMode();
-    int vibrateSetting        = audioManager.getVibrateSetting(AudioManager.VIBRATE_TYPE_RINGER);
-
     //TODO request audio gain here
     //audioManager).requestAudioFocus( )
 
-    if (ringerMode == AudioManager.RINGER_MODE_VIBRATE
-        || (ringerMode == AudioManager.RINGER_MODE_NORMAL && vibrateSetting == AudioManager.VIBRATE_SETTING_ON)
-        || (player == null)) {
+    if(player == null) {
+      //retry player creation to pick up changed ringtones or audio server restarts
+      player = createPlayer();
+    }
+
+    AudioManager audioManager = (AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
+    int ringerMode = audioManager.getRingerMode();
+
+    if (shouldVibrate()) {
       Log.i(TAG, "Starting vibration");
       vibrator.vibrate(VIBRATE_PATTERN, 1);
     }
@@ -92,8 +106,10 @@ public class IncomingRinger {
         }
       } catch (IllegalStateException e) {
         Log.w(TAG, e);
+        player = null;
       } catch (IOException e) {
         Log.w(TAG, e);
+        player = null;
       }
     } else {
       Log.d(TAG, " mode: " + ringerMode);
@@ -107,5 +123,38 @@ public class IncomingRinger {
     }
     Log.d(TAG, "Cancelling vibrator" );
     vibrator.cancel();
+  }
+
+  private boolean shouldVibrate() {
+    if(player == null) {
+      return true;
+    }
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+      return shouldVibrateNew(context);
+    }
+    return shouldVibrateOld(context);
+  }
+
+  private boolean shouldVibrateNew(Context context) {
+    AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+    Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+
+    if (vibrator == null || !vibrator.hasVibrator()) {
+      return false;
+    }
+
+    boolean vibrateWhenRinging = Settings.System.getInt(context.getContentResolver(), "vibrate_when_ringing", 0) != 0;
+    int ringerMode = audioManager.getRingerMode();
+    if (vibrateWhenRinging) {
+      return ringerMode != AudioManager.RINGER_MODE_SILENT;
+    } else {
+      return ringerMode == AudioManager.RINGER_MODE_VIBRATE;
+    }
+  }
+
+  private boolean shouldVibrateOld(Context context) {
+    AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+    return audioManager.shouldVibrate(AudioManager.VIBRATE_TYPE_RINGER);
   }
 }
