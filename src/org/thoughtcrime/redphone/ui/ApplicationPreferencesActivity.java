@@ -60,6 +60,7 @@ public class ApplicationPreferencesActivity extends SherlockPreferenceActivity {
   public static final String CALL_STREAM_DES_LEVEL      = "pref_call_stream_des_buffer_level";
   public static final String ASK_DIAGNOSTIC_REPORTING   = "pref_ask_diagnostic_reporting";
   public static final String OPPORTUNISTIC_UPGRADE_PREF = "pref_prompt_upgrade";
+  public static final String ALWAYS_VIBRATE_PREF        = "pref_always_vibrate";
 
   private ProgressDialog progressDialog;
   private C2DMCompleteReceiver completeReceiver;
@@ -268,5 +269,11 @@ public class ApplicationPreferencesActivity extends SherlockPreferenceActivity {
     return PreferenceManager
            .getDefaultSharedPreferences(context)
            .getBoolean(ASK_DIAGNOSTIC_REPORTING, true);
+  }
+
+  public static boolean getAlwaysVibrate(Context context ) {
+    return PreferenceManager
+           .getDefaultSharedPreferences(context)
+           .getBoolean(ALWAYS_VIBRATE_PREF, true);
   }
 }

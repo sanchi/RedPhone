@@ -27,6 +27,7 @@ import android.os.Vibrator;
 import android.util.Log;
 
 import org.thoughtcrime.redphone.R;
+import org.thoughtcrime.redphone.ui.ApplicationPreferencesActivity;
 
 import java.io.IOException;
 
@@ -64,16 +65,14 @@ public class IncomingRinger {
   }
 
   public void start() {
-    AudioManager audioManager = (AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
-
-    int ringerMode            = audioManager.getRingerMode();
-    int vibrateSetting        = audioManager.getVibrateSetting(AudioManager.VIBRATE_TYPE_RINGER);
-
     //TODO request audio gain here
     //audioManager).requestAudioFocus( )
 
+    AudioManager audioManager = (AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
+    int ringerMode = audioManager.getRingerMode();
+
     if (ringerMode == AudioManager.RINGER_MODE_VIBRATE
-        || (ringerMode == AudioManager.RINGER_MODE_NORMAL && vibrateSetting == AudioManager.VIBRATE_SETTING_ON)
+        || (ringerMode == AudioManager.RINGER_MODE_NORMAL && ApplicationPreferencesActivity.getAlwaysVibrate(context))
         || (player == null)) {
       Log.i(TAG, "Starting vibration");
       vibrator.vibrate(VIBRATE_PATTERN, 1);
