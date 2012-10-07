@@ -26,6 +26,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.AudioManager;
+import android.net.Uri;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
@@ -98,7 +99,7 @@ public class RedPhoneService extends Service implements CallStateListener {
   private StatusBarManager statusBarManager;
   private Handler handler;
 
-
+  private CallLogger.CallRecord currentCallRecord;
   @Override
   public void onCreate() {
     super.onCreate();
@@ -216,7 +217,7 @@ public class RedPhoneService extends Service implements CallStateListener {
 
     statusBarManager.setCallInProgress();
 
-    CallLogger.logOutgoingCall(this, remoteNumber);
+    currentCallRecord = CallLogger.logOutgoingCall(this, remoteNumber);
   }
 
   private void handleBusyCall(Intent intent) {
@@ -350,6 +351,11 @@ public class RedPhoneService extends Service implements CallStateListener {
     incomingRinger.stop();
     outgoingRinger.stop();
 
+    if (currentCallRecord != null) {
+      currentCallRecord.finishCall();
+      currentCallRecord = null;
+    }
+
     if (currentCallManager != null) {
       currentCallManager.terminate();
       currentCallManager = null;
@@ -403,7 +409,7 @@ public class RedPhoneService extends Service implements CallStateListener {
     keyguardDisabled = true;
 
     statusBarManager.setCallInProgress();
-    CallLogger.logIncomingCall(this, remoteNumber);
+    currentCallRecord = CallLogger.logIncomingCall(this, remoteNumber);
   }
 
   public void notifyBusy() {
