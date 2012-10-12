@@ -153,7 +153,7 @@ public class RedPhoneService extends Service implements CallStateListener {
                        am.getStreamMaxVolume(AudioManager.STREAM_VOICE_CALL), 0 );
     //TODO(Stuart Anderson): I suspect we can safely remove everything before this line...
     this.outgoingRinger = new OutgoingRinger(this);
-    this.incomingRinger = new IncomingRinger(this);
+    this.incomingRinger = new IncomingRinger();
   }
 
   private void shutdownAudio() {

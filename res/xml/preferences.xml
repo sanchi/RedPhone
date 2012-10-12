@@ -23,10 +23,6 @@
                             android:key="pref_prompt_upgrade"
                             android:title="Prompt for call upgrade"
                             android:summary="When making insecure calls, prompt for upgrade to RedPhone if contact is RedPhone-enabled."/>
-        <CheckBoxPreference android:defaultValue="true"
-                            android:key="pref_always_vibrate"
-                            android:title="Vibrate when ringing"
-                            android:summary="Vibrate whenever an incoming calls rings audibly"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="Signaling Settings">
         <CheckBoxPreference android:defaultValue="false"
