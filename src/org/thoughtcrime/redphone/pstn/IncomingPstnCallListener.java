@@ -3,12 +3,9 @@ package org.thoughtcrime.redphone.pstn;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import org.thoughtcrime.redphone.RedPhoneService;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.nfc.Tag;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
@@ -21,17 +18,17 @@ import android.util.Log;
  */
 public class IncomingPstnCallListener extends BroadcastReceiver {
   private static final String TAG = IncomingPstnCallListener.class.getName();
-  private final RedPhoneService service;
+  private final CallStateView callState;
 
-  public IncomingPstnCallListener(RedPhoneService service) {
-    this.service = service;
+  public IncomingPstnCallListener(CallStateView callState) {
+    this.callState = callState;
   }
 
   @Override
   public void onReceive(Context context, Intent intent) {
     if(!(intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER) != null
         && intent.getStringExtra(TelephonyManager.EXTRA_STATE).equals(TelephonyManager.EXTRA_STATE_RINGING)
-        && service.isInCall())) {
+        && callState.isInCall())) {
       return;
     }
     Log.d(TAG, "Attempting to deny incoming PSTN call.");

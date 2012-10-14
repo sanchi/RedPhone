@@ -44,6 +44,7 @@ import org.thoughtcrime.redphone.call.InitiatingCallManager;
 import org.thoughtcrime.redphone.call.ResponderCallManager;
 import org.thoughtcrime.redphone.codec.CodecSetupException;
 import org.thoughtcrime.redphone.contacts.PersonInfo;
+import org.thoughtcrime.redphone.pstn.CallStateView;
 import org.thoughtcrime.redphone.pstn.IncomingPstnCallListener;
 import org.thoughtcrime.redphone.signaling.OtpCounterProvider;
 import org.thoughtcrime.redphone.signaling.SessionDescriptor;
@@ -70,13 +71,14 @@ import java.util.List;
  * @author Moxie Marlinspike
  *
  */
-public class RedPhoneService extends Service implements CallStateListener {
-  private static final String TAG = RedPhoneService.class.getName();
+public class RedPhoneService extends Service implements CallStateListener, CallStateView {
   public static final String ACTION_INCOMING_CALL = "org.thoughtcrime.redphone.RedPhoneService.INCOMING_CALL";
   public static final String ACTION_OUTGOING_CALL = "org.thoughtcrime.redphone.RedPhoneService.OUTGOING_CALL";
   public static final String ACTION_ANSWER_CALL   = "org.thoughtcrime.redphone.RedPhoneService.ANSWER_CALL";
   public static final String ACTION_DENY_CALL     = "org.thoughtcrime.redphone.RedPhoneService.DENYU_CALL";
   public static final String ACTION_HANGUP_CALL   = "org.thoughtcrime.redphone.RedPhoneService.HANGUP";
+
+  private static final String TAG = RedPhoneService.class.getName();
 
   private final List<Message> bufferedEvents = new LinkedList<Message>();
   private final IBinder binder               = new RedPhoneServiceBinder();
@@ -111,9 +113,7 @@ public class RedPhoneService extends Service implements CallStateListener {
     initializeResources();
     initializeApplicationContext();
     initializeAudio();
-
-    pstnCallListener = new IncomingPstnCallListener(this);
-    registerReceiver(pstnCallListener, new IntentFilter("android.intent.action.PHONE_STATE"));
+    initializePstnCallListener();
   }
 
   @Override
@@ -169,6 +169,11 @@ public class RedPhoneService extends Service implements CallStateListener {
     //TODO(Stuart Anderson): I suspect we can safely remove everything before this line...
     this.outgoingRinger = new OutgoingRinger(this);
     this.incomingRinger = new IncomingRinger(this);
+  }
+
+  private void initializePstnCallListener() {
+    pstnCallListener = new IncomingPstnCallListener(this);
+    registerReceiver(pstnCallListener, new IntentFilter("android.intent.action.PHONE_STATE"));
   }
 
   private void shutdownAudio() {
@@ -572,6 +577,7 @@ public class RedPhoneService extends Service implements CallStateListener {
     }
   }
 
+  @Override
   public boolean isInCall() {
     switch(state) {
       case RedPhone.STATE_IDLE:
