@@ -43,6 +43,7 @@ import java.io.IOException;
 public class IncomingRinger {
   private static final String TAG = IncomingRinger.class.getName();
   private static final long[] VIBRATE_PATTERN = {0, 1000, 1000};
+  private final Context context;
   private final Vibrator vibrator;
   private MediaPlayer player;
   private final MediaPlayer.OnErrorListener playerErrorListener =
@@ -54,8 +55,9 @@ public class IncomingRinger {
         }
       };
 
-  public IncomingRinger() {
-    vibrator = (Vibrator)ApplicationContext.getInstance().getContext().getSystemService(Context.VIBRATOR_SERVICE);
+  public IncomingRinger(Context context) {
+    this.context = context.getApplicationContext();
+    vibrator = (Vibrator)context.getSystemService(Context.VIBRATOR_SERVICE);
     player = createPlayer();
   }
 
@@ -64,7 +66,7 @@ public class IncomingRinger {
     try {
       Uri ringtoneUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
       newPlayer.setOnErrorListener(playerErrorListener);
-      newPlayer.setDataSource(ApplicationContext.getInstance().getContext(), ringtoneUri);
+      newPlayer.setDataSource(context, ringtoneUri);
       newPlayer.setLooping(true);
       newPlayer.setAudioStreamType(AudioManager.STREAM_RING);
       return newPlayer;
@@ -83,7 +85,7 @@ public class IncomingRinger {
       player = createPlayer();
     }
 
-    AudioManager audioManager = (AudioManager)ApplicationContext.getInstance().getContext().getSystemService(Context.AUDIO_SERVICE);
+    AudioManager audioManager = (AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
     int ringerMode = audioManager.getRingerMode();
 
     if (shouldVibrate()) {
@@ -124,8 +126,6 @@ public class IncomingRinger {
   }
 
   private boolean shouldVibrate() {
-    Context context = ApplicationContext.getInstance().getContext();
-
     if(player == null) {
       return true;
     }
