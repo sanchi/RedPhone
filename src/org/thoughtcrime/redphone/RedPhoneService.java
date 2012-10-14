@@ -26,7 +26,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.AudioManager;
-import android.nfc.Tag;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
@@ -80,6 +79,7 @@ public class RedPhoneService extends Service implements CallStateListener {
 
   private final List<Message> bufferedEvents = new LinkedList<Message>();
   private final IBinder binder               = new RedPhoneServiceBinder();
+  private final Handler serviceHandler       = new Handler();
 
   private OutgoingRinger outgoingRinger;
   private IncomingRinger incomingRinger;
@@ -99,6 +99,7 @@ public class RedPhoneService extends Service implements CallStateListener {
   private StatusBarManager statusBarManager;
   private Handler handler;
 
+  private CallLogger.CallRecord currentCallRecord;
   @Override
   public void onCreate() {
     super.onCreate();
@@ -158,7 +159,7 @@ public class RedPhoneService extends Service implements CallStateListener {
     am.setSpeakerphoneOn(false);
     am.setStreamVolume(AudioManager.STREAM_VOICE_CALL,
                        am.getStreamMaxVolume(AudioManager.STREAM_VOICE_CALL), 0 );
-
+    //TODO(Stuart Anderson): I suspect we can safely remove everything before this line...
     this.outgoingRinger = new OutgoingRinger(this);
     this.incomingRinger = new IncomingRinger(this);
   }
@@ -223,7 +224,7 @@ public class RedPhoneService extends Service implements CallStateListener {
 
     statusBarManager.setCallInProgress();
 
-    CallLogger.logOutgoingCall(this, remoteNumber);
+    currentCallRecord = CallLogger.logOutgoingCall(this, remoteNumber);
   }
 
   private void handleBusyCall(Intent intent) {
@@ -254,10 +255,13 @@ public class RedPhoneService extends Service implements CallStateListener {
 
     Intent intent                           = new Intent(this, DialerActivity.class);
     NotificationManager notificationManager = (NotificationManager)this.getSystemService(NOTIFICATION_SERVICE);
-    Notification notification               = new Notification(android.R.drawable.stat_notify_missed_call, "Missed RedPhone Call", timestamp);
+    Notification notification               = new Notification(android.R.drawable.stat_notify_missed_call, getString(R.string.RedPhoneService_missed_redphone_call), timestamp);
     PendingIntent launchIntent              = PendingIntent.getActivity(this, 0, intent, 0);
 
-    notification.setLatestEventInfo(this, "Missed RedPhone Call", "Missed RedPhone Call", launchIntent);
+    notification.setLatestEventInfo(this, getString(R.string.RedPhoneService_missed_redphone_call),
+                                    getString(R.string.RedPhoneService_missed_redphone_call),
+                                    launchIntent);
+
     notification.defaults |= Notification.DEFAULT_VIBRATE;
     notificationManager.notify(DialerActivity.MISSED_CALL, notification);
   }
@@ -354,6 +358,11 @@ public class RedPhoneService extends Service implements CallStateListener {
     incomingRinger.stop();
     outgoingRinger.stop();
 
+    if (currentCallRecord != null) {
+      currentCallRecord.finishCall();
+      currentCallRecord = null;
+    }
+
     if (currentCallManager != null) {
       currentCallManager.terminate();
       currentCallManager = null;
@@ -407,13 +416,19 @@ public class RedPhoneService extends Service implements CallStateListener {
     keyguardDisabled = true;
 
     statusBarManager.setCallInProgress();
-    CallLogger.logIncomingCall(this, remoteNumber);
+    currentCallRecord = CallLogger.logIncomingCall(this, remoteNumber);
   }
 
   public void notifyBusy() {
     Log.w("RedPhoneService", "Got busy signal from responder!");
     sendMessage(RedPhone.HANDLE_CALL_BUSY, null);
-    this.terminate();
+    outgoingRinger.playBusy();
+    serviceHandler.postDelayed(new Runnable() {
+      @Override
+      public void run() {
+        RedPhoneService.this.terminate();
+      }
+    }, RedPhone.BUSY_SIGNAL_DELAY_FINISH);
   }
 
   public void notifyCallRinging() {
@@ -511,6 +526,10 @@ public class RedPhoneService extends Service implements CallStateListener {
   public void notifyClientError(String msg) {
     sendMessage(RedPhone.HANDLE_CLIENT_FAILURE,msg);
     this.terminate();
+  }
+
+  public void notifyClientError(int messageId) {
+    notifyClientError(getString(messageId));
   }
 
   public void notifyCallConnecting() {

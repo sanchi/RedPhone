@@ -88,7 +88,7 @@ public class CreateAccountActivity extends SherlockActivity implements Runnable 
     setContentView(R.layout.account_creation);
 
     ActionBar actionBar = this.getSupportActionBar();
-    actionBar.setTitle("Register with RedPhone");
+    actionBar.setTitle(R.string.CreateAccountActivity_register_with_redphone);
 
     initializeResources();
   }
@@ -199,7 +199,7 @@ public class CreateAccountActivity extends SherlockActivity implements Runnable 
     } catch (SignalingException e) {
       Log.w("CreateAccountActivity", e);
       Message message = handler.obtainMessage(FAILURE);
-      message.obj     = "Error connecting to server.  Got internet connectivity?";
+      message.obj     = R.string.CreateAccountActivity_error_connecting_to_server_got_internet_connectivity;
       handler.sendMessage(message);
     } catch (AccountVerificationTimeoutException e) {
       Log.w("CreateAccountActivity", e);
@@ -252,7 +252,9 @@ public class CreateAccountActivity extends SherlockActivity implements Runnable 
       switch (msg.what) {
       case SUCCESS:
         progressDialog.dismiss();
-        Toast.makeText(CreateAccountActivity.this, "Account created!", Toast.LENGTH_LONG).show();
+        Toast.makeText(CreateAccountActivity.this,
+                       R.string.CreateAccountActivity_account_created,
+                       Toast.LENGTH_LONG).show();
         ApplicationPreferencesActivity.setC2dm(CreateAccountActivity.this, false);
 
         Intent intent = new Intent("org.thoughtcrime.redphone.ui.DialerActivity");
@@ -262,26 +264,15 @@ public class CreateAccountActivity extends SherlockActivity implements Runnable 
         break;
       case FAILURE:
         progressDialog.dismiss();
-        showAlertDialog("Error creating account", msg.obj+"");
+        showAlertDialog(getString(R.string.CreateAccountActivity_error_creating_account), msg.obj+"");
         break;
       case TIMEOUT_FAILURE:
         progressDialog.dismiss();
-        showAlertDialog("Timeout while waiting for verification",
-                        "RedPhone timed out while waiting for an SMS message used to verify your " +
-                        "phone number. Possible reasons for this might include: \n\n" +
-                        "* Some third party text messaging clients, such as Handcent or " +
-                        "GoSMS, behave poorly and intercept all incoming SMS messages.  Check to " +
-                        "see if you received a text message that starts with 'A RedPhone is " +
-                        "trying to verify you', in which case you'll need to configure " +
-                        "your third party text messaging app to let text messages through.\n\n" +
-                        "* Registering with the wrong phone number.  Please check to make sure " +
-                        "you entered your number correctly.\n\n" +
-                        "* Using a Google Voice number for registration with an older version " +
-                        "of GoogleVoice installed.  RedPhone is now compatible with Google Voice " +
-                        "numbers, but only with recent versions of Google Voice installed.");
+        showAlertDialog(getString(R.string.CreateAccountActivity_timeout_while_waiting_for_verification),
+                        getString(R.string.CreateAccountActivity_redphone_timed_out_while_waiting_for_an_sms_message_explanation));
       case FETCHING_FILTER:
-        progressDialog.setTitle("Account Created");
-        progressDialog.setMessage("Retrieving updates...");
+        progressDialog.setTitle(getString(R.string.CreateAccountActivity_account_created));
+        progressDialog.setMessage(getString(R.string.CreateAccountActivity_retrieving_updates));
         break;
       }
     }
@@ -294,7 +285,7 @@ public class CreateAccountActivity extends SherlockActivity implements Runnable 
 
       if (number == null || number.toString().equals("")) {
         Toast toast = Toast.makeText(CreateAccountActivity.this,
-                                     "You must specify your phone number!",
+                                     R.string.CreateAccountActivity_you_must_specify_your_phone_number,
                                      Toast.LENGTH_LONG);
         toast.show();
         return;
@@ -303,8 +294,8 @@ public class CreateAccountActivity extends SherlockActivity implements Runnable 
       self.number.setText(number.toString().replaceAll("[^0-9+]", ""));
 
       if (!PhoneNumberFormatter.isValidNumber(self.number.getText().toString())) {
-        showAlertDialog("Incorrect number format", "You must specify your number in " +
-                                                   "international format, eg: +14151231234");
+        showAlertDialog(getString(R.string.CreateAccountActivity_incorrect_number_format),
+                        getString(R.string.CreateAccountActivity_you_must_specify_your_number_in_international_format_eg_14151231234));
         return;
       }
 
@@ -313,16 +304,18 @@ public class CreateAccountActivity extends SherlockActivity implements Runnable 
         !CreateAccountActivity.this.number.getText().toString().startsWith("+1")))
       {
         Toast toast = Toast.makeText(CreateAccountActivity.this,
-                                     "Sorry, only USA numbers are supported in the Beta.",
+                                     getString(R.string.CreateAccountActivity_sorry_only_usa_numbers_are_supported_in_the_beta),
                                      Toast.LENGTH_LONG);
         toast.show();
         return;
       }
 
-      CreateAccountActivity.this.progressDialog = ProgressDialog.show(CreateAccountActivity.this,
-                                                                      "Creating account",
-                                                                      "This could take a moment...",
-                                                                      true, false);
+      CreateAccountActivity.this.progressDialog =
+            ProgressDialog.show(CreateAccountActivity.this,
+                                getString(R.string.CreateAccountActivity_creating_account),
+                                getString(R.string.CreateAccountActivity_this_could_take_a_moment),
+                                true, false);
+
       new Thread(CreateAccountActivity.this).start();
     }
   }
@@ -350,7 +343,7 @@ public class CreateAccountActivity extends SherlockActivity implements Runnable 
     dialog.setTitle(title);
     dialog.setMessage(message);
     dialog.setIcon(android.R.drawable.ic_dialog_alert);
-    dialog.setPositiveButton("Ok", null);
+    dialog.setPositiveButton(android.R.string.ok, null);
     dialog.show();
   }
 

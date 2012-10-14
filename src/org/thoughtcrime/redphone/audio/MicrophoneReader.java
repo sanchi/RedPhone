@@ -24,6 +24,7 @@ import android.os.SystemClock;
 import android.util.Log;
 
 import org.thoughtcrime.redphone.ApplicationContext;
+import org.thoughtcrime.redphone.R;
 import org.thoughtcrime.redphone.codec.AudioCodec;
 import org.thoughtcrime.redphone.network.RtpAudioSender;
 import org.thoughtcrime.redphone.profiling.PacketLogger;
@@ -94,7 +95,7 @@ public class MicrophoneReader {
     while (audioSource.getState() != AudioRecord.STATE_INITIALIZED) {
       if (waitCount > 50) {
         micThread.terminate();
-        Util.dieWithError("Microphone failed to initialize.  Try changing Audio Call Mode in Settings?");
+        Util.dieWithError(R.string.MicrophoneReader_microphone_failed_to_initialize_try_changing_audio_call_mode_in_settings);
         throw new RuntimeException("AudioRecord did not initialize");
       }
 

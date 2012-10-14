@@ -70,7 +70,7 @@ public class ApplicationPreferencesActivity extends SherlockPreferenceActivity {
     addPreferencesFromResource(R.xml.preferences);
 
     getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-    getSupportActionBar().setTitle("RedPhone Settings");
+    getSupportActionBar().setTitle(R.string.ApplicationPreferencesActivity_redphone_settings);
 
     if(Release.DEBUG) {
       addPreferencesFromResource(R.xml.debug);
@@ -209,9 +209,8 @@ public class ApplicationPreferencesActivity extends SherlockPreferenceActivity {
       ((CheckBoxPreference)preference).setChecked(!enabled);
 
       progressDialog  = ProgressDialog.show(ApplicationPreferencesActivity.this,
-                                            "Updating Signaling Method",
-                                            "Changing signaling method, " +
-                                            "this could take a second...",
+                                            getString(R.string.ApplicationPreferencesActivity_updating_signaling_method),
+                                            getString(R.string.ApplicationPreferencesActivity_changing_signaling_method_this_could_take_a_second),
                                             true, false);
 
       Intent intent = new Intent(ApplicationPreferencesActivity.this,
@@ -234,7 +233,7 @@ public class ApplicationPreferencesActivity extends SherlockPreferenceActivity {
       if (intent.getStringExtra("type").equals(C2DMRegistrationService.REGISTER_ACTION)) {
         if (!intent.getBooleanExtra("success", false)) {
           Toast.makeText(ApplicationPreferencesActivity.this,
-                         "Error registering with C2DM server...",
+                         R.string.ApplicationPreferencesActivity_error_registering_with_c2dm_server,
                          Toast.LENGTH_LONG).show();
         } else {
           ((CheckBoxPreference)findPreference(USE_C2DM)).setChecked(true);
@@ -244,7 +243,7 @@ public class ApplicationPreferencesActivity extends SherlockPreferenceActivity {
       if (intent.getStringExtra("type").equals(C2DMRegistrationService.UNREGISTER_ACTION)) {
         if (!intent.getBooleanExtra("success", false)) {
           Toast.makeText(ApplicationPreferencesActivity.this,
-                         "Error unregistering with C2DM server...",
+                         R.string.ApplicationPreferencesActivity_error_unregistering_with_c2dm_server,
                          Toast.LENGTH_LONG).show();
         } else {
           ((CheckBoxPreference)findPreference(USE_C2DM)).setChecked(false);
@@ -253,7 +252,7 @@ public class ApplicationPreferencesActivity extends SherlockPreferenceActivity {
 
       if (intent.getStringExtra("type").equals(C2DMRegistrationService.ERROR_ACTION)) {
         Toast.makeText(ApplicationPreferencesActivity.this,
-                       "Error communicating with C2DM server...",
+                       R.string.ApplicationPreferencesActivity_error_communicating_with_c2dm_server,
                        Toast.LENGTH_LONG).show();
       }
     }

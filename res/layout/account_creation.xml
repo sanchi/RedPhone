@@ -23,7 +23,7 @@
                   android:textColor="#ffffff"
                   android:textAppearance="?android:attr/textAppearanceMedium"
                   android:singleLine="true"
-                  android:text="This device's phone number:" />
+                  android:text="@string/account_creation__this_devices_phone_number" />
 
         <EditText style="@style/RegisterEditText"
                   android:id="@+id/number"
@@ -36,7 +36,7 @@
 
           <Button style="@android:style/Widget.Button"
                   android:id="@+id/registerButton"
-                  android:text="Register"
+                  android:text="@string/account_creation__register"
                   android:layout_width="wrap_content"
                   android:layout_height="wrap_content"
                   android:layout_gravity="right"

@@ -47,6 +47,7 @@ public interface CallStateListener {
   public void notifyDebugInfo(String info);
   public void notifyCallStale();
   public void notifyCallFresh();
-  public void notifyClientError(String msg);
+  public void notifyClientError(int msgId);
+  public void notifyClientError(String message);
   public void notifyCallConnecting();
 }

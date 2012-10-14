@@ -27,7 +27,7 @@
     <TextView android:id="@android:id/empty"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:text="Empty call log."
+        android:text="@string/recent_calls__empty_call_log"
         android:gravity="center"
         android:textAppearance="?android:attr/textAppearanceLarge"
     />

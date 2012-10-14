@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:title="Search"
+    <item android:title="@string/contact_list_options_menu__search"
           android:id="@+id/searchItem"
           android:icon="@drawable/ic_action_search"
           android:showAsAction="ifRoom|collapseActionView"

@@ -30,7 +30,6 @@ import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.Message;
 import android.telephony.SmsManager;
@@ -70,6 +69,9 @@ public class RedPhone extends Activity {
   public static final int STATE_ANSWERING = 4;
   public static final int STATE_CONNECTED = 5;
 
+  private static final int STANDARD_DELAY_FINISH    = 3000;
+  public  static final int BUSY_SIGNAL_DELAY_FINISH = 5500;
+
   public static final int HANDLE_CALL_CONNECTED          = 0;
   public static final int HANDLE_WAITING_FOR_RESPONDER   = 1;
   public static final int HANDLE_SERVER_FAILURE          = 2;
@@ -89,8 +91,7 @@ public class RedPhone extends Activity {
   public static final int HANDLE_DEBUG_INFO              = 16;
   public static final int HANDLE_NO_SUCH_USER            = 17;
 
-  private final HandlerThread backgroundTaskThread = new HandlerThread("BackgroundUITasks");
-  private final Handler callStateHandler           = new CallStateHandler();
+  private final Handler callStateHandler = new CallStateHandler();
 
   private int state;
   private boolean deliveringTimingData = false;
@@ -152,7 +153,7 @@ public class RedPhone extends Activity {
   }
 
   private void initializeServiceBinding() {
-    Log.w("RedPHone", "Binding to RedPhoneService...");
+    Log.w("RedPhone", "Binding to RedPhoneService...");
     Intent bindIntent = new Intent(this, RedPhoneService.class);
     bindService(bindIntent, serviceConnection, Context.BIND_AUTO_CREATE);
   }
@@ -168,9 +169,9 @@ public class RedPhone extends Activity {
   }
 
   private void sendInstallLink(String user) {
-    String message = "I'd like to call you securely using RedPhone." +
-                     " You can install RedPhone from Android Market: " +
-                     "http://market.android.com/search?q=pname:org.thoughtcrime.redphone";
+    String message =
+        String.format(getString(R.string.RedPhone_id_like_to_call_you_securely_using_redphone_you_can_install_redphone_from_the_play_store_s),
+                                "https://play.google.com/store/apps/details?id=org.thoughtcrime.redphone");
 
     ArrayList<String> messages = SmsManager.getDefault().divideMessage(message);
     SmsManager.getDefault().sendMultipartTextMessage(user, null, messages, null, null);
@@ -178,7 +179,9 @@ public class RedPhone extends Activity {
 
   private void handleAnswerCall() {
     state = STATE_ANSWERING;
-    callScreen.setActiveCall(redPhoneService.getRemotePersonInfo(), "Answering...");
+    callScreen.setActiveCall(redPhoneService.getRemotePersonInfo(),
+                             getString(R.string.RedPhone_answering));
+
     Intent intent = new Intent(this, RedPhoneService.class);
     intent.setAction(RedPhoneService.ACTION_ANSWER_CALL);
     startService(intent);
@@ -191,7 +194,8 @@ public class RedPhone extends Activity {
     intent.setAction(RedPhoneService.ACTION_DENY_CALL);
     startService(intent);
 
-    callScreen.setActiveCall(redPhoneService.getRemotePersonInfo(), "Ending call");
+    callScreen.setActiveCall(redPhoneService.getRemotePersonInfo(),
+                             getString(R.string.RedPhone_ending_call));
     delayedFinish();
   }
 
@@ -202,7 +206,8 @@ public class RedPhone extends Activity {
 
   private void handleOutgoingCall(String remoteNumber) {
     state = STATE_DIALING;
-    callScreen.setActiveCall(PersonInfo.getInstance(this, remoteNumber), "Dialing...");
+    callScreen.setActiveCall(PersonInfo.getInstance(this, remoteNumber),
+                             getString(R.string.RedPhone_dialing));
   }
 
   private void handleTerminate( int terminationType ) {
@@ -211,12 +216,15 @@ public class RedPhone extends Activity {
 
     if( state == STATE_DIALING ) {
       if (terminationType == LOCAL_TERMINATE) {
-        callScreen.setActiveCall(redPhoneService.getRemotePersonInfo(), "Cancelling call");
+        callScreen.setActiveCall(redPhoneService.getRemotePersonInfo(),
+                                 getString(R.string.RedPhone_cancelling_call));
       } else {
-        callScreen.setActiveCall(redPhoneService.getRemotePersonInfo(), "Call rejected");
+        callScreen.setActiveCall(redPhoneService.getRemotePersonInfo(),
+                                 getString(R.string.RedPhone_call_rejected));
       }
     } else if (state != STATE_IDLE) {
-      callScreen.setActiveCall(redPhoneService.getRemotePersonInfo(), "Ending call");
+      callScreen.setActiveCall(redPhoneService.getRemotePersonInfo(),
+                               getString(R.string.RedPhone_ending_call));
     }
 
     state = STATE_IDLE;
@@ -224,19 +232,22 @@ public class RedPhone extends Activity {
   }
 
   private void handleCallRinging() {
-    callScreen.setActiveCall(redPhoneService.getRemotePersonInfo(), "Ringing...");
+    callScreen.setActiveCall(redPhoneService.getRemotePersonInfo(),
+                             getString(R.string.RedPhone_ringing));
   }
 
   private void handleCallBusy() {
-    callScreen.setActiveCall(redPhoneService.getRemotePersonInfo(), "Busy...");
+    callScreen.setActiveCall(redPhoneService.getRemotePersonInfo(),
+                             getString(R.string.RedPhone_busy));
 
     state = STATE_IDLE;
-    delayedFinish();
+    delayedFinish(BUSY_SIGNAL_DELAY_FINISH);
   }
 
   private void handleCallConnected(String sas) {
     getWindow().addFlags(WindowManager.LayoutParams.FLAG_IGNORE_CHEEK_PRESSES);
-    callScreen.setActiveCall(redPhoneService.getRemotePersonInfo(), "Connected", sas);
+    callScreen.setActiveCall(redPhoneService.getRemotePersonInfo(),
+                             getString(R.string.RedPhone_connected), sas);
     state = STATE_CONNECTED;
     redPhoneService.notifyCallConnectionUIUpdateComplete();
   }
@@ -246,34 +257,40 @@ public class RedPhone extends Activity {
   }
 
   private void handleConnectingToInitiator() {
-    callScreen.setActiveCall(redPhoneService.getRemotePersonInfo(), "Connecting...");
+    callScreen.setActiveCall(redPhoneService.getRemotePersonInfo(),
+                             getString(R.string.RedPhone_connecting));
   }
 
   private void handleHandshakeFailed() {
     state = STATE_IDLE;
-    callScreen.setActiveCall(redPhoneService.getRemotePersonInfo(), "Handshake failed!");
+    callScreen.setActiveCall(redPhoneService.getRemotePersonInfo(),
+                             getString(R.string.RedPhone_handshake_failed_exclamation));
     delayedFinish();
   }
 
   private void handleRecipientUnavailable() {
     state = STATE_IDLE;
-    callScreen.setActiveCall(redPhoneService.getRemotePersonInfo(), "Recipient unavailable");
+    callScreen.setActiveCall(redPhoneService.getRemotePersonInfo(),
+                             getString(R.string.RedPhone_recipient_unavailable));
     delayedFinish();
   }
 
   private void handlePerformingHandshake() {
-    callScreen.setActiveCall(redPhoneService.getRemotePersonInfo(), "Performing handshake...");
+    callScreen.setActiveCall(redPhoneService.getRemotePersonInfo(),
+                             getString(R.string.RedPhone_performing_handshake));
   }
 
   private void handleServerFailure() {
     state = STATE_IDLE;
-    callScreen.setActiveCall(redPhoneService.getRemotePersonInfo(), "Server failed!");
+    callScreen.setActiveCall(redPhoneService.getRemotePersonInfo(),
+                              getString(R.string.RedPhone_server_failed_exclamation));
     delayedFinish();
   }
 
   private void handleClientFailure(String msg) {
     state = STATE_IDLE;
-    callScreen.setActiveCall(redPhoneService.getRemotePersonInfo(), "Client failed");
+    callScreen.setActiveCall(redPhoneService.getRemotePersonInfo(),
+                             getString(R.string.RedPhone_client_failed));
     if( msg != null && !isFinishing() ) {
       AlertDialog.Builder ad = new AlertDialog.Builder(this);
       ad.setTitle("Fatal Error");
@@ -290,17 +307,18 @@ public class RedPhone extends Activity {
 
   private void handleLoginFailed() {
     state = STATE_IDLE;
-    callScreen.setActiveCall(redPhoneService.getRemotePersonInfo(), "Login failed!");
+    callScreen.setActiveCall(redPhoneService.getRemotePersonInfo(),
+                             getString(R.string.RedPhone_login_failed_exclamation));
     delayedFinish();
   }
 
   private void handleServerMessage(String message) {
     if( isFinishing() ) return; //we're already shutting down, this might crash
     AlertDialog.Builder ad = new AlertDialog.Builder(this);
-    ad.setTitle("Message from the server:");
+    ad.setTitle(R.string.RedPhone_message_from_the_server);
     ad.setMessage(message);
     ad.setCancelable(false);
-    ad.setPositiveButton("Ok", new OnClickListener() {
+    ad.setPositiveButton(android.R.string.ok, new OnClickListener() {
       public void onClick(DialogInterface dialog, int arg) {
         RedPhone.this.handleTerminate(LOCAL_TERMINATE);
       }
@@ -311,20 +329,17 @@ public class RedPhone extends Activity {
   private void handleNoSuchUser(final String user) {
     if (isFinishing()) return; // XXX Stuart added this check above, not sure why, so I'm repeating in ignorance. - moxie
     AlertDialog.Builder dialog = new AlertDialog.Builder(this);
-    dialog.setTitle("Number not registered with RedPhone!");
+    dialog.setTitle(R.string.RedPhone_number_not_registered_with_redphone_exclamation);
     dialog.setIcon(android.R.drawable.ic_dialog_info);
-    dialog.setMessage("The number you dialed is not registered with RedPhone.  " +
-                      "Both parties of a call need to have RedPhone installed in " +
-                      "order to have a secure conversation.  Would you like to send " +
-                      "a RedPhone install link to the contact you were trying to dial?");
+    dialog.setMessage(R.string.RedPhone_the_number_you_dialed_is_not_registered_with_redphone_both_parties_of_a_call_need_to_have_redphone_installed);
     dialog.setCancelable(false);
-    dialog.setPositiveButton("Yes!", new OnClickListener() {
+    dialog.setPositiveButton(R.string.RedPhone_yes_exclamation, new OnClickListener() {
       public void onClick(DialogInterface dialog, int arg) {
         RedPhone.this.sendInstallLink(user);
         RedPhone.this.handleTerminate(LOCAL_TERMINATE);
       }
     });
-    dialog.setNegativeButton("No thanks!", new OnClickListener() {
+    dialog.setNegativeButton(R.string.RedPhone_no_thanks_exclamation, new OnClickListener() {
       public void onClick(DialogInterface dialog, int arg) {
         RedPhone.this.handleTerminate(LOCAL_TERMINATE);
       }
@@ -334,11 +349,15 @@ public class RedPhone extends Activity {
 
   private void handleCodecFailure(CodecSetupException e) {
     Log.w("RedPhone", e);
-    Toast.makeText(this, "Codec Failed to Initialize", Toast.LENGTH_LONG).show();
+    Toast.makeText(this, R.string.RedPhone_codec_failed_to_initialize, Toast.LENGTH_LONG).show();
     handleTerminate( LOCAL_TERMINATE );
   }
 
   private void delayedFinish() {
+    delayedFinish(STANDARD_DELAY_FINISH);
+  }
+
+  private void delayedFinish(int delayMillis) {
     callStateHandler.postDelayed(new Runnable() {
 
     public void run() {
@@ -352,7 +371,7 @@ public class RedPhone extends Activity {
       } else {
         RedPhone.this.finish();
       }
-    }}, 3000);
+    }}, delayMillis);
   }
 
   private class CallStateHandler extends Handler {

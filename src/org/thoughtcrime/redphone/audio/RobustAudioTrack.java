@@ -25,6 +25,7 @@ import android.os.SystemClock;
 import android.util.Log;
 
 import org.thoughtcrime.redphone.ApplicationContext;
+import org.thoughtcrime.redphone.R;
 import org.thoughtcrime.redphone.Release;
 import org.thoughtcrime.redphone.codec.AudioCodec;
 import org.thoughtcrime.redphone.ui.ApplicationPreferencesActivity;
@@ -95,7 +96,7 @@ public class RobustAudioTrack  {
       } catch (InterruptedException e) {
       }
       if (waitCount > 50) {
-        Util.dieWithError("AudioTrack did not initialize");
+        Util.dieWithError(R.string.RobustAudioTrack_audiotrack_did_not_initialize);
         throw new RuntimeException("AudioTrack did not initialize");
       }
     }
