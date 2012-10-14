@@ -26,7 +26,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.AudioManager;
-import android.net.Uri;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
@@ -70,6 +69,7 @@ import java.util.List;
  *
  */
 public class RedPhoneService extends Service implements CallStateListener {
+  private static final String TAG = RedPhoneService.class.getName();
 
   public static final String ACTION_INCOMING_CALL = "org.thoughtcrime.redphone.RedPhoneService.INCOMING_CALL";
   public static final String ACTION_OUTGOING_CALL = "org.thoughtcrime.redphone.RedPhoneService.OUTGOING_CALL";
@@ -144,10 +144,17 @@ public class RedPhoneService extends Service implements CallStateListener {
   private void initializeAudio() {
     AudioManager am = (AudioManager) getSystemService(AUDIO_SERVICE);
 
-    if (ApplicationPreferencesActivity.getAudioModeIncall(this))
-      am.setMode(AudioManager.MODE_IN_CALL);
-    else
+    if (ApplicationPreferencesActivity.getAudioModeIncall(this)) {
+      try {
+        am.setMode(AudioManager.MODE_IN_CALL);
+      } catch (SecurityException e) {
+        Log.d(TAG, "Can't use in-call audio mode due to missing permissions.  Falling back to mode-normal.", e);
+        am.setMode(AudioManager.MODE_NORMAL);
+      }
+    }
+    else {
       am.setMode(AudioManager.MODE_NORMAL);
+    }
 
     am.setSpeakerphoneOn(false);
     am.setStreamVolume(AudioManager.STREAM_VOICE_CALL,
