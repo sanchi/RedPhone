@@ -143,13 +143,14 @@ public class RedPhoneService extends Service implements CallStateListener {
   private void initializeAudio() {
     AudioManager am = (AudioManager) getSystemService(AUDIO_SERVICE);
 
-    if (ApplicationPreferencesActivity.getAudioModeIncall(this))
+    if (ApplicationPreferencesActivity.getAudioModeIncall(this)) {
       try {
         am.setMode(AudioManager.MODE_IN_CALL);
       } catch (SecurityException e) {
         Log.d(TAG, "Can't use in-call audio mode due to missing permissions.  Falling back to mode-normal.", e);
         am.setMode(AudioManager.MODE_NORMAL);
       }
+    }
     else {
       am.setMode(AudioManager.MODE_NORMAL);
     }
