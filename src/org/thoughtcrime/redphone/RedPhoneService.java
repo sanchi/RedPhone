@@ -209,7 +209,7 @@ public class RedPhoneService extends Service implements CallStateListener, CallS
 
     fullWakeLock.acquire();
 
-    this.currentCallManager = new ResponderCallManager(this, remoteNumber, localNumber,
+    this.currentCallManager = new ResponderCallManager(this, this, remoteNumber, localNumber,
                                                        password, session, zid);
     this.currentCallManager.start();
   }
@@ -225,7 +225,7 @@ public class RedPhoneService extends Service implements CallStateListener, CallS
     keyGuardLock.disableKeyguard();
     keyguardDisabled = true;
 
-    this.currentCallManager = new InitiatingCallManager(this, localNumber, password,
+    this.currentCallManager = new InitiatingCallManager(this, this, localNumber, password,
                                                         remoteNumber, zid);
     this.currentCallManager.start();
 

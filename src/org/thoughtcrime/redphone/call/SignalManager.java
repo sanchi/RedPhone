@@ -2,7 +2,6 @@ package org.thoughtcrime.redphone.call;
 
 import android.util.Log;
 
-import org.thoughtcrime.redphone.ApplicationContext;
 import org.thoughtcrime.redphone.signaling.SessionDescriptor;
 import org.thoughtcrime.redphone.signaling.SignalingException;
 import org.thoughtcrime.redphone.signaling.SignalingSocket;
@@ -17,12 +16,15 @@ public class SignalManager {
 
   private final SignalingSocket signalingSocket;
   private final SessionDescriptor sessionDescriptor;
+  private final CallStateListener callStateListener;
 
   private volatile boolean interrupted = false;
 
-  public SignalManager(SignalingSocket signalingSocket,
+  public SignalManager(CallStateListener callStateListener,
+                       SignalingSocket signalingSocket,
                        SessionDescriptor sessionDescriptor)
   {
+    this.callStateListener = callStateListener;
     this.signalingSocket   = signalingSocket;
     this.sessionDescriptor = sessionDescriptor;
 
@@ -62,8 +64,6 @@ public class SignalManager {
   private class SignalListenerTask implements Runnable {
     public void run() {
       Log.w("SignalManager", "Running Signal Listener...");
-
-      CallStateListener callStateListener = ApplicationContext.getInstance().getCallStateListener();
 
       try {
         while (!interrupted) {
