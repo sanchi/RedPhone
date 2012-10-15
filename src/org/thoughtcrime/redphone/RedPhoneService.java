@@ -176,11 +176,6 @@ public class RedPhoneService extends Service implements CallStateListener, CallS
     registerReceiver(pstnCallListener, new IntentFilter("android.intent.action.PHONE_STATE"));
   }
 
-  private void shutdownAudio() {
-    AudioManager am = (AudioManager) getSystemService(AUDIO_SERVICE);
-    am.setMode(AudioManager.MODE_NORMAL);
-  }
-
   private void initializeApplicationContext() {
     ApplicationContext context = ApplicationContext.getInstance();
     context.setContext(this);
@@ -305,6 +300,11 @@ public class RedPhoneService extends Service implements CallStateListener, CallS
 
   private boolean isIdle() {
     return state == RedPhone.STATE_IDLE;
+  }
+
+  private void shutdownAudio() {
+    AudioManager am = (AudioManager) getSystemService(AUDIO_SERVICE);
+    am.setMode(AudioManager.MODE_NORMAL);
   }
 
   public int getState() {
