@@ -23,23 +23,42 @@ import org.thoughtcrime.redphone.util.Conversions;
 /**
  * ZRTP 'hello' handshake packet.
  *
+ * http://tools.ietf.org/html/rfc6189#section-5.2
+ *
  * @author Moxie Marlinspike
  *
  */
 
 public class HelloPacket extends HandshakePacket {
-  public  static final String TYPE        = "Hello   ";
-  private static final int HELLO_LENGTH   = 88;
+  public  static final String TYPE = "Hello   ";
 
-  private static final int LENGTH_OFFSET  = MESSAGE_BASE + 2;
-  private static final int VERSION_OFFSET = MESSAGE_BASE + 12;
-  private static final int CLIENT_OFFSET  = MESSAGE_BASE + 16;
-  private static final int HASH_OFFSET    = MESSAGE_BASE + 32;
-  private static final int ZID_OFFSET     = MESSAGE_BASE + 64;
-  private static final int FLAGS_OFFSET   = MESSAGE_BASE + 76;
-  private static final int MAC_OFFSET     = MESSAGE_BASE + 80;
+  private static final int HELLO_MIN_LENGTH       = 88;
+  private static final int OPTIONAL_VALUES_LENGTH = 0;
 
-  private static final int ZID_LENGTH	    = 12;
+  private static final int MAGIC_LENGTH   = 2;
+  private static final int LENGTH_LENGTH  = 2;
+  private static final int TYPE_LENGTH    = 8;
+  private static final int VERSION_LENGTH = 4;
+  private static final int CLIENT_LENGTH  = 16;
+  private static final int H3_LENGTH      = 32;
+  private static final int ZID_LENGTH     = 12;
+  private static final int MAC_LENGTH     = 8;
+
+  private static final int LENGTH_OFFSET  = MESSAGE_BASE   + MAGIC_LENGTH;
+  private static final int TYPE_OFFSET    = LENGTH_OFFSET  + LENGTH_LENGTH;
+  private static final int VERSION_OFFSET = TYPE_OFFSET    + TYPE_LENGTH;
+  private static final int CLIENT_OFFSET  = VERSION_OFFSET + VERSION_LENGTH;
+  private static final int H3_OFFSET      = CLIENT_OFFSET  + CLIENT_LENGTH;
+  private static final int ZID_OFFSET     = H3_OFFSET      + H3_LENGTH;
+  private static final int FLAGS_OFFSET   = ZID_OFFSET     + ZID_LENGTH;
+
+  private static final int HC_OFFSET      = FLAGS_OFFSET + 1;
+  private static final int CC_OFFSET      = FLAGS_OFFSET + 2;
+  private static final int AC_OFFSET      = FLAGS_OFFSET + 2;
+  private static final int KC_OFFSET      = FLAGS_OFFSET + 3;
+  private static final int SC_OFFSET      = FLAGS_OFFSET + 3;
+
+  private static final int OPTIONS_OFFSET = FLAGS_OFFSET + 4;
 
   public HelloPacket(RtpPacket packet) {
     super(packet);
@@ -50,13 +69,15 @@ public class HelloPacket extends HandshakePacket {
   }
 
   public HelloPacket(HashChain hashChain, byte[] zid) {
-    super(TYPE, HELLO_LENGTH);
+    super(TYPE, HELLO_MIN_LENGTH + OPTIONAL_VALUES_LENGTH);
     setZrtpVersion();
     setClientId();
-    setHash(hashChain.getH3());
+    setH3(hashChain.getH3());
     setZID(zid);
     setFlags();
-    setMac(hashChain.getH2(), MAC_OFFSET, HELLO_LENGTH - 8);
+    setMac(hashChain.getH2(),
+           OPTIONS_OFFSET + OPTIONAL_VALUES_LENGTH,
+           HELLO_MIN_LENGTH + OPTIONAL_VALUES_LENGTH - MAC_LENGTH);
   }
 
   public int getLength() {
@@ -69,18 +90,57 @@ public class HelloPacket extends HandshakePacket {
     return zid;
   }
 
-  public byte[] getHash() {
-    byte[] hashValue = new byte[32];
-    System.arraycopy(this.data, HASH_OFFSET, hashValue, 0, hashValue.length);
+  private byte[] getH3() {
+    byte[] hashValue = new byte[H3_LENGTH];
+    System.arraycopy(this.data, H3_OFFSET, hashValue, 0, hashValue.length);
 
     return hashValue;
   }
 
   public void verifyMac(byte[] key) throws InvalidPacketException {
-    if (getLength() < HELLO_LENGTH)
+    if (getLength() < HELLO_MIN_LENGTH)
       throw new InvalidPacketException("Encoded length longer than data length.");
 
-    super.verifyMac(key, MAC_OFFSET, HELLO_LENGTH - 8, getHash());
+    super.verifyMac(key,
+                    OPTIONS_OFFSET + getOptionsLength(),
+                    getMessageLength() - MAC_LENGTH,
+                    getH3());
+  }
+
+  private int getMessageLength() {
+    return HELLO_MIN_LENGTH  + getOptionsLength();
+  }
+
+  private int getOptionsLength() {
+    return (getHashOptionCount()         * 4) +
+           (getCipherOptionCount()       * 4) +
+           (getAuthTagOptionCount()      * 4) +
+           (getKeyAgreementOptionCount() * 4) +
+           (getSasOptionCount()          * 4);
+  }
+
+  private int getHashOptionCount() {
+    return this.data[HC_OFFSET] & 0x0F;
+  }
+
+  private int getCipherOptionCount() {
+    return (this.data[CC_OFFSET] & 0xFF) >> 4;
+  }
+
+  private void setCipherOptionCount(int count) {
+    this.data[CC_OFFSET] |= ((count & 0x0F) << 4);
+  }
+
+  private int getAuthTagOptionCount() {
+    return this.data[AC_OFFSET] & 0x0F;
+  }
+
+  private int getKeyAgreementOptionCount() {
+    return (this.data[KC_OFFSET] & 0xFF) >> 4;
+  }
+
+  private int getSasOptionCount() {
+    return this.data[SC_OFFSET] & 0x0F;
   }
 
   private void setZrtpVersion() {
@@ -88,11 +148,11 @@ public class HelloPacket extends HandshakePacket {
   }
 
   private void setClientId() {
-    "RedPhone 0.1".getBytes(0, 12, this.data, CLIENT_OFFSET);
+    "RedPhone 019".getBytes(0, 12, this.data, CLIENT_OFFSET);
   }
 
-  private void setHash(byte[] hash) {
-    System.arraycopy(hash, 0, this.data, HASH_OFFSET, hash.length);
+  private void setH3(byte[] hash) {
+    System.arraycopy(hash, 0, this.data, H3_OFFSET, hash.length);
   }
 
   private void setZID(byte[] zid) {
@@ -102,5 +162,4 @@ public class HelloPacket extends HandshakePacket {
   private void setFlags() {
     // Leave flags empty.
   }
-
 }
