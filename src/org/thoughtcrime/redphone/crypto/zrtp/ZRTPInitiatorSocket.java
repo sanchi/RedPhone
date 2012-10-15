@@ -20,6 +20,7 @@ package org.thoughtcrime.redphone.crypto.zrtp;
 import android.util.Log;
 
 import org.thoughtcrime.redphone.Release;
+import org.thoughtcrime.redphone.call.CallStateListener;
 import org.thoughtcrime.redphone.crypto.SecureRtpSocket;
 
 import java.security.MessageDigest;
@@ -44,8 +45,8 @@ public class ZRTPInitiatorSocket extends ZRTPSocket {
 
   private final byte[] zid;
 
-  public ZRTPInitiatorSocket(SecureRtpSocket socket, byte[] zid) {
-    super(socket, EXPECTING_HELLO);
+  public ZRTPInitiatorSocket(CallStateListener callStateListener, SecureRtpSocket socket, byte[] zid) {
+    super(callStateListener, socket, EXPECTING_HELLO);
     this.zid = zid;
   }
 

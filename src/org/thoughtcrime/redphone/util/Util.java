@@ -60,6 +60,9 @@ public class Util {
     }
   }
 
+  // XXX-S The consumers of these are way way down in the audio/microphone code.
+  // Is it possible to refactor them so that they bubble up their errors in a way
+  // that's a little cleaner than reaching back up from all the way down there?
   public static void dieWithError(int msgId) {
     ApplicationContext.getInstance().getCallStateListener().notifyClientError( msgId );
     Log.d("RedPhone:AC", "Dying with error.");

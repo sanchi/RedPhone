@@ -21,8 +21,8 @@ import android.util.Log;
 
 import org.spongycastle.jce.interfaces.ECPublicKey;
 import org.spongycastle.math.ec.ECPoint;
-import org.thoughtcrime.redphone.ApplicationContext;
 import org.thoughtcrime.redphone.Release;
+import org.thoughtcrime.redphone.call.CallStateListener;
 import org.thoughtcrime.redphone.crypto.SecureRtpSocket;
 import org.thoughtcrime.redphone.util.Conversions;
 
@@ -76,6 +76,8 @@ public abstract class ZRTPSocket {
   protected static final int KA_TYPE_DH3K = 100;
   protected static final int KA_TYPE_EC25 = 200;
 
+  private final CallStateListener callStateListener;
+
   private long transmitStartTime  = 0;
   private int  retransmitInterval = RETRANSMIT_INTERVAL_MILLIS;
   private int  retransmitCount    = 0;
@@ -91,7 +93,8 @@ public abstract class ZRTPSocket {
   protected HashChain hashChain;
   protected MasterSecret masterSecret;
 
-  public ZRTPSocket(SecureRtpSocket socket, int initialState) {
+  public ZRTPSocket(CallStateListener callStateListener, SecureRtpSocket socket, int initialState) {
+    this.callStateListener = callStateListener;
     this.socket            = socket;
     this.state             = initialState;
     this.dh3kKeyPair       = initializeDH3kKeys();
@@ -261,7 +264,7 @@ public abstract class ZRTPSocket {
         else if (isRetransmitTime())                                                                   resendPacket();
 
         if (packet != null) {
-          ApplicationContext.getInstance().getCallStateListener().notifyPerformingHandshake();
+          callStateListener.notifyPerformingHandshake();
         }
       }
     } catch (InvalidPacketException ipe) {

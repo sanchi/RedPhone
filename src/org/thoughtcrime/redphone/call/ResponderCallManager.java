@@ -20,7 +20,6 @@ package org.thoughtcrime.redphone.call;
 import android.content.Context;
 import android.util.Log;
 
-import org.thoughtcrime.redphone.ApplicationContext;
 import org.thoughtcrime.redphone.Release;
 import org.thoughtcrime.redphone.crypto.SecureRtpSocket;
 import org.thoughtcrime.redphone.crypto.zrtp.MasterSecret;
@@ -45,19 +44,18 @@ import java.net.InetSocketAddress;
  */
 public class ResponderCallManager extends CallManager {
 
-  private final Context context;
   private final String localNumber;
   private final String password;
   private final byte[] zid;
 
   private int answer = 0;
 
-  public ResponderCallManager(Context context, String remoteNumber, String localNumber,
+  public ResponderCallManager(Context context, CallStateListener callStateListener,
+                              String remoteNumber, String localNumber,
                               String password, SessionDescriptor sessionDescriptor,
                               byte[] zid)
   {
-    super(remoteNumber, "ResponderCallManager Thread", context);
-    this.context           = context;
+    super(context, callStateListener, remoteNumber, "ResponderCallManager Thread");
     this.localNumber       = localNumber;
     this.password          = password;
     this.sessionDescriptor = sessionDescriptor;
@@ -74,7 +72,7 @@ public class ResponderCallManager extends CallManager {
                                             OtpCounterProvider.getInstance());
 
       signalingSocket.setRinging(sessionDescriptor.sessionId);
-      ApplicationContext.getInstance().getCallStateListener().notifyCallFresh();
+      callStateListener.notifyCallFresh();
 
       processSignals();
 
@@ -89,28 +87,28 @@ public class ResponderCallManager extends CallManager {
       InetSocketAddress remoteAddress = new InetSocketAddress(sessionDescriptor.getFullServerName(),
                                                               sessionDescriptor.relayPort);
 
-      secureSocket  = new SecureRtpSocket(new RtpSocket(localPort, remoteAddress));
-      zrtpSocket    = new ZRTPResponderSocket(secureSocket, zid);
+      secureSocket  = new SecureRtpSocket(new RtpSocket(callStateListener, localPort, remoteAddress));
+      zrtpSocket    = new ZRTPResponderSocket(callStateListener, secureSocket, zid);
 
-      ApplicationContext.getInstance().getCallStateListener().notifyConnectingtoInitiator();
+      callStateListener.notifyConnectingtoInitiator();
 
       super.run();
     } catch (SignalingException se) {
       Log.w( "ResponderCallManager", se );
-      ApplicationContext.getInstance().getCallStateListener().notifyServerFailure();
+      callStateListener.notifyServerFailure();
     } catch (SessionInitiationFailureException e) {
       Log.w("ResponderCallManager", e);
-      ApplicationContext.getInstance().getCallStateListener().notifyServerFailure();
+      callStateListener.notifyServerFailure();
     } catch (SessionStaleException e) {
       Log.w("ResponderCallManager", e);
-      ApplicationContext.getInstance().getCallStateListener().notifyCallStale();
+      callStateListener.notifyCallStale();
     } catch (LoginFailedException lfe) {
       Log.w("ResponderCallManager", lfe);
-      ApplicationContext.getInstance().getCallStateListener().notifyLoginFailed();
+      callStateListener.notifyLoginFailed();
     } catch( RuntimeException e ) {
-        Log.e( "ResponderCallManager", "Died unhandled with exception!");
-        Log.w( "ResponderCallManager", e );
-        ApplicationContext.getInstance().getCallStateListener().notifyClientFailure();
+      Log.e( "ResponderCallManager", "Died unhandled with exception!");
+      Log.w( "ResponderCallManager", e );
+      callStateListener.notifyClientFailure();
     }
   }
 

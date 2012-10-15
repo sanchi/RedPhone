@@ -19,8 +19,6 @@ package org.thoughtcrime.redphone.codec;
 
 import android.util.Log;
 
-import org.thoughtcrime.redphone.ApplicationContext;
-
 /**
  * An audio codec that uses the Speex library to encode packets.
  * Calls through to the native library implementations of encode and decode.
@@ -35,18 +33,12 @@ public class SpeexCodec extends AudioCodec {
       try {
         System.loadLibrary("redspeex");
       } catch (Throwable e) {
-        Log.w(TAG, e);
-        CodecSetupException loadException =
-                new CodecSetupException("redspeex library failed to load", e);
-        ApplicationContext.getInstance()
-                .getCallStateListener().notifyCodecInitFailed(loadException);
+        throw new AssertionError(e);
       }
       Log.d(TAG, "loaded redspeex, now opening it");
       int result = openSpeex();
       if (result != 0 ) {
-        CodecSetupException loadException = new CodecSetupException("speex initalization failed" );
-        ApplicationContext.getInstance()
-                .getCallStateListener().notifyCodecInitFailed(loadException);
+        throw new AssertionError("Speex initialization failed");
       }
     }
   };
