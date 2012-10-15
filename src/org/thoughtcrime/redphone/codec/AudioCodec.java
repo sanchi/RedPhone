@@ -17,9 +17,6 @@
 
 package org.thoughtcrime.redphone.codec;
 
-import android.util.Log;
-
-import org.thoughtcrime.redphone.ApplicationContext;
 
 /**
  * Provides the basic interface for all audio codecs as well as default implementations
@@ -55,9 +52,6 @@ public abstract class AudioCodec {
     if( codecID.equals( "NullAudioCodec"))
       return new NullAudioCodec();
 
-    CodecSetupException e = new CodecSetupException("Unknown codec " + codecID + " failed to load");
-    Log.w( TAG, e);
-    ApplicationContext.getInstance().getCallStateListener().notifyCodecInitFailed(e);
-    return null;
+    throw new AssertionError("Unknown codec: " + codecID);
   }
 }

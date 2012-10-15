@@ -20,7 +20,6 @@ package org.thoughtcrime.redphone.call;
 import android.content.Context;
 import android.util.Log;
 
-import org.thoughtcrime.redphone.ApplicationContext;
 import org.thoughtcrime.redphone.Release;
 import org.thoughtcrime.redphone.crypto.SecureRtpSocket;
 import org.thoughtcrime.redphone.crypto.zrtp.MasterSecret;
@@ -47,17 +46,16 @@ import java.net.InetSocketAddress;
  */
 public class InitiatingCallManager extends CallManager {
 
-  private final Context context;
   private final String localNumber;
   private final String password;
   private final byte[] zid;
   private boolean loopbackMode;
 
-  public InitiatingCallManager(Context context, String localNumber, String password,
+  public InitiatingCallManager(Context context, CallStateListener callStateListener,
+                               String localNumber, String password,
                                String remoteNumber, byte[] zid)
   {
-    super(remoteNumber, "InitiatingCallManager Thread", context );
-    this.context        = context;
+    super(context, callStateListener, remoteNumber, "InitiatingCallManager Thread");
     this.localNumber    = localNumber;
     this.password       = password;
     this.zid            = zid;
@@ -72,7 +70,7 @@ public class InitiatingCallManager extends CallManager {
     }
 
     try {
-      notifyConnecting();
+      callStateListener.notifyCallConnecting();
 
       signalingSocket = new SignalingSocket(context, Release.RELAY_SERVER_HOST,
                                             Release.SERVER_PORT, localNumber, password,
@@ -84,41 +82,38 @@ public class InitiatingCallManager extends CallManager {
                                            sessionDescriptor.getFullServerName(),
                                            sessionDescriptor.relayPort).makeConnection();
 
-      secureSocket  = new SecureRtpSocket(new RtpSocket(localPort,
-                                          new InetSocketAddress(sessionDescriptor.getFullServerName(),
-                                                                sessionDescriptor.relayPort)));
+      InetSocketAddress remoteAddress = new InetSocketAddress(sessionDescriptor.getFullServerName(),
+                                                              sessionDescriptor.relayPort);
 
-      zrtpSocket    = new ZRTPInitiatorSocket(secureSocket, zid);
+      secureSocket  = new SecureRtpSocket(new RtpSocket(callStateListener, localPort, remoteAddress));
+
+      zrtpSocket    = new ZRTPInitiatorSocket(callStateListener, secureSocket, zid);
 
       processSignals();
 
-      ApplicationContext.getInstance().getCallStateListener().notifyWaitingForResponder();
+      callStateListener.notifyWaitingForResponder();
 
       super.run();
     } catch (NoSuchUserException nsue) {
       Log.w("InitiatingCallManager", nsue);
-      ApplicationContext.getInstance().getCallStateListener().notifyNoSuchUser();
+      callStateListener.notifyNoSuchUser();
     } catch (ServerMessageException ife) {
       Log.w("InitiatingCallManager", ife);
-      ApplicationContext.getInstance().getCallStateListener().notifyServerMessage(ife.getMessage());
+      callStateListener.notifyServerMessage(ife.getMessage());
     } catch (LoginFailedException lfe) {
       Log.w("InitiatingCallManager", lfe);
-      ApplicationContext.getInstance().getCallStateListener().notifyLoginFailed();
+      callStateListener.notifyLoginFailed();
     } catch (SignalingException se) {
       Log.w("InitiatingCallManager", se);
-      ApplicationContext.getInstance().getCallStateListener().notifyServerFailure();
+      callStateListener.notifyServerFailure();
     } catch( RuntimeException e ) {
       Log.e( "InitiatingCallManager", "Died with unhandled exception!");
       Log.w( "InitiatingCallManager", e );
-      ApplicationContext.getInstance().getCallStateListener().notifyClientFailure();
+      callStateListener.notifyClientFailure();
     } catch (SessionInitiationFailureException e) {
       Log.w("InitiatingCallManager", e);
-      ApplicationContext.getInstance().getCallStateListener().notifyServerFailure();
+      callStateListener.notifyServerFailure();
     }
-  }
-
-  private void notifyConnecting() {
-    ApplicationContext.getInstance().getCallStateListener().notifyCallConnecting();
   }
 
   @Override
@@ -139,7 +134,7 @@ public class InitiatingCallManager extends CallManager {
     } catch( RuntimeException e ) {
       Log.e( "InitiatingCallManager", "Died with exception!");
       Log.w( "InitiatingCallManager", e );
-      ApplicationContext.getInstance().getCallStateListener().notifyClientFailure();
+      callStateListener.notifyClientFailure();
     }
   }
 

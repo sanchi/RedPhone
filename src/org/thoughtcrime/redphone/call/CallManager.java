@@ -26,7 +26,6 @@ import android.os.Process;
 import android.text.format.DateFormat;
 import android.util.Log;
 
-import org.thoughtcrime.redphone.ApplicationContext;
 import org.thoughtcrime.redphone.audio.CallAudioManager;
 import org.thoughtcrime.redphone.crypto.SecureRtpSocket;
 import org.thoughtcrime.redphone.crypto.zrtp.MasterSecret;
@@ -53,11 +52,12 @@ public abstract class CallManager extends Thread {
   private static final String CODEC_NAME = "SPEEX";
 
   protected final String remoteNumber;
+  protected final CallStateListener callStateListener;
+  protected final Context context;
 
   private boolean terminated;
   private boolean loopbackMode;
   private CallAudioManager callAudioManager;
-  private Context context;
   private SignalManager signalManager;
 
   protected SessionDescriptor sessionDescriptor;
@@ -65,12 +65,15 @@ public abstract class CallManager extends Thread {
   protected SecureRtpSocket secureSocket;
   protected SignalingSocket signalingSocket;
 
-  public CallManager(String remoteNumber, String threadName, Context context) {
+  public CallManager(Context context, CallStateListener callStateListener,
+                    String remoteNumber, String threadName)
+  {
     super(threadName);
-    this.remoteNumber    = remoteNumber;
-    this.terminated      = false;
-    this.context         = context;
-    this.loopbackMode    = ApplicationPreferencesActivity.getLoopbackEnabled(context);
+    this.remoteNumber      = remoteNumber;
+    this.callStateListener = callStateListener;
+    this.terminated        = false;
+    this.context           = context;
+    this.loopbackMode      = ApplicationPreferencesActivity.getLoopbackEnabled(context);
 
     printInitDebug();
   }
@@ -78,7 +81,6 @@ public abstract class CallManager extends Thread {
   @Override
   public void run() {
     Process.setThreadPriority(Process.THREAD_PRIORITY_URGENT_AUDIO);
-    CallStateListener callStateListener = ApplicationContext.getInstance().getCallStateListener();
 
     try {
       Log.d( "CallManager", "negotiating..." );
@@ -122,7 +124,7 @@ public abstract class CallManager extends Thread {
 
   protected void processSignals() {
     Log.w("CallManager", "Starting signal processing loop...");
-    this.signalManager = new SignalManager(signalingSocket, sessionDescriptor);
+    this.signalManager = new SignalManager(callStateListener, signalingSocket, sessionDescriptor);
   }
 
   protected abstract void setSecureSocketKeys(MasterSecret masterSecret);

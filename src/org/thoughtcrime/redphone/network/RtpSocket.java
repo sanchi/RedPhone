@@ -20,7 +20,7 @@ package org.thoughtcrime.redphone.network;
 import android.os.SystemClock;
 import android.util.Log;
 
-import org.thoughtcrime.redphone.ApplicationContext;
+import org.thoughtcrime.redphone.call.CallStateListener;
 import org.thoughtcrime.redphone.profiling.PeriodicTimer;
 
 import java.io.IOException;
@@ -37,10 +37,14 @@ import java.net.SocketTimeoutException;
  */
 public class RtpSocket {
 
+  private final CallStateListener callStateListener;
+
   private final byte [] buf = new byte[4096];
   protected DatagramSocket socket;
 
-  public RtpSocket(int localPort, InetSocketAddress remoteAddress) {
+  public RtpSocket(CallStateListener callStateListener, int localPort, InetSocketAddress remoteAddress) {
+    this.callStateListener = callStateListener;
+
     try {
       socket = new DatagramSocket(localPort);
       socket.setSoTimeout(1);
@@ -48,6 +52,7 @@ public class RtpSocket {
       Log.d( "RtpSocket", "Connected to: " + remoteAddress.getAddress().getHostAddress() );
     } catch (SocketException e) {
       e.printStackTrace();
+      // XXX-S It seems like this should do something?
     }
   }
 
@@ -87,9 +92,13 @@ public class RtpSocket {
     } catch( SocketTimeoutException e ) {
       return null;
     } catch (SocketException e) {
-      ApplicationContext.getInstance().getCallStateListener().notifyCallDisconnected();
+      // XXX-S I don't think this should be reaching back up the stack from this level.
+      // Instead, it seems like this should be throwing IOException/SocketException up
+      // the stack to CallAudioManager or wherever, which should handle reaching back up
+      // from that point in the stack.
+      callStateListener.notifyCallDisconnected();
     } catch (IOException e) {
-      ApplicationContext.getInstance().getCallStateListener().notifyCallDisconnected();
+      callStateListener.notifyCallDisconnected();
     }
     return null;
   }
