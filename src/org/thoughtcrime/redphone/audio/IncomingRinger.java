@@ -17,8 +17,8 @@
 
 package org.thoughtcrime.redphone.audio;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.res.AssetFileDescriptor;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.RingtoneManager;
@@ -27,10 +27,6 @@ import android.os.Build;
 import android.os.Vibrator;
 import android.provider.Settings;
 import android.util.Log;
-
-import org.thoughtcrime.redphone.ApplicationContext;
-import org.thoughtcrime.redphone.R;
-import org.thoughtcrime.redphone.ui.ApplicationPreferencesActivity;
 
 import java.io.IOException;
 
@@ -136,6 +132,7 @@ public class IncomingRinger {
     return shouldVibrateOld(context);
   }
 
+  @SuppressLint("NewApi")
   private boolean shouldVibrateNew(Context context) {
     AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
     Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
