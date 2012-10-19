@@ -17,6 +17,7 @@
 
 package org.thoughtcrime.redphone.call;
 
+import android.os.Handler;
 import org.thoughtcrime.redphone.codec.CodecSetupException;
 
 /**

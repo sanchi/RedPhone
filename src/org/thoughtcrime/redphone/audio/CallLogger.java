@@ -17,11 +17,13 @@
 
 package org.thoughtcrime.redphone.audio;
 
+import android.content.Context;
 import android.os.SystemClock;
 import android.util.Log;
 
 import org.thoughtcrime.redphone.Release;
 
+import java.io.IOException;
 import java.text.DecimalFormat;
 
 /**
@@ -43,8 +45,8 @@ public class CallLogger extends FileLogger {
 
   static int gapLengthCounts[] = new int[100];
 
-  CallLogger() {
-    super( TIMING_DATA_FILENAME );
+  CallLogger(Context context) {
+    super(context, TIMING_DATA_FILENAME);
   }
 
   private void writeLogLine() {
@@ -62,7 +64,7 @@ public class CallLogger extends FileLogger {
       shiftMode + " " + //10
       largestHeldFrame + "\n";
 
-      writeLine( info );
+    writeLine( info );
   }
 
   private void printDebug() {

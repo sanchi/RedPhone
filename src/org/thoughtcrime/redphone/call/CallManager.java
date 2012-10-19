@@ -26,6 +26,7 @@ import android.os.Process;
 import android.text.format.DateFormat;
 import android.util.Log;
 
+import org.thoughtcrime.redphone.ClientException;
 import org.thoughtcrime.redphone.audio.CallAudioManager;
 import org.thoughtcrime.redphone.crypto.SecureRtpSocket;
 import org.thoughtcrime.redphone.crypto.zrtp.MasterSecret;
@@ -48,7 +49,7 @@ import java.util.Date;
  *
  */
 
-public abstract class CallManager extends Thread {
+public abstract class CallManager {
   private static final String CODEC_NAME = "SPEEX";
 
   protected final String remoteNumber;
@@ -66,9 +67,8 @@ public abstract class CallManager extends Thread {
   protected SignalingSocket signalingSocket;
 
   public CallManager(Context context, CallStateListener callStateListener,
-                    String remoteNumber, String threadName)
+                    String remoteNumber)
   {
-    super(threadName);
     this.remoteNumber      = remoteNumber;
     this.callStateListener = callStateListener;
     this.terminated        = false;
@@ -78,13 +78,12 @@ public abstract class CallManager extends Thread {
     printInitDebug();
   }
 
-  @Override
-  public void run() {
+  public void run() throws ClientException {
     Process.setThreadPriority(Process.THREAD_PRIORITY_URGENT_AUDIO);
 
     try {
       Log.d( "CallManager", "negotiating..." );
-      if (!terminated) callAudioManager = new CallAudioManager( secureSocket, CODEC_NAME, context );
+      if (!terminated) callAudioManager = new CallAudioManager(secureSocket, CODEC_NAME, context);
       if (!terminated) zrtpSocket.negotiate();
       if (!terminated) setSecureSocketKeys(zrtpSocket.getMasterSecret());
       if (!terminated) callStateListener
@@ -157,11 +156,5 @@ public abstract class CallManager extends Thread {
             + " network-extra: " + (networkInfo == null ? null : networkInfo.getExtraInfo())
             + " time: " + DateFormat.getDateFormat(context).format(date) + DateFormat.getTimeFormat(context).format(date)
             );
-  }
-
-  //For loopback operation
-  public void doLoopback() {
-    callAudioManager = new CallAudioManager( null, "SPEEX", context );
-    callAudioManager.run();
   }
 }

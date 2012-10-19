@@ -21,6 +21,7 @@ import android.content.Context;
 import android.os.SystemClock;
 import android.util.Log;
 
+import org.thoughtcrime.redphone.ClientException;
 import org.thoughtcrime.redphone.codec.AudioCodec;
 import org.thoughtcrime.redphone.crypto.SecureRtpSocket;
 import org.thoughtcrime.redphone.network.RtpAudioReader;
@@ -45,39 +46,43 @@ import java.util.NoSuchElementException;
  * @author Stuart O. Anderson
  */
 public class CallAudioManager {
+  private static final String TAG = CallAudioManager.class.getName();
   private final LinkedList<EncodedAudioData> outgoingAudio = new LinkedList<EncodedAudioData>();
   private final LinkedList<EncodedAudioData> incomingAudio = new LinkedList<EncodedAudioData>();
 
   private boolean callDone = false;
   private long extraReads = 0;
 
-  private MicrophoneReader micReader;
-  private RtpAudioSender netSender;
-  private RtpAudioReader netReader;
-  private CallAudioStream audioStream;
-  private AudioCodec codec;
+  private final MicrophoneReader micReader;
+  private final RtpAudioSender netSender;
+  private final RtpAudioReader netReader;
+  private final CallAudioStream audioStream;
+  private final AudioCodec codec;
+  private final LinkedList<EncodedAudioData> stolenAudio = new LinkedList<EncodedAudioData>();
+
   private boolean runStarted = false;
   private boolean loopbackMode;
   private boolean simDrops;
-  private LinkedList<EncodedAudioData> stolenAudio = new LinkedList<EncodedAudioData>();
 
-  private PacketLogger packetLogger = new PacketLogger();
-
-  public CallAudioManager( SecureRtpSocket socket, String codecID, Context context ) {
-    codec = AudioCodec.getInstance( codecID ); //begins init
+  public CallAudioManager(SecureRtpSocket socket, String codecID, Context context) {
+    codec = AudioCodec.getInstance(codecID); //begins init
+    PacketLogger packetLogger = new PacketLogger(context);
+    CallLogger callLogger = new CallLogger(context);
 
     netSender   = new RtpAudioSender( outgoingAudio, socket, packetLogger );
     netReader   = new RtpAudioReader( incomingAudio, socket, packetLogger );
+
+    //TODO(Stuart Anderson): comment below is a sadness, fix.
     //create audioStream before micreader, so they pick up the same audio mode, since audiomode is set in audioStream
-    audioStream = new CallAudioStream( incomingAudio, codec, packetLogger );
-    micReader   = new MicrophoneReader( outgoingAudio, codec, packetLogger );
+    audioStream = new CallAudioStream(incomingAudio, codec, packetLogger, callLogger);
+    micReader   = new MicrophoneReader(outgoingAudio, codec, packetLogger);
 
     //setup preferences
     loopbackMode  = ApplicationPreferencesActivity.getLoopbackEnabled(context);
     simDrops = ApplicationPreferencesActivity.isSimulateDroppedPackets(context);
   }
 
-  public void run() {
+  public void run() throws ClientException {
     synchronized(this) {
       if( callDone ) return;
       runStarted = true;

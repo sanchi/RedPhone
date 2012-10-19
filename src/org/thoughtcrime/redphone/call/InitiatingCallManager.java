@@ -20,10 +20,12 @@ package org.thoughtcrime.redphone.call;
 import android.content.Context;
 import android.util.Log;
 
+import org.thoughtcrime.redphone.ClientException;
 import org.thoughtcrime.redphone.Release;
 import org.thoughtcrime.redphone.crypto.SecureRtpSocket;
 import org.thoughtcrime.redphone.crypto.zrtp.MasterSecret;
 import org.thoughtcrime.redphone.crypto.zrtp.ZRTPInitiatorSocket;
+import org.thoughtcrime.redphone.network.LowLatencySocketConnector;
 import org.thoughtcrime.redphone.network.RtpSocket;
 import org.thoughtcrime.redphone.signaling.LoginFailedException;
 import org.thoughtcrime.redphone.signaling.NetworkConnector;
@@ -36,6 +38,7 @@ import org.thoughtcrime.redphone.signaling.SignalingSocket;
 import org.thoughtcrime.redphone.ui.ApplicationPreferencesActivity;
 
 import java.net.InetSocketAddress;
+import java.net.SocketException;
 
 /**
  * Call Manager for the coordination of outgoing calls.  It initiates
@@ -44,7 +47,7 @@ import java.net.InetSocketAddress;
  * @author Moxie Marlinspike
  *
  */
-public class InitiatingCallManager extends CallManager {
+public class InitiatingCallManager extends CallManager implements Runnable {
 
   private final String localNumber;
   private final String password;
@@ -55,7 +58,7 @@ public class InitiatingCallManager extends CallManager {
                                String localNumber, String password,
                                String remoteNumber, byte[] zid)
   {
-    super(context, callStateListener, remoteNumber, "InitiatingCallManager Thread");
+    super(context, callStateListener, remoteNumber);
     this.localNumber    = localNumber;
     this.password       = password;
     this.zid            = zid;
@@ -64,11 +67,6 @@ public class InitiatingCallManager extends CallManager {
 
   @Override
   public void run() {
-    if( loopbackMode ) {
-      runLoopback();
-      return;
-    }
-
     try {
       callStateListener.notifyCallConnecting();
 
@@ -113,6 +111,12 @@ public class InitiatingCallManager extends CallManager {
     } catch (SessionInitiationFailureException e) {
       Log.w("InitiatingCallManager", e);
       callStateListener.notifyServerFailure();
+    } catch (SocketException e) {
+      Log.w("InitiatingCallManager", e);
+      callStateListener.notifyClientFailure();
+    } catch (ClientException e) {
+      Log.w("ClientException", e);
+      callStateListener.notifyClientError(e.getMsgId());
     }
   }
 
@@ -125,17 +129,9 @@ public class InitiatingCallManager extends CallManager {
             .getInitiatorSrtpSalt());
   }
 
-  //***************************
-  // SOA's Loopback Code, for debugging.
-
-  private void runLoopback() {
-    try {
-      super.doLoopback();
-    } catch( RuntimeException e ) {
-      Log.e( "InitiatingCallManager", "Died with exception!");
-      Log.w( "InitiatingCallManager", e );
-      callStateListener.notifyClientFailure();
-    }
+  public void start() {
+    Thread t = new Thread(this);
+    t.setName("InitiatingCallManager Thread");
+    t.start();
   }
-
 }

@@ -28,6 +28,7 @@ import org.thoughtcrime.redphone.util.Util;
 
 import java.io.BufferedOutputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -39,31 +40,40 @@ import java.io.OutputStream;
  */
 public class FileLogger {
   private static final String TAG = "FileLogger";
-  protected PeriodicTimer pt = new PeriodicTimer(5000);
-  private OutputStream debugOutput;
+  private static final int MAX_LOGGED_EXCEPTIONS = 25;
+  protected final PeriodicTimer pt = new PeriodicTimer(5000);
+  private final OutputStream debugOutput;
+  private int loggedExceptions;
 
-  public FileLogger( String fileName ) {
+  public FileLogger(Context context, String fileName) {
+    debugOutput = null;
     if( Release.DELIVER_DIAGNOSTIC_DATA ) {
       try {
-        debugOutput = new BufferedOutputStream(ApplicationContext
-            .getInstance().getContext().openFileOutput(
-              fileName, Context.MODE_WORLD_READABLE));
-        Log.d( TAG, "Writing debug output to: " + Environment.getDataDirectory());
-      } catch (FileNotFoundException e) {
-        Util.dieWithError(e);
+        FileOutputStream outputStream = context.openFileOutput(fileName, Context.MODE_WORLD_READABLE);
+        debugOutput = new BufferedOutputStream(outputStream);
+        Log.d(TAG, "Writing debug output to: " + Environment.getDataDirectory());
+      } catch (IOException e) {
+        Log.e(TAG, "Failed to create log file: " + fileName, e);
       }
     }
   }
 
   public void writeLine( final String line ) {
-    if( !Release.DELIVER_DIAGNOSTIC_DATA ) return;
+    if( !Release.DELIVER_DIAGNOSTIC_DATA
+        || debugOutput == null) {
+      return;
+    }
     try {
       debugOutput.write( line.getBytes() );
     } catch (IOException e) {
-      Util.dieWithError(e);
+      if(loggedExceptions < MAX_LOGGED_EXCEPTIONS) {
+        loggedExceptions++;
+        Log.w(TAG, e);
+      }
     }
   }
 
+  //TODO(Stuart Anderson): Should be safe to remove this function entirely.
   public void terminate() {
     if( debugOutput != null ) {
       try {

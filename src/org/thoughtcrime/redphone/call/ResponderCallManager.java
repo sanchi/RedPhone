@@ -20,6 +20,7 @@ package org.thoughtcrime.redphone.call;
 import android.content.Context;
 import android.util.Log;
 
+import org.thoughtcrime.redphone.ClientException;
 import org.thoughtcrime.redphone.Release;
 import org.thoughtcrime.redphone.crypto.SecureRtpSocket;
 import org.thoughtcrime.redphone.crypto.zrtp.MasterSecret;
@@ -35,6 +36,7 @@ import org.thoughtcrime.redphone.signaling.SignalingException;
 import org.thoughtcrime.redphone.signaling.SignalingSocket;
 
 import java.net.InetSocketAddress;
+import java.net.SocketException;
 
 /**
  * CallManager responsible for coordinating incoming calls.
@@ -42,7 +44,7 @@ import java.net.InetSocketAddress;
  * @author Moxie Marlinspike
  *
  */
-public class ResponderCallManager extends CallManager {
+public class ResponderCallManager extends CallManager implements Runnable {
 
   private final String localNumber;
   private final String password;
@@ -55,7 +57,7 @@ public class ResponderCallManager extends CallManager {
                               String password, SessionDescriptor sessionDescriptor,
                               byte[] zid)
   {
-    super(context, callStateListener, remoteNumber, "ResponderCallManager Thread");
+    super(context, callStateListener, remoteNumber);
     this.localNumber       = localNumber;
     this.password          = password;
     this.sessionDescriptor = sessionDescriptor;
@@ -106,9 +108,15 @@ public class ResponderCallManager extends CallManager {
       Log.w("ResponderCallManager", lfe);
       callStateListener.notifyLoginFailed();
     } catch( RuntimeException e ) {
-      Log.e( "ResponderCallManager", "Died unhandled with exception!");
-      Log.w( "ResponderCallManager", e );
+      Log.e("ResponderCallManager", "Died unhandled with exception!");
+      Log.w("ResponderCallManager", e);
       callStateListener.notifyClientFailure();
+    } catch( SocketException e ) {
+      Log.w("ResponderCallManager", e);
+      callStateListener.notifyClientFailure();
+    } catch(ClientException e) {
+      Log.w("ClientException", e);
+      callStateListener.notifyClientError(e.getMsgId());
     }
   }
 
@@ -146,4 +154,9 @@ public class ResponderCallManager extends CallManager {
                          masterSecret.getResponderMacKey(), masterSecret.getResponderSrtpSailt());
   }
 
+  public void start() {
+    Thread t = new Thread(this);
+    t.setName("ResponderCallManager Thread");
+    t.start();
+  }
 }

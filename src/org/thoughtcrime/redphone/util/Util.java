@@ -68,9 +68,5 @@ public class Util {
     Log.d("RedPhone:AC", "Dying with error.");
   }
 
-  public static void dieWithError(Exception e) {
-    Log.w( "RedPhone:AC", e );
-    ApplicationContext.getInstance().getCallStateListener().notifyClientError( e.getMessage() );
-  }
 }
 

@@ -20,10 +20,12 @@ package org.thoughtcrime.redphone.audio;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
+import android.os.Handler;
 import android.os.SystemClock;
 import android.util.Log;
 
 import org.thoughtcrime.redphone.ApplicationContext;
+import org.thoughtcrime.redphone.ClientException;
 import org.thoughtcrime.redphone.R;
 import org.thoughtcrime.redphone.codec.AudioCodec;
 import org.thoughtcrime.redphone.network.RtpAudioSender;
@@ -33,7 +35,6 @@ import org.thoughtcrime.redphone.profiling.ProfilingTimer;
 import org.thoughtcrime.redphone.ui.ApplicationPreferencesActivity;
 import org.thoughtcrime.redphone.util.Factory;
 import org.thoughtcrime.redphone.util.Pool;
-import org.thoughtcrime.redphone.util.Util;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -67,7 +68,7 @@ public class MicrophoneReader {
   private long sequenceNumber = 0;
   PeriodicTimer debugTimer = new PeriodicTimer(5000);
   private int totalSamplesRead;
-  private MicReadThread micThread = new MicReadThread();
+  private final MicReadThread micThread;
   private final boolean singleThread = ApplicationPreferencesActivity.isSingleThread(ApplicationContext.getInstance().getContext());
 
   private ProfilingTimer readTime = new ProfilingTimer("Mic Read Time");
@@ -82,21 +83,23 @@ public class MicrophoneReader {
       return new AudioChunk( new short[AudioCodec.SAMPLES_PER_FRAME], 0);
     }
   });
+  private volatile Throwable micThreadThrowable = null;
 
   public MicrophoneReader(LinkedList<EncodedAudioData> outgoingAudio,
-      AudioCodec codec, PacketLogger packetLogger) {
+                          AudioCodec codec,
+                          PacketLogger packetLogger) {
     this.codec = codec;
     this.packetLogger = packetLogger;
     audioQueue = outgoingAudio;
+    micThread = new MicReadThread();
   }
 
-  private void waitForMicReady() {
+  private void waitForMicReady() throws ClientException {
     int waitCount = 0;
     while (audioSource.getState() != AudioRecord.STATE_INITIALIZED) {
       if (waitCount > 50) {
         micThread.terminate();
-        Util.dieWithError(R.string.MicrophoneReader_microphone_failed_to_initialize_try_changing_audio_call_mode_in_settings);
-        throw new RuntimeException("AudioRecord did not initialize");
+        throw new ClientException(R.string.MicrophoneReader_microphone_failed_to_initialize_try_changing_audio_call_mode_in_settings);
       }
 
       waitCount++;
@@ -113,7 +116,8 @@ public class MicrophoneReader {
     }
   }
 
-  public void go() {
+  public void go() throws ClientException {
+    checkForError();
     short audioData[];
     AudioChunk chunk;
     if( singleThread ) {
@@ -150,6 +154,16 @@ public class MicrophoneReader {
     }
   }
 
+  private void checkForError() throws ClientException {
+    if (micThreadThrowable != null) {
+      if(micThreadThrowable instanceof ClientException) {
+        throw (ClientException)micThreadThrowable;
+      }
+      throw new RuntimeException(micThreadThrowable);
+    }
+  }
+
+
   public void terminate() {
     if( !singleThread ) {
         micThread.terminate();
@@ -174,24 +188,20 @@ public class MicrophoneReader {
   }
 
   private class MicReadThread extends Thread {
-    private boolean terminate;
-    private boolean outOfLoop;
+    private volatile boolean terminate;
     public MicReadThread() {
-      super( "Microphone Reader" );
+      super("Microphone Reader");
     }
 
     @Override
     public void run() {
       try {
-        while( !terminate ) {
+        while(!terminate) {
           readFromMic();
         }
-      } catch( RuntimeException e ) {
-        Log.w( TAG, e );
-      }
-      outOfLoop = true;
-      synchronized( this ) {
-        notify();
+      } catch (Throwable e) {
+        micThreadThrowable = e;
+        Log.d(TAG, "MicReadThread terminating with error.", e);
       }
     }
 
@@ -201,7 +211,7 @@ public class MicrophoneReader {
 
     AudioChunk staticChunk = new AudioChunk( new short[AudioCodec.SAMPLES_PER_FRAME], 0 );
 
-    public void readFromMic() {
+    public void readFromMic() throws ClientException {
       /*if (debugTextUpdateTimer.periodically()) {
         double loadEst = 1 - readTime.getAccumTime()
             / (debugTextUpdateTimer.getActualLastPeriod() / 1000.0);

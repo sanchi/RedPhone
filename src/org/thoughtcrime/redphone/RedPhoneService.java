@@ -209,9 +209,10 @@ public class RedPhoneService extends Service implements CallStateListener, CallS
 
     fullWakeLock.acquire();
 
-    this.currentCallManager = new ResponderCallManager(this, this, remoteNumber, localNumber,
-                                                       password, session, zid);
-    this.currentCallManager.start();
+    ResponderCallManager responderCallManager = new ResponderCallManager(this, this, remoteNumber, localNumber,
+                                                                         password, session, zid);
+    this.currentCallManager = responderCallManager;
+    responderCallManager.start();
   }
 
   private void handleOutgoingCall(Intent intent) {
@@ -225,9 +226,10 @@ public class RedPhoneService extends Service implements CallStateListener, CallS
     keyGuardLock.disableKeyguard();
     keyguardDisabled = true;
 
-    this.currentCallManager = new InitiatingCallManager(this, this, localNumber, password,
-                                                        remoteNumber, zid);
-    this.currentCallManager.start();
+    InitiatingCallManager initiatingCallManager = new InitiatingCallManager(this, this, localNumber, password,
+                                                                            remoteNumber, zid);
+    this.currentCallManager = initiatingCallManager;
+    initiatingCallManager.start();
 
     statusBarManager.setCallInProgress();
 

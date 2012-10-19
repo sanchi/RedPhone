@@ -33,12 +33,17 @@ import java.util.List;
 
 public class CallAudioStream {
   private final LatencyMinimizingAudioPlayer audioPlayer;
-  private CallAudioProvider audioProvider;
-  private CallLogger callAudioLog = new CallLogger();
-  private List<EncodedAudioData> incomingAudio;
-  private PacketLogger packetLogger;
-  public CallAudioStream( List<EncodedAudioData> incomingAudio, AudioCodec codec, PacketLogger packetLogger ) {
+  private final CallAudioProvider audioProvider;
+  private final List<EncodedAudioData> incomingAudio;
+  private final PacketLogger packetLogger;
+  private final CallLogger callAudioLog;
+
+  public CallAudioStream(List<EncodedAudioData> incomingAudio,
+                         AudioCodec codec,
+                         PacketLogger packetLogger,
+                         CallLogger callAudioLog) {
     audioProvider = new CallAudioProvider( codec, packetLogger, callAudioLog );
+    this.callAudioLog = callAudioLog;
     this.packetLogger = packetLogger;
     audioPlayer = new LatencyMinimizingAudioPlayer(audioProvider, new RobustAudioTrack());
     this.incomingAudio = incomingAudio;

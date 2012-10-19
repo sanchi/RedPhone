@@ -36,31 +36,27 @@ import java.net.SocketTimeoutException;
  * @author Stuart O. Anderson
  */
 public class RtpSocket {
-
+  private static final String TAG = RtpSocket.class.getName();
   private final CallStateListener callStateListener;
 
   private final byte [] buf = new byte[4096];
   protected DatagramSocket socket;
 
-  public RtpSocket(CallStateListener callStateListener, int localPort, InetSocketAddress remoteAddress) {
+  public RtpSocket(CallStateListener callStateListener, int localPort, InetSocketAddress remoteAddress)
+      throws SocketException {
     this.callStateListener = callStateListener;
 
-    try {
-      socket = new DatagramSocket(localPort);
-      socket.setSoTimeout(1);
-      socket.connect(new InetSocketAddress(remoteAddress.getAddress().getHostAddress(), remoteAddress.getPort()));
-      Log.d( "RtpSocket", "Connected to: " + remoteAddress.getAddress().getHostAddress() );
-    } catch (SocketException e) {
-      e.printStackTrace();
-      // XXX-S It seems like this should do something?
-    }
+    socket = new DatagramSocket(localPort);
+    socket.setSoTimeout(1);
+    socket.connect(new InetSocketAddress(remoteAddress.getAddress().getHostAddress(), remoteAddress.getPort())); //TODO(Stuart Anderson): Why do we clone the address here?  Simplify?
+    Log.d(TAG, "Connected to: " + remoteAddress.toString());
   }
 
   public void setTimeout(int timeoutMillis) {
     try {
       socket.setSoTimeout(timeoutMillis);
     } catch (SocketException e) {
-      Log.w("RtpSocket", e);
+      Log.w(TAG, e);
     }
   }
 
@@ -72,12 +68,12 @@ public class RtpSocket {
     try {
       socket.send(new DatagramPacket(outPacket.getPacket(), outPacket.getPacketLength()));
     } catch (IOException e) {
-      Log.w("RtpSocket", e);
+      Log.w(TAG, e);
     }
     long stop = SystemClock.uptimeMillis();
     totalSendTime += stop - start;
     if( pt.periodically() ) {
-      Log.d( "RPS", "Send avg time:" + (totalSendTime/(double)pt.getPeriod()) );
+      Log.d( TAG, "Send avg time:" + (totalSendTime/(double)pt.getPeriod()) );
       totalSendTime = 0;
     }
   }

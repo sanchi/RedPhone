@@ -17,10 +17,13 @@
 
 package org.thoughtcrime.redphone.profiling;
 
+import android.content.Context;
 import android.os.SystemClock;
 
 import org.thoughtcrime.redphone.Release;
 import org.thoughtcrime.redphone.audio.FileLogger;
+
+import java.io.IOException;
 
 /**
  * Logs information about audio packet events to a file.
@@ -57,8 +60,8 @@ public class PacketLogger extends FileLogger {
   public static final int FAILED_READ			= 14;
   private static final long decimate = 1;
 
-  public PacketLogger() {
-    super( PACKET_DATA_FILENAME );
+  public PacketLogger(Context context) {
+    super(context, PACKET_DATA_FILENAME);
   }
 
   public void logPacket( long packetNumber, int stage ) {
@@ -73,7 +76,7 @@ public class PacketLogger extends FileLogger {
       packetNumber + " " +
       stage + " " +
       extra + "\n";
-      writeLine( info );
+    writeLine( info );
   }
 
 }
