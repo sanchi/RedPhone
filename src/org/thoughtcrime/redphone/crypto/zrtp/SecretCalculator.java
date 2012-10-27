@@ -17,28 +17,22 @@
 
 package org.thoughtcrime.redphone.crypto.zrtp;
 
-import android.util.Log;
-
 import org.thoughtcrime.redphone.util.Conversions;
 
-import java.security.InvalidKeyException;
-import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.security.PublicKey;
-import java.security.spec.InvalidKeySpecException;
-
-import javax.crypto.KeyAgreement;
-import javax.crypto.spec.DHPublicKeySpec;
 
 /**
  * Calculates a shared secret based on the DH parts.
  *
+ * The various supported KA types (DH3K, EC25) are handled
+ * in their respective subclasses.
+ *
  * @author Moxie Marlinspike
  *
  */
-public class SecretCalculator {
+public abstract class SecretCalculator {
 
   public byte[] calculateSharedSecret(byte[] dhResult, byte[] totalHash, byte[] zidi, byte[] zidr) {
     try {
@@ -80,30 +74,6 @@ public class SecretCalculator {
     }
   }
 
-  public byte[] calculateDHSecret(KeyPair localKey, byte[] publicKeyBytes) {
-    try {
-      Log.w("SecretCalculator", "Calculating DH secret...");
-      DHPublicKeySpec keySpec = new DHPublicKeySpec(Conversions.byteArrayToBigInteger(publicKeyBytes),
-                                                    ZRTPSocket.PRIME, ZRTPSocket.GENERATOR);
-      KeyFactory keyFactory   = KeyFactory.getInstance("DH");
-      PublicKey publicKey     = keyFactory.generatePublic(keySpec);
-
-      KeyAgreement agreement = KeyAgreement.getInstance("DH");
-      agreement.init(localKey.getPrivate());
-      agreement.doPhase(publicKey, true);
-
-      return agreement.generateSecret();
-    } catch (NoSuchAlgorithmException e) {
-      Log.w("SecretCalculator", e);
-      throw new IllegalArgumentException(e);
-    } catch (InvalidKeySpecException e) {
-      Log.w("SecretCalculator", e);
-      throw new IllegalArgumentException(e);
-    } catch (InvalidKeyException e) {
-      Log.w("SecretCalculator", e);
-      throw new IllegalArgumentException(e);
-    }
-
-  }
+  public abstract byte[] calculateKeyAgreement(KeyPair localKey, byte[] publicKeyBytes);
 
 }

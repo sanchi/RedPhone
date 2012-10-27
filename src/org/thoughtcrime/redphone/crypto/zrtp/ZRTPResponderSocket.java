@@ -55,7 +55,11 @@ public class ZRTPResponderSocket extends ZRTPSocket {
   @Override
   protected void handleCommit(HandshakePacket packet) throws InvalidPacketException {
     foreignCommit = new CommitPacket(packet, true);
-    localDH       = new DHPartOnePacket(hashChain, getPublicKey());
+
+    switch (getKeyAgreementType()) {
+    case KA_TYPE_EC25: localDH = new EC25DHPartOnePacket(hashChain, getPublicKey()); break;
+    case KA_TYPE_DH3K: localDH = new DH3KDHPartOnePacket(hashChain, getPublicKey()); break;
+    }
 
     foreignHello.verifyMac(foreignCommit.getHash());
 
@@ -65,15 +69,29 @@ public class ZRTPResponderSocket extends ZRTPSocket {
 
   @Override
   protected void handleDH(HandshakePacket packet) throws InvalidPacketException {
-    foreignDH = new DHPartTwoPacket(packet, true);
+    SecretCalculator calculator;
+
+    switch (getKeyAgreementType()) {
+    case KA_TYPE_EC25:
+      foreignDH  = new EC25DHPartTwoPacket(packet, true);
+      calculator = new EC25SecretCalculator();
+      break;
+    case KA_TYPE_DH3K:
+      foreignDH  = new DH3KDHPartTwoPacket(packet, true);
+      calculator = new DH3KSecretCalculator();
+      break;
+    default:
+      throw new AssertionError("Unknown KA type: " + getKeyAgreementType());
+    }
 
     foreignCommit.verifyMac(foreignDH.getHash());
     foreignCommit.verifyHvi(localHello.getMessageBytes(), foreignDH.getMessageBytes());
 
-    SecretCalculator calculator = new SecretCalculator();
-    byte[] dhResult     = calculator.calculateDHSecret(keyPair, foreignDH.getPvr());
+    byte[] dhResult     = calculator.calculateKeyAgreement(getKeyPair(), foreignDH.getPvr());
+
     byte[] totalHash    = calculator.calculateTotalHash(localHello, foreignCommit,
                                                         localDH, foreignDH);
+
     byte[] sharedSecret = calculator.calculateSharedSecret(dhResult, totalHash,
                                                            foreignHello.getZID(),
                                                            localHello.getZID());
@@ -95,7 +113,7 @@ public class ZRTPResponderSocket extends ZRTPSocket {
     confirmPacket.decrypt(masterSecret.getInitiatorZrtpKey());
 
     byte[] preimage = confirmPacket.getPreimage();
-    foreignDH.veifyMac(preimage);
+    foreignDH.verifyMac(preimage);
 
     setState(HANDSHAKE_COMPLETE);
     sendFreshPacket(new ConfAckPacket());
@@ -120,6 +138,20 @@ public class ZRTPResponderSocket extends ZRTPSocket {
   public void negotiate() throws NegotiationFailedException {
     sendFreshPacket(localHello);
     super.negotiate();
+  }
+
+  @Override
+  protected int getKeyAgreementType() {
+    if (foreignCommit == null)
+      throw new AssertionError("Can't determine KA until we've seen foreign commit!");
+
+    String keyAgreementSpec = new String(foreignCommit.getKeyAgreementType());
+
+    if (keyAgreementSpec.equals("EC25")) {
+      return KA_TYPE_EC25;
+    } else {
+      return KA_TYPE_DH3K;
+    }
   }
 
 

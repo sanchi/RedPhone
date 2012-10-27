@@ -24,6 +24,7 @@ import java.security.SecureRandom;
 
 /**
  * Base DH packet, from which DH part one and DH part two derive.
+ * http://tools.ietf.org/html/rfc6189#section-5.5
  *
  * @author Moxie Marlinspike
  *
@@ -31,37 +32,80 @@ import java.security.SecureRandom;
 
 public abstract class DHPacket extends HandshakePacket {
 
-  private static final int DH_LENGTH = 468;
+  /**
+   * We switch on these two KA types in several places below. This
+   * is really unfortunate, particularly because we have distinct
+   * sub-classes for the various KA types, so it stands to reason that
+   * we should be able to isolate KA functionality to each KA type.
+   *
+   * Unfortunately, however, we already have sub-classes for PartOne
+   * and PartTwo, which we really need.  So given the absence of multiple
+   * inheritance, this is the only way to include the functionality without
+   * duplicating code.  =(
+   */
 
-  private static final int LENGTH_OFFSET = MESSAGE_BASE + 2;
-  private static final int HASH_OFFSET   = MESSAGE_BASE + 12;
-  private static final int RS1_OFFSET    = MESSAGE_BASE + 44;
-  private static final int RS2_OFFSET    = MESSAGE_BASE + 52;
-  private static final int AUX_OFFSET    = MESSAGE_BASE + 60;
-  private static final int PBX_OFFSET    = MESSAGE_BASE + 68;
-  private static final int PVR_OFFSET    = MESSAGE_BASE + 76;
-  private static final int MAC_OFFSET    = MESSAGE_BASE + 460;
+  protected static final int DH3K_AGREEMENT_TYPE = 1;
+  protected static final int EC25_AGREEMENT_TYPE = 2;
 
-  public DHPacket(RtpPacket packet) {
+  protected static final int DH3K_DH_LENGTH = 468;
+  protected static final int EC25_DH_LENGTH = 148;
+
+  private static final int LENGTH_OFFSET   = MESSAGE_BASE + 2;
+  private static final int HASH_OFFSET     = MESSAGE_BASE + 12;
+  private static final int RS1_OFFSET      = MESSAGE_BASE + 44;
+  private static final int RS2_OFFSET      = MESSAGE_BASE + 52;
+  private static final int AUX_OFFSET      = MESSAGE_BASE + 60;
+  private static final int PBX_OFFSET      = MESSAGE_BASE + 68;
+  private static final int PVR_OFFSET      = MESSAGE_BASE + 76;
+  private static final int DH3K_MAC_OFFSET = PVR_OFFSET + 384;
+  private static final int EC25_MAC_OFFSET = PVR_OFFSET + 64;
+
+  private final int agreementType;
+
+  public DHPacket(RtpPacket packet, int agreementType) {
     super(packet);
+    this.agreementType = agreementType;
   }
 
-  public DHPacket(RtpPacket packet, boolean deepCopy) {
+  public DHPacket(RtpPacket packet, int agreementType, boolean deepCopy) {
     super(packet, deepCopy);
+    this.agreementType = agreementType;
   }
 
-  public DHPacket(String partTag, HashChain hashChain, byte[] pvr) {
-    super(partTag, DH_LENGTH);
+  public DHPacket(String typeTag, int agreementType, HashChain hashChain, byte[] pvr) {
+    super(typeTag, agreementType == DH3K_AGREEMENT_TYPE ? DH3K_DH_LENGTH : EC25_DH_LENGTH);
+
     setHash(hashChain.getH1());
     setState();
     setPvr(pvr);
-    setMac(hashChain.getH0(), MAC_OFFSET, DH_LENGTH - 8);
+
+    switch (agreementType) {
+    case DH3K_AGREEMENT_TYPE:
+      setMac(hashChain.getH0(), DH3K_MAC_OFFSET, DH3K_DH_LENGTH - 8);
+      break;
+    case EC25_AGREEMENT_TYPE:
+      setMac(hashChain.getH0(), EC25_MAC_OFFSET, EC25_DH_LENGTH - 8);
+      break;
+    default:
+      throw new AssertionError("Bad agreement type: " + agreementType);
+    }
+
+    this.agreementType = agreementType;
   }
 
   public byte[] getPvr() {
-    byte[] pvr = new byte[384];
-    System.arraycopy(this.data, PVR_OFFSET, pvr, 0, pvr.length);
-    return pvr;
+    switch (agreementType) {
+    case DH3K_AGREEMENT_TYPE:
+      byte[] dh3k_pvr = new byte[384];
+      System.arraycopy(this.data, PVR_OFFSET, dh3k_pvr, 0, dh3k_pvr.length);
+      return dh3k_pvr;
+    case EC25_AGREEMENT_TYPE:
+      byte[] ec25_pvr = new byte[64];
+      System.arraycopy(this.data, PVR_OFFSET, ec25_pvr, 0, ec25_pvr.length);
+      return ec25_pvr;
+    default:
+      throw new AssertionError("Bad agreement type: " + agreementType);
+    }
   }
 
   public byte[] getHash() {
@@ -70,8 +114,17 @@ public abstract class DHPacket extends HandshakePacket {
     return hash;
   }
 
-  public void veifyMac(byte[] key) throws InvalidPacketException {
-    super.verifyMac(key, MAC_OFFSET, DH_LENGTH-8, getHash());
+  public void verifyMac(byte[] key) throws InvalidPacketException {
+    switch (agreementType) {
+    case DH3K_AGREEMENT_TYPE:
+      super.verifyMac(key, DH3K_MAC_OFFSET, DH3K_DH_LENGTH-8, getHash());
+      return;
+    case EC25_AGREEMENT_TYPE:
+      super.verifyMac(key, EC25_MAC_OFFSET, EC25_DH_LENGTH-8, getHash());
+      return;
+    default:
+      throw new AssertionError("Bad agreement type: " + agreementType);
+    }
   }
 
   private void setHash(byte[] hash) {

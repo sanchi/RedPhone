@@ -27,6 +27,15 @@ import java.math.BigInteger;
  */
 public class Conversions {
 
+  public static byte[] combine(byte[] first, byte[] second) {
+    byte[] combined = new byte[first.length + second.length];
+
+    System.arraycopy(first, 0, combined, 0, first.length);
+    System.arraycopy(second, 0, combined, first.length, second.length);
+
+    return combined;
+  }
+
   public static void bigIntegerToByteArray(byte[] bytes, BigInteger value) {
     BigInteger mask = BigInteger.valueOf(0xFF);
 

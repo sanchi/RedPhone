@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011 Whisper Systems
+ * Copyright (C) 2012 Whisper Systems
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,26 +20,25 @@ package org.thoughtcrime.redphone.crypto.zrtp;
 import org.thoughtcrime.redphone.network.RtpPacket;
 
 /**
- * DH part two ZRTP handshake packet.
+ * A DHPartOnePacket for the EC25 KA type.
  *
  * @author Moxie Marlinspike
  *
  */
 
-public abstract class DHPartTwoPacket extends DHPacket {
-  public static final String TYPE = "DHPart2 ";
+public class EC25DHPartOnePacket extends DHPartOnePacket {
 
-  public DHPartTwoPacket(RtpPacket packet, int agreementType) {
-    super(packet, agreementType);
+  public EC25DHPartOnePacket(RtpPacket packet) {
+    super(packet, DHPacket.EC25_AGREEMENT_TYPE);
   }
 
-  public DHPartTwoPacket(RtpPacket packet, int agreementType, boolean deepCopy) {
-    super(packet, agreementType, deepCopy);
+  public EC25DHPartOnePacket(RtpPacket packet, boolean deepCopy) {
+    super(packet, DHPacket.EC25_AGREEMENT_TYPE, deepCopy);
   }
 
-  public DHPartTwoPacket(int agreementType, HashChain hashChain, byte[] pvr) {
-    super(TYPE, agreementType, hashChain, pvr);
+  public EC25DHPartOnePacket(HashChain hashChain, byte[] pvr) {
+    super(DHPacket.EC25_AGREEMENT_TYPE, hashChain, pvr);
+    assert(pvr.length == 64);
   }
 
-  public abstract byte[] getAgreementSpec();
 }

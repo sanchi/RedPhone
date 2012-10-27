@@ -20,6 +20,9 @@ package org.thoughtcrime.redphone.crypto.zrtp;
 import org.thoughtcrime.redphone.network.RtpPacket;
 import org.thoughtcrime.redphone.util.Conversions;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * ZRTP 'hello' handshake packet.
  *
@@ -139,6 +142,22 @@ public class HelloPacket extends HandshakePacket {
     return (this.data[KC_OFFSET] & 0xFF) >> 4;
   }
 
+  public Set<String> getKeyAgreementOptions() {
+    Set<String> keyAgreementOptions = new HashSet<String>();
+
+    int keyAgreementOptionsOffset  = OPTIONS_OFFSET                +
+                                     (getHashOptionCount()    * 4) +
+                                     (getCipherOptionCount()  * 4) +
+                                     (getAuthTagOptionCount() * 4);
+
+    for (int i=0;i<getKeyAgreementOptionCount();i++) {
+      int keyAgreementOptionOffset = keyAgreementOptionsOffset + (i * 4);
+      keyAgreementOptions.add(new String(this.data, keyAgreementOptionOffset, 4));
+    }
+
+    return keyAgreementOptions;
+  }
+
   private int getSasOptionCount() {
     return this.data[SC_OFFSET] & 0x0F;
   }
@@ -148,7 +167,11 @@ public class HelloPacket extends HandshakePacket {
   }
 
   private void setClientId() {
-    "RedPhone 019".getBytes(0, 12, this.data, CLIENT_OFFSET);
+    "RedPhone 019    ".getBytes(0, 16, this.data, CLIENT_OFFSET);
+  }
+
+  public String getClientId() {
+    return new String(this.data, CLIENT_OFFSET, CLIENT_LENGTH);
   }
 
   private void setH3(byte[] hash) {
