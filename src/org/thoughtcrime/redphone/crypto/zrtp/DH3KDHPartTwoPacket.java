@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011 Whisper Systems
+ * Copyright (C) 2012 Whisper Systems
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,26 +20,29 @@ package org.thoughtcrime.redphone.crypto.zrtp;
 import org.thoughtcrime.redphone.network.RtpPacket;
 
 /**
- * DH part two ZRTP handshake packet.
+ * A DHPartTwoPacket for the DH3K KA type.
  *
- * @author Moxie Marlinspike
+ * @author moxie
  *
  */
+public class DH3KDHPartTwoPacket extends DHPartTwoPacket {
 
-public abstract class DHPartTwoPacket extends DHPacket {
-  public static final String TYPE = "DHPart2 ";
+  private static final byte[] AGREEMENT_SPEC = {'D', 'H', '3', 'k'};
 
-  public DHPartTwoPacket(RtpPacket packet, int agreementType) {
-    super(packet, agreementType);
+  public DH3KDHPartTwoPacket(RtpPacket packet) {
+    super(packet, DHPacket.DH3K_AGREEMENT_TYPE);
   }
 
-  public DHPartTwoPacket(RtpPacket packet, int agreementType, boolean deepCopy) {
-    super(packet, agreementType, deepCopy);
+  public DH3KDHPartTwoPacket(RtpPacket packet, boolean deepCopy) {
+    super(packet, DHPacket.DH3K_AGREEMENT_TYPE, deepCopy);
   }
 
-  public DHPartTwoPacket(int agreementType, HashChain hashChain, byte[] pvr) {
-    super(TYPE, agreementType, hashChain, pvr);
+  public DH3KDHPartTwoPacket(HashChain hashChain, byte[] pvr) {
+    super(DHPacket.DH3K_AGREEMENT_TYPE, hashChain, pvr);
   }
 
-  public abstract byte[] getAgreementSpec();
+  @Override
+  public byte[] getAgreementSpec() {
+    return AGREEMENT_SPEC;
+  }
 }

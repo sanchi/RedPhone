@@ -49,7 +49,6 @@ public class CommitPacket extends HandshakePacket {
   private static final byte[] HASH_SPEC      = {'S', '2', '5', '6'};
   private static final byte[] CIPHER_SPEC    = {'A', 'E', 'S', '1'};
   private static final byte[] AUTH_SPEC      = {'H', 'S', '8', '0'};
-  private static final byte[] AGREEMENT_SPEC = {'D', 'H', '3', 'k'};
   private static final byte[] SAS_SPEC       = {'B', '2', '5', '6'};
 
   public CommitPacket(RtpPacket packet) {
@@ -60,12 +59,15 @@ public class CommitPacket extends HandshakePacket {
     super(packet, deepCopy);
   }
 
-  public CommitPacket(HashChain hashChain, byte[] helloBytes, byte[] dhBytes, byte[] zid) {
+  public CommitPacket(HashChain hashChain, byte[] helloBytes,
+                      DHPartTwoPacket dhPacket, byte[] zid)
+    throws InvalidPacketException
+  {
     super(TYPE, COMMIT_LENGTH);
     setHash(hashChain.getH2());
     setZID(zid);
-    setSpec();
-    setHvi(calculateHvi(helloBytes, dhBytes));
+    setSpec(dhPacket.getAgreementSpec());
+    setHvi(calculateHvi(helloBytes, dhPacket.getMessageBytes()));
     setMac(hashChain.getH1(), MAC_OFFSET, COMMIT_LENGTH - 8);
   }
 
@@ -101,11 +103,11 @@ public class CommitPacket extends HandshakePacket {
     System.arraycopy(zid, 0, this.data, ZID_OFFSET, zid.length);
   }
 
-  private void setSpec() {
+  private void setSpec(byte[] agreementSpec) {
     System.arraycopy(HASH_SPEC, 0, this.data, HASH_SPEC_OFFSET, HASH_SPEC.length);
     System.arraycopy(CIPHER_SPEC, 0, this.data, CIPHER_OFFSET, CIPHER_SPEC.length);
     System.arraycopy(AUTH_SPEC, 0, this.data, AUTH_OFFSET, AUTH_SPEC.length);
-    System.arraycopy(AGREEMENT_SPEC, 0, this.data, AGREEMENT_OFFSET, AGREEMENT_SPEC.length);
+    System.arraycopy(agreementSpec, 0, this.data, AGREEMENT_OFFSET, agreementSpec.length);
     System.arraycopy(SAS_SPEC, 0, this.data, SAS_OFFSET, SAS_SPEC.length);
   }
 
@@ -123,6 +125,13 @@ public class CommitPacket extends HandshakePacket {
 
   private void setHvi(byte[] hvi) {
     System.arraycopy(hvi, 0, this.data, HVI_OFFSET, hvi.length);
+  }
+
+  public byte[] getKeyAgreementType() {
+    byte[] ka = new byte[4];
+    System.arraycopy(this.data, AGREEMENT_OFFSET, ka, 0, ka.length);
+
+    return ka;
   }
 
 }

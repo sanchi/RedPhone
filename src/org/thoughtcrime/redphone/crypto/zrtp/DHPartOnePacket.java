@@ -26,18 +26,18 @@ import org.thoughtcrime.redphone.network.RtpPacket;
  *
  */
 
-public class DHPartOnePacket extends DHPacket {
+public abstract class DHPartOnePacket extends DHPacket {
   public static final String TYPE = "DHPart1 ";
 
-  public DHPartOnePacket(RtpPacket packet) {
-    super(packet);
+  public DHPartOnePacket(RtpPacket packet, int agreementType) {
+    super(packet, agreementType);
   }
 
-  public DHPartOnePacket(RtpPacket packet, boolean deepCopy) {
-    super(packet, deepCopy);
+  public DHPartOnePacket(RtpPacket packet, int agreementType, boolean deepCopy) {
+    super(packet, agreementType, deepCopy);
   }
 
-  public DHPartOnePacket(HashChain hashChain, byte[] pvr) {
-    super(TYPE, hashChain, pvr);
+  public DHPartOnePacket(int agreementType, HashChain hashChain, byte[] pvr) {
+    super(TYPE, agreementType, hashChain, pvr);
   }
 }

@@ -19,6 +19,8 @@ package org.thoughtcrime.redphone.crypto.zrtp;
 
 import android.util.Log;
 
+import org.spongycastle.jce.interfaces.ECPublicKey;
+import org.spongycastle.math.ec.ECPoint;
 import org.thoughtcrime.redphone.ApplicationContext;
 import org.thoughtcrime.redphone.Release;
 import org.thoughtcrime.redphone.crypto.SecureRtpSocket;
@@ -30,6 +32,9 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.Security;
+import java.security.spec.ECGenParameterSpec;
 
 import javax.crypto.interfaces.DHPublicKey;
 import javax.crypto.spec.DHParameterSpec;
@@ -47,6 +52,9 @@ import javax.crypto.spec.DHParameterSpec;
  */
 
 public abstract class ZRTPSocket {
+  static {
+    Security.addProvider(new org.spongycastle.jce.provider.BouncyCastleProvider());
+  }
 
   public static final BigInteger PRIME     = new BigInteger("FFFFFFFFFFFFFFFFC90FDAA22168C234C4C6628B80DC1CD129024E088A67CC74020BBEA63B139B22514A08798E3404DDEF9519B3CD3A431B302B0A6DF25F14374FE1356D6D51C245E485B576625E7EC6F44C42E9A637ED6B0BFF5CB6F406B7EDEE386BFB5A899FA5AE9F24117C4B1FE649286651ECE45B3DC2007CB8A163BF0598DA48361C55D39A69163FA8FD24CF5F83655D23DCA3AD961C62F356208552BB9ED529077096966D670C354E4ABC9804F1746C08CA18217C32905E462E36CE3BE39E772C180E86039B2783A2EC07A28FB5C55DF06F4C52C9DE2BCBF6955817183995497CEA956AE515D2261898FA051015728E5A8AAAC42DAD33170D04507A33A85521ABDF1CBA64ECFB850458DBEF0A8AEA71575D060C7DB3970F85A6E1E4C7ABF5AE8CDB0933D71E8C94E04A25619DCEE3D2261AD2EE6BF12FFA06D98A0864D87602733EC86A64521F2B18177B200CBBE117577A615D6C770988C0BAD946E208E24FA074E5AB3143DB5BFCE0FD108E4B82D120A93AD2CAFFFFFFFFFFFFFFFF", 16);
   public static final BigInteger GENERATOR = new BigInteger("02", 16);
@@ -65,6 +73,9 @@ public abstract class ZRTPSocket {
   protected static final int EXPECTING_CONFIRM_ACK      = 7;
   protected static final int TERMINATED                 = 8;
 
+  protected static final int KA_TYPE_DH3K = 100;
+  protected static final int KA_TYPE_EC25 = 200;
+
   private long transmitStartTime  = 0;
   private int  retransmitInterval = RETRANSMIT_INTERVAL_MILLIS;
   private int  retransmitCount    = 0;
@@ -74,14 +85,17 @@ public abstract class ZRTPSocket {
   private SecureRtpSocket socket;
   private HandshakePacket lastPacket;
 
-  protected KeyPair keyPair;
+  private KeyPair dh3kKeyPair;
+  private KeyPair ec25KeyPair;
+
   protected HashChain hashChain;
   protected MasterSecret masterSecret;
 
   public ZRTPSocket(SecureRtpSocket socket, int initialState) {
     this.socket            = socket;
     this.state             = initialState;
-    this.keyPair           = initializeKeys();
+    this.dh3kKeyPair       = initializeDH3kKeys();
+    this.ec25KeyPair       = initializeEC25Keys();
     this.hashChain         = new HashChain();
 
     this.socket.setTimeout(RETRANSMIT_INTERVAL_MILLIS);
@@ -95,13 +109,47 @@ public abstract class ZRTPSocket {
   protected abstract void handleHelloAck(HandshakePacket packet) throws InvalidPacketException;
   protected abstract void handleConfirmAck(HandshakePacket packet) throws InvalidPacketException;
 
+  protected abstract int getKeyAgreementType();
+
   protected byte[] getPublicKey() {
+    switch (getKeyAgreementType()) {
+    case KA_TYPE_EC25: return getPublicEC25Key();
+    case KA_TYPE_DH3K: return getPublicDH3kKey();
+    default:           throw new AssertionError("Unknown KA type: " + getKeyAgreementType());
+    }
+  }
+
+  protected KeyPair getKeyPair() {
+    switch (getKeyAgreementType()) {
+    case KA_TYPE_EC25: return ec25KeyPair;
+    case KA_TYPE_DH3K: return dh3kKeyPair;
+    default:           throw new AssertionError("Unknown KA type: " + getKeyAgreementType());
+    }
+  }
+
+  private byte[] getPublicDH3kKey() {
     if (Release.DEBUG)
-      Log.w("ZRTPSocket", "Sending public key: " + ((DHPublicKey)keyPair.getPublic()).getY());
+      Log.w("ZRTPSocket", "Sending public key: " + ((DHPublicKey)dh3kKeyPair.getPublic()).getY());
 
     byte[] temp = new byte[384];
-    Conversions.bigIntegerToByteArray(temp, ((DHPublicKey)keyPair.getPublic()).getY());
+    Conversions.bigIntegerToByteArray(temp, ((DHPublicKey)dh3kKeyPair.getPublic()).getY());
     return temp;
+  }
+
+  private byte[] getPublicEC25Key() {
+    if (Release.DEBUG)
+      Log.w("ZRTPSocket", "Sending public key: " + ec25KeyPair.getPublic());
+
+    ECPublicKey publicKey = (ECPublicKey)ec25KeyPair.getPublic();
+    ECPoint q             = publicKey.getQ();
+
+    byte[] x = new byte[32];
+    byte[] y = new byte[32];
+
+    Conversions.bigIntegerToByteArray(x, q.getX().toBigInteger());
+    Conversions.bigIntegerToByteArray(y, q.getY().toBigInteger());
+
+    return Conversions.combine(x, y);
   }
 
   protected void setState(int state) {
@@ -141,7 +189,7 @@ public abstract class ZRTPSocket {
     sendPacket(lastPacket);
   }
 
-  private KeyPair initializeKeys() {
+  private KeyPair initializeDH3kKeys() {
     try {
       KeyPairGenerator kg    = KeyPairGenerator.getInstance("DH");
       DHParameterSpec dhSpec = new DHParameterSpec(PRIME, GENERATOR);
@@ -152,6 +200,22 @@ public abstract class ZRTPSocket {
       throw new IllegalArgumentException(e);
     } catch (NoSuchAlgorithmException e) {
       throw new IllegalArgumentException(e);
+    }
+  }
+
+  private KeyPair initializeEC25Keys() {
+    try {
+      KeyPairGenerator kg       = KeyPairGenerator.getInstance("ECDH", "SC");
+      ECGenParameterSpec ecSpec = new ECGenParameterSpec("secp256r1");
+      kg.initialize(ecSpec);
+
+      return kg.generateKeyPair();
+    } catch (InvalidAlgorithmParameterException e) {
+      throw new AssertionError(e);
+    } catch (NoSuchAlgorithmException nsae) {
+      throw new AssertionError(nsae);
+    } catch (NoSuchProviderException e) {
+      throw new AssertionError(e);
     }
   }
 
