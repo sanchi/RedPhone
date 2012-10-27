@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * MicrophoneReader provides robust async access to the device microphone.  A reader thread
@@ -75,6 +76,8 @@ public class MicrophoneReader {
   private DecimalFormat loadFormat = new DecimalFormat("0.00");
   private PacketLogger packetLogger;
 
+  private final AtomicReference<AudioException> micThreadException;
+
   private List<AudioChunk> micAudioList =
     Collections.synchronizedList(new ArrayList<AudioChunk>());
   private Pool<AudioChunk> chunkPool = new Pool<AudioChunk>( new Factory<AudioChunk>() {
@@ -88,15 +91,15 @@ public class MicrophoneReader {
     this.codec = codec;
     this.packetLogger = packetLogger;
     audioQueue = outgoingAudio;
+    micThreadException = new AtomicReference<AudioException>();
   }
 
-  private void waitForMicReady() {
+  private void waitForMicReady() throws AudioException {
     int waitCount = 0;
     while (audioSource.getState() != AudioRecord.STATE_INITIALIZED) {
       if (waitCount > 50) {
         micThread.terminate();
-        Util.dieWithError(R.string.MicrophoneReader_microphone_failed_to_initialize_try_changing_audio_call_mode_in_settings);
-        throw new RuntimeException("AudioRecord did not initialize");
+        throw new AudioException(R.string.MicrophoneReader_microphone_failed_to_initialize_try_changing_audio_call_mode_in_settings);
       }
 
       waitCount++;
@@ -113,16 +116,19 @@ public class MicrophoneReader {
     }
   }
 
-  public void go() {
+  public void go() throws AudioException {
     short audioData[];
     AudioChunk chunk;
+
+    AudioException exception = micThreadException.get();
+    if(exception != null) {
+      throw new AudioException(exception);
+    }
+
     if( singleThread ) {
-      try {
-        micThread.readFromMic();
-      }catch (RuntimeException e) {
-        return;
-      }
+      micThread.readFromMic();
     } else if( !micThread.isAlive() ) {
+      //TODO(Stuart Anderson): This will throw an unhelpful error if the micThread dies...
       micThread.start();
     }
 
@@ -186,8 +192,8 @@ public class MicrophoneReader {
         while( !terminate ) {
           readFromMic();
         }
-      } catch( RuntimeException e ) {
-        Log.w( TAG, e );
+      } catch(AudioException e) {
+        micThreadException.set(e);
       }
       outOfLoop = true;
       synchronized( this ) {
@@ -201,7 +207,7 @@ public class MicrophoneReader {
 
     AudioChunk staticChunk = new AudioChunk( new short[AudioCodec.SAMPLES_PER_FRAME], 0 );
 
-    public void readFromMic() {
+    public void readFromMic() throws AudioException {
       /*if (debugTextUpdateTimer.periodically()) {
         double loadEst = 1 - readTime.getAccumTime()
             / (debugTextUpdateTimer.getActualLastPeriod() / 1000.0);

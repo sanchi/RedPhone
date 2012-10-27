@@ -21,6 +21,7 @@ import android.content.Context;
 import android.util.Log;
 
 import org.thoughtcrime.redphone.Release;
+import org.thoughtcrime.redphone.audio.AudioException;
 import org.thoughtcrime.redphone.crypto.SecureRtpSocket;
 import org.thoughtcrime.redphone.crypto.zrtp.MasterSecret;
 import org.thoughtcrime.redphone.crypto.zrtp.ZRTPInitiatorSocket;
@@ -131,7 +132,7 @@ public class InitiatingCallManager extends CallManager {
   private void runLoopback() {
     try {
       super.doLoopback();
-    } catch( RuntimeException e ) {
+    } catch( Exception e ) {
       Log.e( "InitiatingCallManager", "Died with exception!");
       Log.w( "InitiatingCallManager", e );
       callStateListener.notifyClientFailure();
