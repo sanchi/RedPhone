@@ -26,6 +26,7 @@ import android.os.Process;
 import android.text.format.DateFormat;
 import android.util.Log;
 
+import org.thoughtcrime.redphone.audio.AudioException;
 import org.thoughtcrime.redphone.audio.CallAudioManager;
 import org.thoughtcrime.redphone.crypto.SecureRtpSocket;
 import org.thoughtcrime.redphone.crypto.zrtp.MasterSecret;
@@ -102,6 +103,9 @@ public abstract class CallManager extends Thread {
     } catch (NegotiationFailedException nfe) {
       Log.w("CallManager", nfe);
       if (!terminated) callStateListener.notifyHandshakeFailed();
+    } catch (AudioException e) {
+      Log.w("CallManager", e);
+      callStateListener.notifyClientError(e.getClientMessage());
     }
   }
 
@@ -160,7 +164,7 @@ public abstract class CallManager extends Thread {
   }
 
   //For loopback operation
-  public void doLoopback() {
+  public void doLoopback() throws AudioException {
     callAudioManager = new CallAudioManager( null, "SPEEX", context );
     callAudioManager.run();
   }

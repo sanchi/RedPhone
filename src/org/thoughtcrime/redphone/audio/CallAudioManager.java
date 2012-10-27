@@ -77,7 +77,7 @@ public class CallAudioManager {
     simDrops = ApplicationPreferencesActivity.isSimulateDroppedPackets(context);
   }
 
-  public void run() {
+  public void run() throws AudioException {
     synchronized(this) {
       if( callDone ) return;
       runStarted = true;
