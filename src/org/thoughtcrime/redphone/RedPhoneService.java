@@ -17,12 +17,10 @@
 
 package org.thoughtcrime.redphone;
 
-import android.app.KeyguardManager;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -31,7 +29,6 @@ import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
-import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.telephony.TelephonyManager;
 import android.util.Log;
@@ -41,6 +38,7 @@ import org.thoughtcrime.redphone.audio.OutgoingRinger;
 import org.thoughtcrime.redphone.call.CallManager;
 import org.thoughtcrime.redphone.call.CallStateListener;
 import org.thoughtcrime.redphone.call.InitiatingCallManager;
+import org.thoughtcrime.redphone.call.LockManager;
 import org.thoughtcrime.redphone.call.ResponderCallManager;
 import org.thoughtcrime.redphone.codec.CodecSetupException;
 import org.thoughtcrime.redphone.contacts.PersonInfo;
@@ -93,11 +91,7 @@ public class RedPhoneService extends Service implements CallStateListener, CallS
   private String remoteNumber;
   private String password;
   private CallManager currentCallManager;
-  private boolean keyguardDisabled;
-
-  private PowerManager.WakeLock fullWakeLock;
-  private PowerManager.WakeLock partialWakeLock;
-  private KeyguardManager.KeyguardLock keyGuardLock;
+  private LockManager lockManager;
 
   private StatusBarManager statusBarManager;
   private Handler handler;
@@ -190,14 +184,8 @@ public class RedPhoneService extends Service implements CallStateListener, CallS
     this.localNumber      = preferences.getString("Number", "NO_SAVED_NUMBER!");
     this.password         = preferences.getString("Password", "NO_SAVED_PASSWORD!");
 
-    PowerManager pm       = (PowerManager) getSystemService(Context.POWER_SERVICE);
-    this.fullWakeLock     = pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK |
-                                           PowerManager.ACQUIRE_CAUSES_WAKEUP, "RedPhone");
-    this.partialWakeLock  = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, "RedPhone");
-    this.keyGuardLock     = ((KeyguardManager)getSystemService(Context.KEYGUARD_SERVICE))
-                              .newKeyguardLock("RedPhone");
-
     this.statusBarManager = new StatusBarManager(this);
+    this.lockManager      = new LockManager(this);
   }
 
   /// Intent Handlers
@@ -207,8 +195,7 @@ public class RedPhoneService extends Service implements CallStateListener, CallS
     remoteNumber              = extractRemoteNumber(intent);
     state                     = RedPhone.STATE_RINGING;
 
-    fullWakeLock.acquire();
-
+    lockManager.updatePhoneState(LockManager.PhoneState.PROCESSING);
     this.currentCallManager = new ResponderCallManager(this, remoteNumber, localNumber,
                                                        password, session, zid);
     this.currentCallManager.start();
@@ -220,11 +207,7 @@ public class RedPhoneService extends Service implements CallStateListener, CallS
     sendMessage(RedPhone.HANDLE_OUTGOING_CALL, remoteNumber);
 
     state = RedPhone.STATE_DIALING;
-
-    fullWakeLock.acquire();
-    keyGuardLock.disableKeyguard();
-    keyguardDisabled = true;
-
+    lockManager.updatePhoneState(LockManager.PhoneState.INTERACTIVE);
     this.currentCallManager = new InitiatingCallManager(this, localNumber, password,
                                                         remoteNumber, zid);
     this.currentCallManager.start();
@@ -370,6 +353,8 @@ public class RedPhoneService extends Service implements CallStateListener, CallS
     incomingRinger.stop();
     outgoingRinger.stop();
 
+    lockManager.updatePhoneState(LockManager.PhoneState.IDLE);
+
     if (currentCallRecord != null) {
       currentCallRecord.finishCall();
       currentCallRecord = null;
@@ -380,15 +365,7 @@ public class RedPhoneService extends Service implements CallStateListener, CallS
       currentCallManager = null;
     }
 
-    if (keyguardDisabled) {
-      keyGuardLock.reenableKeyguard();
-      keyguardDisabled = false;
-    }
-
     shutdownAudio();
-
-    if (fullWakeLock.isHeld())    fullWakeLock.release();
-    if (partialWakeLock.isHeld()) partialWakeLock.release();
 
     state = RedPhone.STATE_IDLE;
 
@@ -424,8 +401,7 @@ public class RedPhoneService extends Service implements CallStateListener, CallS
     startCallCardActivity();
     incomingRinger.start();
 
-    keyGuardLock.disableKeyguard();
-    keyguardDisabled = true;
+    lockManager.updatePhoneState(LockManager.PhoneState.INTERACTIVE);
 
     statusBarManager.setCallInProgress();
     currentCallRecord = CallLogger.logIncomingCall(this, remoteNumber);
@@ -450,8 +426,7 @@ public class RedPhoneService extends Service implements CallStateListener, CallS
 
   public void notifyCallConnected(String sas) {
     outgoingRinger.playComplete();
-    if (!partialWakeLock.isHeld()) partialWakeLock.acquire();
-    if (fullWakeLock.isHeld())     fullWakeLock.release();
+    lockManager.updatePhoneState(LockManager.PhoneState.IN_CALL);
     state = RedPhone.STATE_CONNECTED;
     synchronized( this ) {
       sendMessage(RedPhone.HANDLE_CALL_CONNECTED, sas);
