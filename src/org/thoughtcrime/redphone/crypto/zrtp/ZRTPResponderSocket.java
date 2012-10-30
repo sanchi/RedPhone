@@ -113,7 +113,7 @@ public class ZRTPResponderSocket extends ZRTPSocket {
     confirmPacket.decrypt(masterSecret.getInitiatorZrtpKey());
 
     byte[] preimage = confirmPacket.getPreimage();
-    foreignDH.veifyMac(preimage);
+    foreignDH.verifyMac(preimage);
 
     setState(HANDSHAKE_COMPLETE);
     sendFreshPacket(new ConfAckPacket());

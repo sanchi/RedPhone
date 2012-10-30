@@ -67,7 +67,7 @@ public class ZRTPInitiatorSocket extends ZRTPSocket {
     confirmPacket.decrypt(masterSecret.getResponderZrtpKey());
 
     byte[] preimage = confirmPacket.getPreimage();
-    foreignDH.veifyMac(preimage);
+    foreignDH.verifyMac(preimage);
 
     setState(EXPECTING_CONFIRM_ACK);
     sendFreshPacket(new ConfirmTwoPacket(masterSecret.getInitiatorMacKey(),

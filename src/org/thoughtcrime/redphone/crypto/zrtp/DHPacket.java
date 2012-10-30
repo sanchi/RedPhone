@@ -114,7 +114,7 @@ public abstract class DHPacket extends HandshakePacket {
     return hash;
   }
 
-  public void veifyMac(byte[] key) throws InvalidPacketException {
+  public void verifyMac(byte[] key) throws InvalidPacketException {
     switch (agreementType) {
     case DH3K_AGREEMENT_TYPE:
       super.verifyMac(key, DH3K_MAC_OFFSET, DH3K_DH_LENGTH-8, getHash());
