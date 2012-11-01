@@ -2,7 +2,10 @@ package org.thoughtcrime.redphone.call;
 
 import android.app.KeyguardManager;
 import android.content.Context;
+import android.net.wifi.WifiManager;
+import android.nfc.Tag;
 import android.os.PowerManager;
+import android.util.Log;
 import org.thoughtcrime.redphone.RedPhone;
 
 /**
@@ -15,6 +18,7 @@ public class LockManager {
   private final PowerManager.WakeLock fullLock;
   private final PowerManager.WakeLock partialLock;
   private final KeyguardManager.KeyguardLock keyGuardLock;
+  private final WifiManager.WifiLock wifiLock;
 
   private boolean keyguardDisabled;
 
@@ -35,11 +39,14 @@ public class LockManager {
     this.context = context.getApplicationContext();
 
     PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
-    fullLock = pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "RedPhone");
-    partialLock = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, "RedPhone");
+    fullLock = pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "RedPhone Full");
+    partialLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "RedPhone Partial");
 
     KeyguardManager km = (KeyguardManager) context.getSystemService(Context.KEYGUARD_SERVICE);
-    keyGuardLock = km.newKeyguardLock("RedPhone");
+    keyGuardLock = km.newKeyguardLock("RedPhone KeyGuard");
+
+    WifiManager wm = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+    wifiLock = wm.createWifiLock(WifiManager.WIFI_MODE_FULL_HIGH_PERF, "RedPhone Wifi");
   }
 
   public void updatePhoneState(PhoneState state) {
@@ -59,17 +66,19 @@ public class LockManager {
       case IN_CALL:
         //TODO(Stuart Anderson): Use proximity wake mode during calls.
         setLockState(LockState.PARTIAL);
-        maybeEnableKeyguard();
+        disableKeyguard();
         break;
     }
   }
 
   private void setLockState(LockState newState) {
+    Log.d("LockManager", "Entering Lock State: " + newState);
     switch(newState) {
       case FULL:
         fullLock.acquire();
-        if(partialLock.isHeld()) {
-          partialLock.release();
+        partialLock.acquire();
+        if(!wifiLock.isHeld()) {
+          wifiLock.acquire();
         }
         break;
       case PARTIAL:
@@ -77,14 +86,23 @@ public class LockManager {
         if(fullLock.isHeld()) {
           fullLock.release();
         }
+        if(!wifiLock.isHeld()) {
+          wifiLock.acquire();
+        }
+        break;
       case SLEEP:
-      default:
         if(fullLock.isHeld()) {
           fullLock.release();
         }
         if(partialLock.isHeld()) {
           partialLock.release();
         }
+        if(wifiLock.isHeld()) {
+          wifiLock.release();
+        }
+        break;
+      default:
+        throw new IllegalArgumentException("Unhandled Mode: " + newState);
     }
   }
 

@@ -348,12 +348,11 @@ public class RedPhoneService extends Service implements CallStateListener, CallS
   private synchronized void terminate() {
     Log.w("RedPhoneService", "terminate() called");
     Log.w("RedPhoneService", "termination stack", new Exception() );
+    lockManager.updatePhoneState(LockManager.PhoneState.PROCESSING);
     statusBarManager.setCallEnded();
 
     incomingRinger.stop();
     outgoingRinger.stop();
-
-    lockManager.updatePhoneState(LockManager.PhoneState.IDLE);
 
     if (currentCallRecord != null) {
       currentCallRecord.finishCall();
@@ -368,7 +367,7 @@ public class RedPhoneService extends Service implements CallStateListener, CallS
     shutdownAudio();
 
     state = RedPhone.STATE_IDLE;
-
+    lockManager.updatePhoneState(LockManager.PhoneState.IDLE);
     // XXX moxie@thoughtcrime.org -- Do we still need to stop the Service?
 //    Log.d("RedPhoneService", "STOP SELF" );
 //    this.stopSelf();
@@ -398,10 +397,10 @@ public class RedPhoneService extends Service implements CallStateListener, CallS
     Log.w("RedPhoneService", "Good call, time to ring and display call card...");
     sendMessage(RedPhone.HANDLE_INCOMING_CALL, remoteNumber);
 
+    lockManager.updatePhoneState(LockManager.PhoneState.INTERACTIVE);
+
     startCallCardActivity();
     incomingRinger.start();
-
-    lockManager.updatePhoneState(LockManager.PhoneState.INTERACTIVE);
 
     statusBarManager.setCallInProgress();
     currentCallRecord = CallLogger.logIncomingCall(this, remoteNumber);
