@@ -115,21 +115,6 @@ public class ApplicationPreferencesActivity extends SherlockPreferenceActivity {
   }
 
   private void initializePreferenceDisplay() {
-    // XXX-S Why are there two separate if blocks to do this? Merely setting these UI elements to
-    // "checked" won't necessarily change the underlying preferences, and it won't have any
-    // effect until this activity is opened.
-    if (DeviceAudioSettings.useInCallMode()) {
-      CheckBoxPreference speakerPreference =
-          (CheckBoxPreference)this.findPreference(AUDIO_SPEAKER_INCALL);
-      speakerPreference.setChecked(true);
-    }
-
-    if (Build.MANUFACTURER.equals("Samsung")) {
-      CheckBoxPreference speakerPreference =
-          (CheckBoxPreference)this.findPreference(AUDIO_SPEAKER_INCALL);
-      speakerPreference.setChecked(false);
-    }
-
     if (Build.VERSION.SDK_INT < 8)
       ((CheckBoxPreference)findPreference(USE_C2DM)).setEnabled(false);
   }
