@@ -47,6 +47,10 @@ public class LockManager {
 
     WifiManager wm = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
     wifiLock = wm.createWifiLock(WifiManager.WIFI_MODE_FULL_HIGH_PERF, "RedPhone Wifi");
+
+    fullLock.setReferenceCounted(false);
+    partialLock.setReferenceCounted(false);
+    wifiLock.setReferenceCounted(false);
   }
 
   public void updatePhoneState(PhoneState state) {
@@ -72,38 +76,26 @@ public class LockManager {
   }
 
   private void setLockState(LockState newState) {
-    Log.d("LockManager", "Entering Lock State: " + newState);
     switch(newState) {
       case FULL:
         fullLock.acquire();
         partialLock.acquire();
-        if(!wifiLock.isHeld()) {
-          wifiLock.acquire();
-        }
+        wifiLock.acquire();
         break;
       case PARTIAL:
         partialLock.acquire();
-        if(fullLock.isHeld()) {
-          fullLock.release();
-        }
-        if(!wifiLock.isHeld()) {
-          wifiLock.acquire();
-        }
+        wifiLock.acquire();
+        fullLock.release();
         break;
       case SLEEP:
-        if(fullLock.isHeld()) {
-          fullLock.release();
-        }
-        if(partialLock.isHeld()) {
-          partialLock.release();
-        }
-        if(wifiLock.isHeld()) {
-          wifiLock.release();
-        }
+        fullLock.release();
+        partialLock.release();
+        wifiLock.release();
         break;
       default:
         throw new IllegalArgumentException("Unhandled Mode: " + newState);
     }
+    Log.d("LockManager", "Entered Lock State: " + newState);
   }
 
   private void disableKeyguard() {

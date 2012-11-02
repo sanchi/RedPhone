@@ -346,7 +346,6 @@ public class RedPhoneService extends Service implements CallStateListener, CallS
   }
 
   private synchronized void terminate() {
-    Log.w("RedPhoneService", "terminate() called");
     Log.w("RedPhoneService", "termination stack", new Exception() );
     lockManager.updatePhoneState(LockManager.PhoneState.PROCESSING);
     statusBarManager.setCallEnded();
