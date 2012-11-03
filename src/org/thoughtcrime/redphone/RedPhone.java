@@ -361,7 +361,6 @@ public class RedPhone extends Activity {
     callStateHandler.postDelayed(new Runnable() {
 
     public void run() {
-      Log.w("RedPhone", "Releasing wake locks...");
       if (Release.DELIVER_DIAGNOSTIC_DATA &&
           ApplicationPreferencesActivity.getAskUserToSendDiagnosticData(RedPhone.this)) {
         if( !deliveringTimingData) {
