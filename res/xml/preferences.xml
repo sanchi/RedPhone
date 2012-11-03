@@ -18,17 +18,17 @@
  */
 -->
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-  <PreferenceCategory android:title="General Settings">
+  <PreferenceCategory android:title="@string/preferences__general_settings">
     <CheckBoxPreference android:defaultValue="true"
                         android:key="pref_prompt_upgrade"
-                        android:title="Prompt for call upgrade"
-                        android:summary="When making insecure calls, prompt for upgrade to RedPhone if contact is RedPhone-enabled."/>
+                        android:title="@string/preferences__prompt_for_call_upgrade"
+                        android:summary="@string/preferences__when_making_insecure_calls_prompt_for_upgrade_to_redphone_if_contact_is_redphone_enabled"/>
   </PreferenceCategory>
-  <PreferenceCategory android:title="Signaling Settings">
+  <PreferenceCategory android:title="@string/preferences__signaling_settings">
     <CheckBoxPreference android:defaultValue="false"
                         android:key="pref_use_c2dm"
-                        android:title="Use C2DM For Signaling"
-                        android:summary="Use Google's 'push' messaging rather than SMS for signaling (Android 2.2+)." />
+                        android:title="@string/preferences__use_c2dm_for_signaling"
+                        android:summary="@string/preferences__use_google_s_push_messaging_rather_than_sms_for_signaling" />
   </PreferenceCategory>
   <!--   <PreferenceCategory android:title="Privacy Settings">
     <CheckBoxPreference android:defaultValue="true"
@@ -37,23 +37,23 @@
     					android:summary="Display an option to send diagnostic data to Whisper Systems when a call ends" />
     				    		
   </PreferenceCategory>-->
-  <PreferenceCategory android:title="Audio Settings">
+  <PreferenceCategory android:title="@string/preferences__audio_settings">
     <CheckBoxPreference android:defaultValue="false"
                         android:key="pref_audio_compat"
-                        android:summary="Enable Audio Compatibility Mode [higher latency]"
-                        android:title="Compatibility Mode" />
+                        android:summary="@string/preferences__enable_audio_compatibility_mode_higher_latency"
+                        android:title="@string/preferences__compatibility_mode" />
     <CheckBoxPreference android:defaultValue="false"
                         android:key="pref_speaker_incall"
-                        android:title="Use In-Call Audio Mode"
-                        android:summary="Enable if audio comes from rear speaker" />
+                        android:title="@string/preferences__use_in_call_audio_mode"
+                        android:summary="@string/preferences__enable_if_audio_comes_from_rear_speaker" />
     <CheckBoxPreference android:defaultValue="false"
                         android:key="pref_singlethread"
-                        android:title="Single-Thread Mode"
-                        android:summary="May improve performance on some devices" />
+                        android:title="@string/preferences__single_thread_mode"
+                        android:summary="@string/preferences__may_improve_performance_on_some_devices" />
     <CheckBoxPreference android:defaultValue="false"
                         android:key="pref_min_latency"
-                        android:title="Force minimum latency"
-                        android:summary="Reduce latency at the expense of audio quality" />
+                        android:title="@string/preferences__force_minimum_latency"
+                        android:summary="@string/preferences__reduce_latency_at_the_expense_of_audio_quality" />
   </PreferenceCategory>
 </PreferenceScreen>
 

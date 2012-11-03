@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">RedPhone</string>
+
     <string name="RedPhone_id_like_to_call_you_securely_using_redphone_you_can_install_redphone_from_the_play_store_s">I\'d like to call you securely using RedPhone. You can install RedPhone from the Play Store: %s</string>
     <string name="RedPhone_answering">Answering...</string>
     <string name="RedPhone_ending_call">Ending call</string>
@@ -23,18 +24,25 @@
     <string name="RedPhone_no_thanks_exclamation">No thanks!</string>
     <string name="RedPhone_yes_exclamation">Yes!</string>
     <string name="RedPhone_codec_failed_to_initialize">Codec Failed to Initialize</string>
+
     <string name="RedPhoneService_missed_redphone_call">Missed RedPhone Call</string>
+
     <string name="MicrophoneReader_microphone_failed_to_initialize_try_changing_audio_call_mode_in_settings">Microphone failed to initialize.  Try changing Audio Call Mode in Settings?</string>
+
     <string name="RobustAudioTrack_audiotrack_did_not_initialize">AudioTrack did not initialize</string>
+
     <string name="AboutActivity_about_redphone">About RedPhone</string>
     <string name="AboutActivity_redphone_beta_s">RedPhone Beta %s</string>
+
     <string name="ApplicationPreferencesActivity_redphone_settings">RedPhone Settings</string>
     <string name="ApplicationPreferencesActivity_updating_signaling_method">Updating Signaling Method</string>
     <string name="ApplicationPreferencesActivity_changing_signaling_method_this_could_take_a_second">Changing signaling method, this could take a second...</string>
     <string name="ApplicationPreferencesActivity_error_registering_with_c2dm_server">Error registering with C2DM server...</string>
     <string name="ApplicationPreferencesActivity_error_unregistering_with_c2dm_server">Error unregistering with C2DM server...</string>
     <string name="ApplicationPreferencesActivity_error_communicating_with_c2dm_server">Error communicating with C2DM server...</string>
+    
     <string name="CallScreen_incoming_call">Incoming call...</string>
+
     <string name="CreateAccountActivity_register_with_redphone">Register with RedPhone</string>
     <string name="CreateAccountActivity_error_connecting_to_server_got_internet_connectivity">Error connecting to server.  Got internet connectivity?</string>
     <string name="CreateAccountActivity_account_created">Account Created</string>
@@ -48,29 +56,57 @@
     <string name="CreateAccountActivity_sorry_only_usa_numbers_are_supported_in_the_beta">Sorry, only USA numbers are supported in the Beta.</string>
     <string name="CreateAccountActivity_creating_account">Creating account</string>
     <string name="CreateAccountActivity_this_could_take_a_moment">This could take a moment...</string>
+
     <string name="QualityReporting_would_you_like_to_send_diagnostic_information_about_this_call_to_whisper_systems">Would you like to send diagnostic information about this call to Whisper Systems?</string>
     <string name="QualityReporting_never">Never</string>
     <string name="QualityReporting_send_diagnostics">Send Diagnostics?</string>
+
     <string name="RedPhoneChooser_upgrade_to_redphone">Upgrade to RedPhone?</string>
     <string name="RedPhoneChooser_this_contact_also_uses_redphone_would_you_like_to_upgrade_to_a_secure_call">This contact also uses RedPhone. Would you like to upgrade to a secure call?</string>
     <string name="RedPhoneChooser_secure_call">Secure Call</string>
     <string name="RedPhoneChooser_insecure_call">Insecure Call</string>
+    
     <string name="StatusBarManager_redphone_call_in_progress">RedPhone Call In Progress</string>
+    
     <string name="about_activity__additional_information">Additional information:</string>
     <string name="about_activity__attribution">Attribution:</string>
     <string name="about_activity__aboutText">Please see whispersystems.org for additional information, or contact support@whispersystems.org with problems, questions, or comments.</string>
     <string name="about_activity__attributionText">RedPhone links to the SpanDSP library, which is licensed under the LGPL.\n\nRedPhone uses the SPEEX Codec, which is used under the Xiph.Org variant of the BSD license: © 2002-2003, Jean-Marc Valin/Xiph.Org Foundation\n\nRedistribution and use of the SPEEX library in source and binary forms, with or without modification, are permitted provided that the following conditions are met:\n\n\t* Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.\n\t* Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.\n\t* Neither the name of the Xiph.org Foundation nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.\n\nThe SPEEX library is provided by the copyright holders and contributors “as is” and any express or implied warranties, including, but not limited to, the implied warranties of merchantability and fitness for a particular purpose are disclaimed. In no event shall the foundation or contributors be liable for any direct, indirect, incidental, special, exemplary, or consequential damages (including, but not limited to, procurement of substitute goods or services; loss of use, data, or profits; or business interruption) however caused and on any theory of liability, whether in contract, strict liability, or tort (including negligence or otherwise) arising in any way out of the use of this software, even if advised of the possibility of such damage.\n\n\nSome sound samples are licensed under the Creative Commons Sampling Plus License: http://creativecommons.org/licenses/sampling+/1.0/\n\nBy acclivity (http://www.freesound.org/usersViewSingle.php?id=37876):\nShipsBell.wav (http://www.freesound.org/samplesViewSingle.php?id=32304)\n\nBy Splashdust (http://www.freesound.org/usersViewSingle.php?id=754949):\nnegativebeep.wav (http://www.freesound.org/samplesViewSingle.php?id=67454)\n\nBy Peter_Gross (http://www.freesound.org/usersViewSingle.php?id=33429):\nSonar_pings.ogg (http://www.freesound.org/samplesViewSingle.php?id=12677\n\nBy suonho: http://www.freesound.org/samplesViewSingle.php?id=58348: ambienta_soundtrack_moog_sweep\n\nBy Mike Koenig: Busy Signal</string>    
+    
     <string name="account_creation__this_devices_phone_number">This device\'s phone number:</string>
     <string name="account_creation__register">Register</string>
+
     <string name="contacts_list_content__search">Search</string>
+
     <string name="outbound_chooser__you_ve_initiated_a_call_with_a_contact_who_also_uses_redphone_would_you_like_to_upgrade_this_to_a_redphone_call">You\'ve initiated a call with a contact who also uses RedPhone. Would you like to upgrade this to a RedPhone call?</string>
     <string name="outbound_chooser__secure_call">Secure Call</string>
     <string name="outbound_chooser__insecure_call">Insecure Call</string>
+
     <string name="recent_calls__empty_call_log">Empty call log.</string>
+    
     <string name="about_menu__about">About</string>
     
     <string name="contact_list_options_menu__search">Search</string>
+
     <string name="dialer_options_menu__re_register">Re-register</string>
     <string name="dialer_options_menu__about">About</string>
     <string name="dialer_options_menu__settings">Settings</string>
+    
+    <string name="preferences__general_settings">General Settings</string>
+    <string name="preferences__prompt_for_call_upgrade">Prompt for call upgrade</string>
+    <string name="preferences__when_making_insecure_calls_prompt_for_upgrade_to_redphone_if_contact_is_redphone_enabled">When making insecure calls, prompt for upgrade to RedPhone if contact is RedPhone-enabled.</string>
+    <string name="preferences__signaling_settings">Signaling Settings</string>
+    <string name="preferences__use_c2dm_for_signaling">Use C2DM For Signaling</string>
+    <string name="preferences__use_google_s_push_messaging_rather_than_sms_for_signaling">Use Google\'s \'push\' messaging rather than SMS for signaling.</string>
+    <string name="preferences__audio_settings">Audio Settings</string>
+    <string name="preferences__enable_audio_compatibility_mode_higher_latency">Enable Audio Compatibility Mode [higher latency]</string>
+    <string name="preferences__compatibility_mode">Compatibility Mode</string>
+    <string name="preferences__use_in_call_audio_mode">Use In-Call Audio Mode</string>
+    <string name="preferences__enable_if_audio_comes_from_rear_speaker">Enable if audio comes from rear speaker</string>
+    <string name="preferences__single_thread_mode">Single-Thread Mode</string>
+    <string name="preferences__may_improve_performance_on_some_devices">May improve performance on some devices</string>
+    <string name="preferences__force_minimum_latency">Force minimum latency</string>
+    <string name="preferences__reduce_latency_at_the_expense_of_audio_quality">Reduce latency at the expense of audio quality</string>
+    
+    <!-- EOF -->
 </resources>
