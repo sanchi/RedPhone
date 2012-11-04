@@ -95,7 +95,7 @@ public class SMSListener extends BroadcastReceiver {
 
   @Override
   public void onReceive(Context context, Intent intent) {
-    Log.w("SMSListener", "Got broadcast..." + intent);
+    Log.w("SMSListener", "Got broadcast...");
 
     SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
     String[] messages             = null;
