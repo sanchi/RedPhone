@@ -49,7 +49,9 @@ public class SMSListener extends BroadcastReceiver {
     Log.w("SMSListener", "Incoming call details: " + call);
     if (call == null) return;
 
-    abortBroadcast();
+    if(isOrderedBroadcast()) {
+      abortBroadcast();
+    }
 
     Intent intent = new Intent(context, RedPhoneService.class);
     intent.setAction(RedPhoneService.ACTION_INCOMING_CALL);
@@ -65,7 +67,9 @@ public class SMSListener extends BroadcastReceiver {
 
     if (challenge == null) return;
 
-    abortBroadcast();
+    if(isOrderedBroadcast()) {
+      abortBroadcast();
+    }
 
     Intent challengeIntent = new Intent(CreateAccountActivity.CHALLENGE_EVENT);
     challengeIntent.putExtra(CreateAccountActivity.CHALLENGE_EXTRA, challenge);
@@ -91,7 +95,7 @@ public class SMSListener extends BroadcastReceiver {
 
   @Override
   public void onReceive(Context context, Intent intent) {
-    Log.w("SMSListener", "Got broadcast...");
+    Log.w("SMSListener", "Got broadcast..." + intent);
 
     SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
     String[] messages             = null;
