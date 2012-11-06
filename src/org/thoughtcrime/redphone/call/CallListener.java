@@ -93,7 +93,8 @@ public class CallListener extends BroadcastReceiver {
       Log.w("CallListener", "Redirecting to RedPhone dialer...");
       redirectToRedphone(context, intent, phoneNumber);
     } else if (ApplicationPreferencesActivity.getPromptUpgradePreference(context) &&
-               numberFilter.containsNumber(context, phoneNumber))
+               numberFilter.containsNumber(context, phoneNumber)                  &&
+               !CallChooserCache.getInstance().isRecentInsecureChoice(phoneNumber))
     {
       Log.w("CallListener", "Redirecting to RedPhone opportunistic dialog...");
       redirectToOpportunisticRedphone(context, intent, phoneNumber);

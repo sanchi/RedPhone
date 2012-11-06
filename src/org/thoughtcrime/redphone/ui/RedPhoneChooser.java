@@ -28,6 +28,7 @@ import org.thoughtcrime.redphone.Constants;
 import org.thoughtcrime.redphone.R;
 import org.thoughtcrime.redphone.RedPhone;
 import org.thoughtcrime.redphone.RedPhoneService;
+import org.thoughtcrime.redphone.call.CallChooserCache;
 import org.thoughtcrime.redphone.call.CallListener;
 
 /**
@@ -71,10 +72,12 @@ public class RedPhoneChooser extends Activity {
 
     builder.setNegativeButton(R.string.RedPhoneChooser_insecure_call, new DialogInterface.OnClickListener() {
       public void onClick(DialogInterface dialog, int which) {
+        String remoteNumber = getIntent().getStringExtra(Constants.REMOTE_NUMBER);
+        CallChooserCache.getInstance().addInsecureChoice(remoteNumber);
+
         Intent intent = new Intent("android.intent.action.CALL",
-                                   Uri.fromParts("tel", getIntent()
-                                                        .getStringExtra(Constants.REMOTE_NUMBER) +
-                                                        CallListener.IGNORE_SUFFIX, null));
+                                   Uri.fromParts("tel", remoteNumber + CallListener.IGNORE_SUFFIX,
+                                                 null));
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
         finish();
