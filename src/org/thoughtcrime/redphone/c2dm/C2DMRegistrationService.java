@@ -60,9 +60,10 @@ public class C2DMRegistrationService extends Service {
 
   @Override
   public void onStart(Intent intent, int startId) {
-    String action = intent.getAction();
+    if (intent == null || intent.getAction() == null)
+      return;
 
-    if (action == null) return;
+    String action = intent.getAction();
 
     Log.w("C2DMRegistrationService", "Handling C2DM service action: " + intent.getAction());
 
