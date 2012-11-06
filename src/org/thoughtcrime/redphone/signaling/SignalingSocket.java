@@ -316,7 +316,7 @@ public class SignalingSocket {
 
   protected void sendSignal(Signal signal) throws SignalingException {
     try {
-      Log.d("SignallingSocket", "Sending signal: " + signal.serialize() );
+      Log.d("SignalingSocket", "Sending signal...");
       this.outputStream.write(signal.serialize().getBytes());
     } catch (IOException ioe) {
       throw new SignalingException(ioe);
