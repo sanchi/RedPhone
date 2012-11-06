@@ -176,12 +176,14 @@ public class RecentCallListActivity extends SherlockListFragment
 
   @Override
   public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
+    ((TextView)getListView().getEmptyView()).setText(R.string.RecentCallListActivity_loading);
     return new CursorLoader(getActivity(), Calls.CONTENT_URI,
                             null, null, null, Calls.DEFAULT_SORT_ORDER);
   }
 
   @Override
   public void onLoadFinished(Loader<Cursor> arg0, Cursor cursor) {
+    ((TextView)getListView().getEmptyView()).setText(R.string.RecentCallListActivity_empty_call_log);
     ((CursorAdapter)getListAdapter()).changeCursor(cursor);
   }
 

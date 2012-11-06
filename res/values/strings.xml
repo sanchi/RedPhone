@@ -57,10 +57,16 @@
     <string name="CreateAccountActivity_creating_account">Creating account</string>
     <string name="CreateAccountActivity_this_could_take_a_moment">This could take a moment...</string>
 
+    <string name="ContactsListActivity_loading">Loading...</string>
+    <string name="ContactsListActivity_no_contacts_found">No contacts found.</string>    
+    
     <string name="QualityReporting_would_you_like_to_send_diagnostic_information_about_this_call_to_whisper_systems">Would you like to send diagnostic information about this call to Whisper Systems?</string>
     <string name="QualityReporting_never">Never</string>
     <string name="QualityReporting_send_diagnostics">Send Diagnostics?</string>
 
+    <string name="RecentCallListActivity_loading">Loading...</string>
+    <string name="RecentCallListActivity_empty_call_log">Empty call log.</string>    
+    
     <string name="RedPhoneChooser_upgrade_to_redphone">Upgrade to RedPhone?</string>
     <string name="RedPhoneChooser_this_contact_also_uses_redphone_would_you_like_to_upgrade_to_a_secure_call">This contact also uses RedPhone. Would you like to upgrade to a secure call?</string>
     <string name="RedPhoneChooser_secure_call">Secure Call</string>
@@ -81,8 +87,6 @@
     <string name="outbound_chooser__you_ve_initiated_a_call_with_a_contact_who_also_uses_redphone_would_you_like_to_upgrade_this_to_a_redphone_call">You\'ve initiated a call with a contact who also uses RedPhone. Would you like to upgrade this to a RedPhone call?</string>
     <string name="outbound_chooser__secure_call">Secure Call</string>
     <string name="outbound_chooser__insecure_call">Insecure Call</string>
-
-    <string name="recent_calls__empty_call_log">Empty call log.</string>
     
     <string name="about_menu__about">About</string>
     

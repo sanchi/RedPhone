@@ -316,6 +316,8 @@ private void initializeSearch(android.widget.SearchView searchView) {
 
   @Override
   public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
+    ((TextView)getListView().getEmptyView()).setText(R.string.ContactsListActivity_loading);
+
     if (isFavoritesFragment()) {
       if (this.queryFilter == null || this.queryFilter.trim().length() == 0) {
         return ContactAccessor.getInstance().getFavoritesCursor(getActivity());
@@ -333,6 +335,7 @@ private void initializeSearch(android.widget.SearchView searchView) {
 
   @Override
   public void onLoadFinished(Loader<Cursor> arg0, Cursor cursor) {
+    ((TextView)getListView().getEmptyView()).setText(R.string.ContactsListActivity_no_contacts_found);
     ((CursorAdapter)getListAdapter()).changeCursor(cursor);
   }
 
