@@ -70,7 +70,7 @@ public class SecureRtpSocket {
     this.outgoingContext = new SecureStream(outgoingCipherKey, outgoingMacKey, outgoingSalt);
   }
 
-  public void send(HandshakePacket packet) {
+  public void send(HandshakePacket packet) throws IOException {
     packet.setCRC();
     socket.send(packet);
   }
@@ -93,7 +93,7 @@ public class SecureRtpSocket {
     socket.setTimeout(timeoutMillis);
   }
 
-  public void send(SecureRtpPacket packet) {
+  public void send(SecureRtpPacket packet) throws IOException {
     TimeProfiler.startBlock("SRPS:send:updateSeq" );
     outgoingContext.updateSequence(packet);
     TimeProfiler.stopBlock("SRPS:send:updateSeq" );
@@ -108,7 +108,7 @@ public class SecureRtpSocket {
     TimeProfiler.stopBlock("SRPS:send:send" );
   }
 
-  public SecureRtpPacket receive() {
+  public SecureRtpPacket receive() throws IOException {
     TimeProfiler.startBlock( "SecureRedphoneSocket::receive" );
     RtpPacket barePacket;
     barePacket = socket.receive();

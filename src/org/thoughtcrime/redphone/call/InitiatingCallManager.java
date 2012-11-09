@@ -19,7 +19,6 @@ package org.thoughtcrime.redphone.call;
 
 import android.content.Context;
 import android.util.Log;
-
 import org.thoughtcrime.redphone.Release;
 import org.thoughtcrime.redphone.crypto.SecureRtpSocket;
 import org.thoughtcrime.redphone.crypto.zrtp.MasterSecret;
@@ -36,6 +35,7 @@ import org.thoughtcrime.redphone.signaling.SignalingSocket;
 import org.thoughtcrime.redphone.ui.ApplicationPreferencesActivity;
 
 import java.net.InetSocketAddress;
+import java.net.SocketException;
 
 /**
  * Call Manager for the coordination of outgoing calls.  It initiates
@@ -85,7 +85,7 @@ public class InitiatingCallManager extends CallManager {
       InetSocketAddress remoteAddress = new InetSocketAddress(sessionDescriptor.getFullServerName(),
                                                               sessionDescriptor.relayPort);
 
-      secureSocket  = new SecureRtpSocket(new RtpSocket(callStateListener, localPort, remoteAddress));
+      secureSocket  = new SecureRtpSocket(new RtpSocket(localPort, remoteAddress));
 
       zrtpSocket    = new ZRTPInitiatorSocket(secureSocket, zid);
 
@@ -106,6 +106,9 @@ public class InitiatingCallManager extends CallManager {
     } catch (SignalingException se) {
       Log.w("InitiatingCallManager", se);
       callStateListener.notifyServerFailure();
+    } catch (SocketException e) {
+      Log.w("InitiatingCallManager", e);
+      callStateListener.notifyCallDisconnected();
     } catch( RuntimeException e ) {
       Log.e( "InitiatingCallManager", "Died with unhandled exception!");
       Log.w( "InitiatingCallManager", e );

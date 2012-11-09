@@ -30,6 +30,7 @@ import org.thoughtcrime.redphone.profiling.StatisticsWatcher;
 import org.thoughtcrime.redphone.profiling.TimeProfiler;
 import org.thoughtcrime.redphone.ui.ApplicationPreferencesActivity;
 
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
 
@@ -77,7 +78,16 @@ public class CallAudioManager {
     simDrops = ApplicationPreferencesActivity.isSimulateDroppedPackets(context);
   }
 
-  public void run() throws AudioException {
+  public void run() throws AudioException, IOException {
+    try {
+      doRun();
+    } finally {
+      doTerminate();
+    }
+  }
+
+  //TODO(Stuart Anderson): Split this up
+  private void doRun() throws AudioException, IOException {
     synchronized(this) {
       if( callDone ) return;
       runStarted = true;
@@ -180,7 +190,6 @@ public class CallAudioManager {
       }
 
     }
-    doTerminate();
   }
 
   private void doTerminate() {

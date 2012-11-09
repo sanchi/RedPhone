@@ -38,6 +38,7 @@ import org.thoughtcrime.redphone.signaling.SessionDescriptor;
 import org.thoughtcrime.redphone.signaling.SignalingSocket;
 import org.thoughtcrime.redphone.ui.ApplicationPreferencesActivity;
 
+import java.io.IOException;
 import java.util.Date;
 
 /**
@@ -116,6 +117,9 @@ public abstract class CallManager extends Thread {
     } catch (AudioException e) {
       Log.w("CallManager", e);
       callStateListener.notifyClientError(e.getClientMessage());
+    } catch (IOException e) {
+      Log.w("CallManager", e);
+      callStateListener.notifyCallDisconnected();
     }
   }
 
@@ -178,7 +182,7 @@ public abstract class CallManager extends Thread {
   }
 
   //For loopback operation
-  public void doLoopback() throws AudioException {
+  public void doLoopback() throws AudioException, IOException {
     callAudioManager = new CallAudioManager( null, "SPEEX", context );
     callAudioManager.run();
   }

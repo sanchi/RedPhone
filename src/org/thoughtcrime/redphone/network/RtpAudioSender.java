@@ -26,6 +26,7 @@ import org.thoughtcrime.redphone.crypto.SecureRtpSocket;
 import org.thoughtcrime.redphone.profiling.PacketLogger;
 import org.thoughtcrime.redphone.profiling.StatisticsWatcher;
 
+import java.io.IOException;
 import java.util.LinkedList;
 
 /**
@@ -61,7 +62,7 @@ public class RtpAudioSender {
 
 
 
-  public void go() {
+  public void go() throws IOException {
 
     if( audioQueue.size() < audioChunksPerPacket ) {
       consecutiveSends = 0;
