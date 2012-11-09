@@ -88,7 +88,7 @@
         <receiver android:name=".call.CallListener"
                   android:enabled="true"
                   android:exported="true">
-            <intent-filter android:priority="1001">
+            <intent-filter android:priority="-1">
                 <action android:name="android.intent.action.NEW_OUTGOING_CALL"/>
             </intent-filter>
         </receiver>
