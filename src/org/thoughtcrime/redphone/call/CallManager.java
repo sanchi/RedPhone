@@ -60,6 +60,7 @@ public abstract class CallManager extends Thread {
   private boolean loopbackMode;
   private CallAudioManager callAudioManager;
   private SignalManager signalManager;
+  private String sas;
 
   protected SessionDescriptor sessionDescriptor;
   protected ZRTPSocket zrtpSocket;
@@ -85,12 +86,21 @@ public abstract class CallManager extends Thread {
 
     try {
       Log.d( "CallManager", "negotiating..." );
-      if (!terminated) callAudioManager = new CallAudioManager( secureSocket, CODEC_NAME, context );
-      if (!terminated) zrtpSocket.negotiate();
-      if (!terminated) setSecureSocketKeys(zrtpSocket.getMasterSecret());
-      if (!terminated) callStateListener
-                        .notifyCallConnected(SASCalculator
-                                              .calculateSAS(zrtpSocket.getMasterSecret().getSAS()));
+      if (!terminated) {
+        callAudioManager = new CallAudioManager(secureSocket, CODEC_NAME, context);
+        zrtpSocket.negotiateStart();
+      }
+
+      if (!terminated) {
+        callStateListener.notifyPerformingHandshake();
+        zrtpSocket.negotiateFinish();
+      }
+
+      if (!terminated) {
+        setSecureSocketKeys(zrtpSocket.getMasterSecret());
+        sas = SASCalculator.calculateSAS(zrtpSocket.getMasterSecret().getSAS());
+        callStateListener.notifyCallConnected(sas);
+      }
 
       if (!terminated) {
         Log.d("CallManager", "Finished handshake, calling run() on CallAudioManager...");
@@ -124,6 +134,10 @@ public abstract class CallManager extends Thread {
 
   public SessionDescriptor getSessionDescriptor() {
     return this.sessionDescriptor;
+  }
+
+  public String getSAS() {
+    return this.sas;
   }
 
   protected void processSignals() {

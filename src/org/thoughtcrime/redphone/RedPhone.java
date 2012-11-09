@@ -429,11 +429,11 @@ public class RedPhone extends Activity {
       PersonInfo personInfo = redPhoneService.getRemotePersonInfo();
 
       switch (redPhoneService.getState()) {
-      case STATE_IDLE:      callScreen.reset();                         break;
-      case STATE_RINGING:   handleIncomingCall(personInfo.getNumber()); break;
-      case STATE_DIALING:   handleOutgoingCall(personInfo.getNumber()); break;
-      case STATE_ANSWERING: handleAnswerCall();                         break;
-      case STATE_CONNECTED: handleCallConnected("XXXX");                break;
+      case STATE_IDLE:      callScreen.reset();                                       break;
+      case STATE_RINGING:   handleIncomingCall(personInfo.getNumber());               break;
+      case STATE_DIALING:   handleOutgoingCall(personInfo.getNumber());               break;
+      case STATE_ANSWERING: handleAnswerCall();                                       break;
+      case STATE_CONNECTED: handleCallConnected(redPhoneService.getCurrentCallSAS()); break;
       }
     }
 

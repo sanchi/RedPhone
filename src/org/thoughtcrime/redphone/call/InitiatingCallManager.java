@@ -21,7 +21,6 @@ import android.content.Context;
 import android.util.Log;
 
 import org.thoughtcrime.redphone.Release;
-import org.thoughtcrime.redphone.audio.AudioException;
 import org.thoughtcrime.redphone.crypto.SecureRtpSocket;
 import org.thoughtcrime.redphone.crypto.zrtp.MasterSecret;
 import org.thoughtcrime.redphone.crypto.zrtp.ZRTPInitiatorSocket;
@@ -88,7 +87,7 @@ public class InitiatingCallManager extends CallManager {
 
       secureSocket  = new SecureRtpSocket(new RtpSocket(callStateListener, localPort, remoteAddress));
 
-      zrtpSocket    = new ZRTPInitiatorSocket(callStateListener, secureSocket, zid);
+      zrtpSocket    = new ZRTPInitiatorSocket(secureSocket, zid);
 
       processSignals();
 

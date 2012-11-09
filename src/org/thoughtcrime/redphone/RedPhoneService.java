@@ -294,6 +294,13 @@ public class RedPhoneService extends Service implements CallStateListener, CallS
     return state;
   }
 
+  public String getCurrentCallSAS() {
+    if (currentCallManager != null)
+      return currentCallManager.getSAS();
+    else
+      return null;
+  }
+
   public PersonInfo getRemotePersonInfo() {
     return PersonInfo.getInstance(this, remoteNumber);
   }

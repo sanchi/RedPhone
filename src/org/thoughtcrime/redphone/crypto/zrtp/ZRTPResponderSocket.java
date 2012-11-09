@@ -17,7 +17,6 @@
 
 package org.thoughtcrime.redphone.crypto.zrtp;
 
-import org.thoughtcrime.redphone.call.CallStateListener;
 import org.thoughtcrime.redphone.crypto.SecureRtpSocket;
 
 /**
@@ -39,8 +38,8 @@ public class ZRTPResponderSocket extends ZRTPSocket {
 
   private final byte[] zid;
 
-  public ZRTPResponderSocket(CallStateListener callStateListener, SecureRtpSocket socket, byte[] zid) {
-    super(callStateListener, socket, EXPECTING_HELLO);
+  public ZRTPResponderSocket(SecureRtpSocket socket, byte[] zid) {
+    super(socket, EXPECTING_HELLO);
     this.zid        = zid;
     this.localHello = new HelloPacket(hashChain, zid);
   }
@@ -136,9 +135,9 @@ public class ZRTPResponderSocket extends ZRTPSocket {
   }
 
   @Override
-  public void negotiate() throws NegotiationFailedException {
+  public void negotiateStart() throws NegotiationFailedException {
     sendFreshPacket(localHello);
-    super.negotiate();
+    super.negotiateStart();
   }
 
   @Override
