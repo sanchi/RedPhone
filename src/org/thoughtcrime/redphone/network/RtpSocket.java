@@ -36,24 +36,14 @@ import java.net.SocketTimeoutException;
  * @author Stuart O. Anderson
  */
 public class RtpSocket {
-
-  private final CallStateListener callStateListener;
-
   private final byte [] buf = new byte[4096];
   protected DatagramSocket socket;
 
-  public RtpSocket(CallStateListener callStateListener, int localPort, InetSocketAddress remoteAddress) {
-    this.callStateListener = callStateListener;
-
-    try {
-      socket = new DatagramSocket(localPort);
-      socket.setSoTimeout(1);
-      socket.connect(new InetSocketAddress(remoteAddress.getAddress().getHostAddress(), remoteAddress.getPort()));
-      Log.d( "RtpSocket", "Connected to: " + remoteAddress.getAddress().getHostAddress() );
-    } catch (SocketException e) {
-      e.printStackTrace();
-      // XXX-S It seems like this should do something?
-    }
+  public RtpSocket(int localPort, InetSocketAddress remoteAddress) throws SocketException {
+    socket = new DatagramSocket(localPort);
+    socket.setSoTimeout(1);
+    socket.connect(new InetSocketAddress(remoteAddress.getAddress().getHostAddress(), remoteAddress.getPort()));
+    Log.d( "RtpSocket", "Connected to: " + remoteAddress.getAddress().getHostAddress() );
   }
 
   public void setTimeout(int timeoutMillis) {
@@ -82,7 +72,7 @@ public class RtpSocket {
     }
   }
 
-  public RtpPacket receive() {
+  public RtpPacket receive() throws IOException {
     try {
       DatagramPacket dataPack = new DatagramPacket(buf, buf.length);
       socket.setSoTimeout(1);
@@ -90,15 +80,7 @@ public class RtpSocket {
       RtpPacket inPacket = new RtpPacket(dataPack.getData(), dataPack.getLength());
       return inPacket;
     } catch( SocketTimeoutException e ) {
-      return null;
-    } catch (SocketException e) {
-      // XXX-S I don't think this should be reaching back up the stack from this level.
-      // Instead, it seems like this should be throwing IOException/SocketException up
-      // the stack to CallAudioManager or wherever, which should handle reaching back up
-      // from that point in the stack.
-      callStateListener.notifyCallDisconnected();
-    } catch (IOException e) {
-      callStateListener.notifyCallDisconnected();
+      //Do Nothing.
     }
     return null;
   }

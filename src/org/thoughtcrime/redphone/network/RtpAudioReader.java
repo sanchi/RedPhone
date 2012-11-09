@@ -26,6 +26,7 @@ import org.thoughtcrime.redphone.profiling.PacketLogger;
 import org.thoughtcrime.redphone.profiling.PeriodicTimer;
 import org.thoughtcrime.redphone.profiling.TimeProfiler;
 
+import java.io.IOException;
 import java.util.List;
 /**
  * RtpAudioReader listens to a {@link SecureRtpSocket} and writes the incoming {@link EncodedAudioData} to
@@ -51,7 +52,7 @@ public class RtpAudioReader {
 
   private int consecutiveReads = 0;
   private int totalReads = 0;
-  public void go() {
+  public void go() throws IOException {
     //if( !recvTimer.periodically()) return;
 
     SecureRtpPacket inPacket = socket.receive();

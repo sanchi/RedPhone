@@ -35,6 +35,7 @@ import org.thoughtcrime.redphone.signaling.SignalingException;
 import org.thoughtcrime.redphone.signaling.SignalingSocket;
 
 import java.net.InetSocketAddress;
+import java.net.SocketException;
 
 /**
  * CallManager responsible for coordinating incoming calls.
@@ -87,7 +88,7 @@ public class ResponderCallManager extends CallManager {
       InetSocketAddress remoteAddress = new InetSocketAddress(sessionDescriptor.getFullServerName(),
                                                               sessionDescriptor.relayPort);
 
-      secureSocket  = new SecureRtpSocket(new RtpSocket(callStateListener, localPort, remoteAddress));
+      secureSocket  = new SecureRtpSocket(new RtpSocket(localPort, remoteAddress));
       zrtpSocket    = new ZRTPResponderSocket(secureSocket, zid);
 
       callStateListener.notifyConnectingtoInitiator();
@@ -105,6 +106,9 @@ public class ResponderCallManager extends CallManager {
     } catch (LoginFailedException lfe) {
       Log.w("ResponderCallManager", lfe);
       callStateListener.notifyLoginFailed();
+    } catch (SocketException e) {
+      Log.w("ResponderCallManager", e);
+      callStateListener.notifyClientFailure();
     } catch( RuntimeException e ) {
       Log.e( "ResponderCallManager", "Died unhandled with exception!");
       Log.w( "ResponderCallManager", e );
