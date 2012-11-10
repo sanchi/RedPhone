@@ -37,7 +37,7 @@ import java.net.SocketTimeoutException;
  */
 public class RtpSocket {
   private final byte [] buf = new byte[4096];
-  protected DatagramSocket socket;
+  private DatagramSocket socket;
 
   public RtpSocket(int localPort, InetSocketAddress remoteAddress) throws SocketException {
     socket = new DatagramSocket(localPort);
