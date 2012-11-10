@@ -19,12 +19,10 @@ package org.thoughtcrime.redphone.call;
 
 import android.content.Context;
 import android.util.Log;
-
 import org.thoughtcrime.redphone.Release;
 import org.thoughtcrime.redphone.crypto.SecureRtpSocket;
 import org.thoughtcrime.redphone.crypto.zrtp.MasterSecret;
 import org.thoughtcrime.redphone.crypto.zrtp.ZRTPInitiatorSocket;
-import org.thoughtcrime.redphone.network.LowLatencySocketConnector;
 import org.thoughtcrime.redphone.network.RtpSocket;
 import org.thoughtcrime.redphone.signaling.LoginFailedException;
 import org.thoughtcrime.redphone.signaling.NetworkConnector;
