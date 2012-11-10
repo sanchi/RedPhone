@@ -18,6 +18,7 @@ public class LockManager {
   private final PowerManager.WakeLock fullLock;
   private final PowerManager.WakeLock partialLock;
   private final KeyguardManager.KeyguardLock keyGuardLock;
+  private final KeyguardManager km;
   private final WifiManager.WifiLock wifiLock;
 
   private boolean keyguardDisabled;
@@ -42,7 +43,7 @@ public class LockManager {
     fullLock = pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "RedPhone Full");
     partialLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "RedPhone Partial");
 
-    KeyguardManager km = (KeyguardManager) context.getSystemService(Context.KEYGUARD_SERVICE);
+    km = (KeyguardManager) context.getSystemService(Context.KEYGUARD_SERVICE);
     keyGuardLock = km.newKeyguardLock("RedPhone KeyGuard");
 
     WifiManager wm = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
@@ -99,8 +100,10 @@ public class LockManager {
   }
 
   private void disableKeyguard() {
-    keyGuardLock.disableKeyguard();
-    keyguardDisabled = true;
+    if(km.isKeyguardLocked()) {
+      keyGuardLock.disableKeyguard();
+      keyguardDisabled = true;
+    }
   }
 
   private void maybeEnableKeyguard() {
