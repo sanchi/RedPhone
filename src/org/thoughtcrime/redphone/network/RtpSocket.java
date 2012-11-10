@@ -81,6 +81,10 @@ public class RtpSocket {
       return inPacket;
     } catch( SocketTimeoutException e ) {
       //Do Nothing.
+    } catch (IOException e) {
+      if (!socket.isClosed()) {
+        throw e;
+      }
     }
     return null;
   }
