@@ -25,11 +25,15 @@ public class LockManager {
   private final WifiManager.WifiLock wifiLock;
 
   private final Method wakelockParameterizedRelease;
+  private final AccelerometerListener accelerometerListener;
 
   private boolean keyguardDisabled;
 
   private static final int PROXIMITY_SCREEN_OFF_WAKE_LOCK = 32;
   private static final int WAIT_FOR_PROXIMITY_NEGATIVE = 1;
+
+  private PhoneState phoneState = PhoneState.IDLE;
+  private int orientation = AccelerometerListener.ORIENTATION_UNKNOWN;
 
   public enum PhoneState {
     IDLE,
@@ -42,7 +46,7 @@ public class LockManager {
     FULL,
     PARTIAL,
     SLEEP,
-    IN_CALL
+    PROXIMITY
   }
 
   public LockManager(Context context) {
@@ -53,13 +57,7 @@ public class LockManager {
     partialLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "RedPhone Partial");
     proximityLock = pm.newWakeLock(PROXIMITY_SCREEN_OFF_WAKE_LOCK, "RedPhone Incall");
 
-    Method maybeRelease = null;
-    try {
-      maybeRelease = proximityLock.getClass().getDeclaredMethod("release", Integer.TYPE);
-    } catch (NoSuchMethodException e) {
-      Log.d("LockManager", "Parameterized WakeLock release not available on this device.");
-    }
-    wakelockParameterizedRelease = maybeRelease;
+    wakelockParameterizedRelease = getWakelockParamterizedReleaseMethod();
 
     km = (KeyguardManager) context.getSystemService(Context.KEYGUARD_SERVICE);
     keyGuardLock = km.newKeyguardLock("RedPhone KeyGuard");
@@ -69,33 +67,64 @@ public class LockManager {
 
     fullLock.setReferenceCounted(false);
     partialLock.setReferenceCounted(false);
-    proximityLock.setReferenceCounted(false);
+    proximityLock.setReferenceCounted(false);//This appears to have no effect on JB
     wifiLock.setReferenceCounted(false);
+
+    accelerometerListener = new AccelerometerListener(context, new AccelerometerListener.OrientationListener() {
+      @Override
+      public void orientationChanged(int newOrientation) {
+        orientation = newOrientation;
+        Log.d("LockManager", "Orentation Update: " + newOrientation);
+        updateInCallLockState();
+      }
+    });
+  }
+
+  private void updateInCallLockState() {
+    boolean horizontal = orientation == AccelerometerListener.ORIENTATION_HORIZONTAL;
+    if (phoneState == PhoneState.IN_CALL && !horizontal) {
+      setLockState(LockState.PROXIMITY);
+    } else {
+      setLockState(LockState.PARTIAL);
+    }
+  }
+
+  private Method getWakelockParamterizedReleaseMethod() {
+    try {
+      return proximityLock.getClass().getDeclaredMethod("release", Integer.TYPE);
+    } catch (NoSuchMethodException e) {
+      Log.d("LockManager", "Parameterized WakeLock release not available on this device.");
+    }
+    return null;
   }
 
   public void updatePhoneState(PhoneState state) {
+    phoneState = state;
     switch(state) {
       case IDLE:
         setLockState(LockState.SLEEP);
+        accelerometerListener.enable(false);
         maybeEnableKeyguard();
         break;
       case PROCESSING:
         setLockState(LockState.PARTIAL);
+        accelerometerListener.enable(false);
         maybeEnableKeyguard();
         break;
       case INTERACTIVE:
         setLockState(LockState.FULL);
+        accelerometerListener.enable(false);
         disableKeyguard();
         break;
       case IN_CALL:
-        //TODO(Stuart Anderson): Use proximity wake mode during calls.
-        setLockState(LockState.IN_CALL);
+        accelerometerListener.enable(true);
+        updateInCallLockState();
         disableKeyguard();
         break;
     }
   }
 
-  private void setLockState(LockState newState) {
+  private synchronized void setLockState(LockState newState) {
     switch(newState) {
       case FULL:
         fullLock.acquire();
@@ -115,9 +144,11 @@ public class LockManager {
         wifiLock.release();
         releaseProximityLock();
         break;
-      case IN_CALL:
+      case PROXIMITY:
         partialLock.acquire();
-        proximityLock.acquire();
+        if (!proximityLock.isHeld()) {
+          proximityLock.acquire();
+        }
         wifiLock.acquire();
         fullLock.release();
         break;
@@ -128,6 +159,9 @@ public class LockManager {
   }
 
   private void releaseProximityLock() {
+    if (!proximityLock.isHeld()) {
+      return;
+    }
     boolean released = false;
     if (wakelockParameterizedRelease != null) {
       try {
@@ -143,6 +177,7 @@ public class LockManager {
     if(!released) {
       proximityLock.release();
     }
+    Log.d("LockManager", "Released proximity lock:" + proximityLock.isHeld());
   }
 
   private void disableKeyguard() {
