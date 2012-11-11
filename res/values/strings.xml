@@ -60,6 +60,10 @@
     <string name="ContactsListActivity_loading">Loading...</string>
     <string name="ContactsListActivity_no_contacts_found">No contacts found.</string>    
     
+    <string name="NotificationBarManager_redphone_call_in_progress">RedPhone call in progress</string>
+    <string name="NotificationBarManager_missed_redphone_call_from_s">Missed RedPhone call from %s</string>
+    <string name="NotificationBarManager_missed_redphone_call">Missed RedPhone call</string>
+    
     <string name="QualityReporting_would_you_like_to_send_diagnostic_information_about_this_call_to_whisper_systems">Would you like to send diagnostic information about this call to Whisper Systems?</string>
     <string name="QualityReporting_never">Never</string>
     <string name="QualityReporting_send_diagnostics">Send Diagnostics?</string>
@@ -71,9 +75,7 @@
     <string name="RedPhoneChooser_this_contact_also_uses_redphone_would_you_like_to_upgrade_to_a_secure_call">This contact also uses RedPhone. Would you like to upgrade to a secure call?</string>
     <string name="RedPhoneChooser_secure_call">Secure Call</string>
     <string name="RedPhoneChooser_insecure_call">Insecure Call</string>
-    
-    <string name="StatusBarManager_redphone_call_in_progress">RedPhone Call In Progress</string>
-    
+        
     <string name="about_activity__additional_information">Additional information:</string>
     <string name="about_activity__attribution">Attribution:</string>
     <string name="about_activity__aboutText">Please see whispersystems.org for additional information, or contact support@whispersystems.org with problems, questions, or comments.</string>
