@@ -119,7 +119,7 @@ public abstract class CallManager extends Thread {
       callStateListener.notifyClientError(e.getClientMessage());
     } catch (IOException e) {
       Log.w("CallManager", e);
-      callStateListener.notifyClientFailure();
+      callStateListener.notifyCallDisconnected();
     }
   }
 

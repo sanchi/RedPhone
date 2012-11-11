@@ -57,12 +57,14 @@ public class RtpSocket {
   private long totalSendTime = 0;
   private PeriodicTimer pt = new PeriodicTimer(10000);
 
-  public void send(RtpPacket outPacket) {
+  public void send(RtpPacket outPacket) throws IOException {
     long start = SystemClock.uptimeMillis();
     try {
       socket.send(new DatagramPacket(outPacket.getPacket(), outPacket.getPacketLength()));
     } catch (IOException e) {
-      Log.w("RtpSocket", e);
+      if (!socket.isClosed()) {
+        throw new IOException(e);
+      }
     }
     long stop = SystemClock.uptimeMillis();
     totalSendTime += stop - start;
@@ -83,7 +85,7 @@ public class RtpSocket {
       //Do Nothing.
     } catch (IOException e) {
       if (!socket.isClosed()) {
-        throw e;
+        throw new IOException(e);
       }
     }
     return null;

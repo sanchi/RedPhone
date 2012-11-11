@@ -170,7 +170,11 @@ public abstract class ZRTPSocket {
 
     if (packet != null) {
       packet.setSequenceNumber(this.sequence++);
-      socket.send(packet);
+      try {
+        socket.send(packet);
+      } catch (IOException e) {
+        Log.w("ZRTPSocket", e);
+      }
     }
   }
 

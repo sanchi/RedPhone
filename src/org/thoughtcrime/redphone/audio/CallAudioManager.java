@@ -79,6 +79,15 @@ public class CallAudioManager {
   }
 
   public void run() throws AudioException, IOException {
+    try {
+      doRun();
+    } finally {
+      doTerminate();
+    }
+  }
+
+  //TODO(Stuart Anderson): Split this up
+  private void doRun() throws AudioException, IOException {
     synchronized(this) {
       if( callDone ) return;
       runStarted = true;
@@ -181,7 +190,6 @@ public class CallAudioManager {
       }
 
     }
-    doTerminate();
   }
 
   private void doTerminate() {
