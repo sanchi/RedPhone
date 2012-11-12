@@ -46,7 +46,8 @@ import org.thoughtcrime.redphone.directory.DirectoryUpdateReceiver;
 
 public class DialerActivity extends SherlockFragmentActivity {
 
-  public static final int MISSED_CALL = 1;
+  public static final int    MISSED_CALL     = 1;
+  public static final String CALL_LOG_ACTION = "org.thoughtcrime.redphone.ui.DialerActivity";
 
   @Override
   protected void onCreate(Bundle icicle) {
@@ -64,6 +65,22 @@ public class DialerActivity extends SherlockFragmentActivity {
     setupContactsTab();
     setupCallLogTab();
     setupFavoritesTab();
+  }
+
+  @Override
+  public void onNewIntent(Intent intent) {
+    setIntent(intent);
+  }
+
+  @Override
+  protected void onResume() {
+    super.onResume();
+    if (getIntent().getAction() != null &&
+        getIntent().getAction().equals(CALL_LOG_ACTION))
+    {
+      getIntent().setAction(null);
+      getSupportActionBar().setSelectedNavigationItem(1);
+    }
   }
 
   private ActionBar.Tab constructTab(final Fragment fragment) {
