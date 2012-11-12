@@ -63,7 +63,8 @@ public class NotificationBarManager {
   }
 
   public static void notifyMissedCall(Context context, String remoteNumber) {
-    Intent intent              = new Intent(context, DialerActivity.class);
+    Intent intent              = new Intent(DialerActivity.CALL_LOG_ACTION, null,
+                                            context, DialerActivity.class);
     PendingIntent launchIntent = PendingIntent.getActivity(context, 0, intent, 0);
     PersonInfo remoteInfo      = PersonInfo.getInstance(context, remoteNumber);
 
