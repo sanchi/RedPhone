@@ -76,7 +76,7 @@ public class DialerActivity extends SherlockFragmentActivity {
         FragmentManager manager = DialerActivity.this.getSupportFragmentManager();
         FragmentTransaction ft  = manager.beginTransaction();
 
-        ft.add(R.id.fragment_container, fragment);
+        ft.replace(R.id.fragment_container, fragment);
         ft.commit();
       }
 
@@ -134,10 +134,6 @@ public class DialerActivity extends SherlockFragmentActivity {
     }
 
     DirectoryUpdateReceiver.scheduleDirectoryUpdate(this);
-  }
-
-
-  public void onTabChanged(String tabId) {
   }
 
   @Override
