@@ -24,7 +24,6 @@ public class LockManager {
 
   private boolean keyguardDisabled;
 
-  private PhoneState phoneState = PhoneState.IDLE;
   private int orientation = AccelerometerListener.ORIENTATION_UNKNOWN;
 
   public enum PhoneState {
@@ -76,7 +75,6 @@ public class LockManager {
   }
 
   public void updatePhoneState(PhoneState state) {
-    phoneState = state;
     switch(state) {
       case IDLE:
         setLockState(LockState.SLEEP);
@@ -153,5 +151,4 @@ public class LockManager {
     }
     return true;
   }
-
 }

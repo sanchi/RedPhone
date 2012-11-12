@@ -108,6 +108,7 @@ public class RedPhoneService extends Service implements CallStateListener, CallS
     initializeApplicationContext();
     initializeAudio();
     initializePstnCallListener();
+    registerUncaughtExceptionHandler();
   }
 
   @Override
@@ -186,6 +187,16 @@ public class RedPhoneService extends Service implements CallStateListener, CallS
 
     this.statusBarManager = new StatusBarManager(this);
     this.lockManager      = new LockManager(this);
+  }
+
+  private void registerUncaughtExceptionHandler() {
+    Thread.currentThread().setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+      @Override
+      public void uncaughtException(Thread thread, Throwable throwable) {
+        Log.d(TAG, "Uncaught exception - releasing proximity lock", throwable);
+        lockManager.updatePhoneState(LockManager.PhoneState.IDLE);
+      }
+    });
   }
 
   /// Intent Handlers
