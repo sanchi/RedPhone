@@ -53,6 +53,7 @@ import org.thoughtcrime.redphone.ui.DialerActivity;
 import org.thoughtcrime.redphone.ui.StatusBarManager;
 import org.thoughtcrime.redphone.util.Base64;
 import org.thoughtcrime.redphone.util.CallLogger;
+import org.thoughtcrime.redphone.util.UncaughtExceptionHandlerManager;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
@@ -92,6 +93,7 @@ public class RedPhoneService extends Service implements CallStateListener, CallS
   private String password;
   private CallManager currentCallManager;
   private LockManager lockManager;
+  private UncaughtExceptionHandlerManager uncaughtExceptionHandlerManager;
 
   private StatusBarManager statusBarManager;
   private Handler handler;
@@ -190,7 +192,8 @@ public class RedPhoneService extends Service implements CallStateListener, CallS
   }
 
   private void registerUncaughtExceptionHandler() {
-    Thread.setDefaultUncaughtExceptionHandler(new ProximityLockRelease(lockManager));
+    uncaughtExceptionHandlerManager = new UncaughtExceptionHandlerManager();
+    uncaughtExceptionHandlerManager.registerHandler(new ProximityLockRelease(lockManager));
   }
 
   /// Intent Handlers
@@ -589,7 +592,6 @@ public class RedPhoneService extends Service implements CallStateListener, CallS
     public void uncaughtException(Thread thread, Throwable throwable) {
       Log.d(TAG, "Uncaught exception - releasing proximity lock", throwable);
       lockManager.updatePhoneState(LockManager.PhoneState.IDLE);
-      Thread.getDefaultUncaughtExceptionHandler().uncaughtException(thread, throwable);
     }
   }
 }
