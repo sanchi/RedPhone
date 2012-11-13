@@ -108,7 +108,7 @@ public class ResponderCallManager extends CallManager {
       callStateListener.notifyLoginFailed();
     } catch (SocketException e) {
       Log.w("ResponderCallManager", e);
-      callStateListener.notifyClientFailure();
+      callStateListener.notifyCallDisconnected();
     } catch( RuntimeException e ) {
       Log.e( "ResponderCallManager", "Died unhandled with exception!");
       Log.w( "ResponderCallManager", e );

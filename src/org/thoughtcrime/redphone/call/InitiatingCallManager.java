@@ -108,7 +108,7 @@ public class InitiatingCallManager extends CallManager {
       callStateListener.notifyServerFailure();
     } catch (SocketException e) {
       Log.w("InitiatingCallManager", e);
-      callStateListener.notifyClientFailure();
+      callStateListener.notifyCallDisconnected();
     } catch( RuntimeException e ) {
       Log.e( "InitiatingCallManager", "Died with unhandled exception!");
       Log.w( "InitiatingCallManager", e );
