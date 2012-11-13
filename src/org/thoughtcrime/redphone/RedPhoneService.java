@@ -190,13 +190,7 @@ public class RedPhoneService extends Service implements CallStateListener, CallS
   }
 
   private void registerUncaughtExceptionHandler() {
-    Thread.currentThread().setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
-      @Override
-      public void uncaughtException(Thread thread, Throwable throwable) {
-        Log.d(TAG, "Uncaught exception - releasing proximity lock", throwable);
-        lockManager.updatePhoneState(LockManager.PhoneState.IDLE);
-      }
-    });
+    Thread.setDefaultUncaughtExceptionHandler(new ProximityLockRelease(lockManager));
   }
 
   /// Intent Handlers
@@ -581,6 +575,21 @@ public class RedPhoneService extends Service implements CallStateListener, CallS
       default:
         Log.e(TAG, "Unhandled call state: " + state);
         return false;
+    }
+  }
+
+  private static class ProximityLockRelease implements Thread.UncaughtExceptionHandler {
+    private final LockManager lockManager;
+
+    private ProximityLockRelease(LockManager lockManager) {
+      this.lockManager = lockManager;
+    }
+
+    @Override
+    public void uncaughtException(Thread thread, Throwable throwable) {
+      Log.d(TAG, "Uncaught exception - releasing proximity lock", throwable);
+      lockManager.updatePhoneState(LockManager.PhoneState.IDLE);
+      Thread.getDefaultUncaughtExceptionHandler().uncaughtException(thread, throwable);
     }
   }
 }
