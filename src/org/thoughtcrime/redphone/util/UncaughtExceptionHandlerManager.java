@@ -9,7 +9,7 @@ import java.util.List;
  * Allows multiple default uncaught exception handlers to be registered
  *
  * Calls all registered handlers in reverse order of registration.
- * Errors in one handler do not prevent subsequence handlers from being called.
+ * Errors in one handler do not prevent subsequent handlers from being called.
  */
 public class UncaughtExceptionHandlerManager implements Thread.UncaughtExceptionHandler {
   private final List<Thread.UncaughtExceptionHandler> handlers = new ArrayList<Thread.UncaughtExceptionHandler>();
