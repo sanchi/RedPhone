@@ -12,15 +12,21 @@ import java.util.List;
  * Errors in one handler do not prevent subsequent handlers from being called.
  */
 public class UncaughtExceptionHandlerManager implements Thread.UncaughtExceptionHandler {
+  private final Thread.UncaughtExceptionHandler originalHandler;
   private final List<Thread.UncaughtExceptionHandler> handlers = new ArrayList<Thread.UncaughtExceptionHandler>();
 
   public UncaughtExceptionHandlerManager() {
-    registerHandler(Thread.getDefaultUncaughtExceptionHandler());
+    originalHandler = Thread.getDefaultUncaughtExceptionHandler();
+    registerHandler(originalHandler);
     Thread.setDefaultUncaughtExceptionHandler(this);
   }
 
   public void registerHandler(Thread.UncaughtExceptionHandler handler) {
     handlers.add(handler);
+  }
+
+  public void unregister() {
+    Thread.setDefaultUncaughtExceptionHandler(originalHandler);
   }
 
   @Override

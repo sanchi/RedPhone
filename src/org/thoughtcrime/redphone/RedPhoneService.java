@@ -129,6 +129,7 @@ public class RedPhoneService extends Service implements CallStateListener, CallS
   public void onDestroy() {
     super.onDestroy();
     unregisterReceiver(pstnCallListener);
+    uncaughtExceptionHandlerManager.unregister();
     statusBarManager.setCallEnded();
   }
 
