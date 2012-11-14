@@ -83,8 +83,10 @@ public class NumberFilter {
     try {
       FileInputStream fis         = context.openFileInput(DIRECTORY_FILE);
       NumberFilterStorage storage = NumberFilterStorage.fromStream(fis);
-      return new NumberFilter(new BloomFilter(Base64.decode(storage.getFilterData()),
-                                              storage.getHashCount()));
+
+      if (storage == null) return new NumberFilter(null);
+      else                 return new NumberFilter(new BloomFilter(Base64.decode(storage.getFilterData()),
+                                                                   storage.getHashCount()));
     } catch (IOException ioe) {
       Log.w("NumberFilter", ioe);
       return new NumberFilter(null);
