@@ -1,11 +1,8 @@
 package org.thoughtcrime.redphone.util;
 
-import java.net.URI;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.net.Uri;
-import android.nfc.Tag;
 import android.provider.CallLog.Calls;
 import android.util.Log;
 
@@ -69,7 +66,9 @@ public class CallLogger {
       int duration = (int)((System.currentTimeMillis() - startTimeMillis)/1000);
       ContentValues values = new ContentValues();
       values.put(Calls.DURATION, duration);
-      context.getContentResolver().update(uri, values, null, null);
+      if (uri != null) {
+        context.getContentResolver().update(uri, values, null, null);
+      }
     }
   }
 }
