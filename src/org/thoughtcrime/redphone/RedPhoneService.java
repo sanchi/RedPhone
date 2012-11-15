@@ -49,6 +49,7 @@ import org.thoughtcrime.redphone.ui.ApplicationPreferencesActivity;
 import org.thoughtcrime.redphone.ui.NotificationBarManager;
 import org.thoughtcrime.redphone.util.Base64;
 import org.thoughtcrime.redphone.util.CallLogger;
+import org.thoughtcrime.redphone.util.UncaughtExceptionHandlerManager;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
@@ -88,6 +89,7 @@ public class RedPhoneService extends Service implements CallStateListener, CallS
   private String password;
   private CallManager currentCallManager;
   private LockManager lockManager;
+  private UncaughtExceptionHandlerManager uncaughtExceptionHandlerManager;
 
   private Handler handler;
   private CallLogger.CallRecord currentCallRecord;
@@ -103,6 +105,7 @@ public class RedPhoneService extends Service implements CallStateListener, CallS
     initializeApplicationContext();
     initializeAudio();
     initializePstnCallListener();
+    registerUncaughtExceptionHandler();
   }
 
   @Override
@@ -122,6 +125,7 @@ public class RedPhoneService extends Service implements CallStateListener, CallS
     super.onDestroy();
     unregisterReceiver(pstnCallListener);
     NotificationBarManager.setCallEnded(this);
+    uncaughtExceptionHandlerManager.unregister();
   }
 
   private synchronized void onIntentReceived(Intent intent) {
@@ -180,6 +184,11 @@ public class RedPhoneService extends Service implements CallStateListener, CallS
     this.password         = preferences.getString("Password", "NO_SAVED_PASSWORD!");
 
     this.lockManager      = new LockManager(this);
+  }
+
+  private void registerUncaughtExceptionHandler() {
+    uncaughtExceptionHandlerManager = new UncaughtExceptionHandlerManager();
+    uncaughtExceptionHandlerManager.registerHandler(new ProximityLockRelease(lockManager));
   }
 
   /// Intent Handlers
@@ -566,6 +575,20 @@ public class RedPhoneService extends Service implements CallStateListener, CallS
       default:
         Log.e(TAG, "Unhandled call state: " + state);
         return false;
+    }
+  }
+
+  private static class ProximityLockRelease implements Thread.UncaughtExceptionHandler {
+    private final LockManager lockManager;
+
+    private ProximityLockRelease(LockManager lockManager) {
+      this.lockManager = lockManager;
+    }
+
+    @Override
+    public void uncaughtException(Thread thread, Throwable throwable) {
+      Log.d(TAG, "Uncaught exception - releasing proximity lock", throwable);
+      lockManager.updatePhoneState(LockManager.PhoneState.IDLE);
     }
   }
 }

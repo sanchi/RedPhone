@@ -3,10 +3,9 @@ package org.thoughtcrime.redphone.call;
 import android.app.KeyguardManager;
 import android.content.Context;
 import android.net.wifi.WifiManager;
-import android.nfc.Tag;
+import android.os.Build;
 import android.os.PowerManager;
 import android.util.Log;
-import org.thoughtcrime.redphone.RedPhone;
 
 /**
  * Maintains wake lock state.
@@ -14,14 +13,18 @@ import org.thoughtcrime.redphone.RedPhone;
  * @author Stuart O. Anderson
  */
 public class LockManager {
-  private final Context context;
   private final PowerManager.WakeLock fullLock;
   private final PowerManager.WakeLock partialLock;
   private final KeyguardManager.KeyguardLock keyGuardLock;
   private final KeyguardManager km;
   private final WifiManager.WifiLock wifiLock;
+  private final ProximityLock proximityLock;
+
+  private final AccelerometerListener accelerometerListener;
 
   private boolean keyguardDisabled;
+
+  private int orientation = AccelerometerListener.ORIENTATION_UNKNOWN;
 
   public enum PhoneState {
     IDLE,
@@ -33,15 +36,15 @@ public class LockManager {
   private enum LockState {
     FULL,
     PARTIAL,
-    SLEEP
+    SLEEP,
+    PROXIMITY
   }
 
   public LockManager(Context context) {
-    this.context = context.getApplicationContext();
-
     PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
     fullLock = pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "RedPhone Full");
     partialLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "RedPhone Partial");
+    proximityLock = new ProximityLock(pm);
 
     km = (KeyguardManager) context.getSystemService(Context.KEYGUARD_SERVICE);
     keyGuardLock = km.newKeyguardLock("RedPhone KeyGuard");
@@ -52,46 +55,75 @@ public class LockManager {
     fullLock.setReferenceCounted(false);
     partialLock.setReferenceCounted(false);
     wifiLock.setReferenceCounted(false);
+
+    accelerometerListener = new AccelerometerListener(context, new AccelerometerListener.OrientationListener() {
+      @Override
+      public void orientationChanged(int newOrientation) {
+        orientation = newOrientation;
+        Log.d("LockManager", "Orentation Update: " + newOrientation);
+        updateInCallLockState();
+      }
+    });
+  }
+
+  private void updateInCallLockState() {
+    if (orientation != AccelerometerListener.ORIENTATION_HORIZONTAL) {
+      setLockState(LockState.PROXIMITY);
+    } else {
+      setLockState(LockState.PARTIAL);
+    }
   }
 
   public void updatePhoneState(PhoneState state) {
     switch(state) {
       case IDLE:
         setLockState(LockState.SLEEP);
+        accelerometerListener.enable(false);
         maybeEnableKeyguard();
         break;
       case PROCESSING:
         setLockState(LockState.PARTIAL);
+        accelerometerListener.enable(false);
         maybeEnableKeyguard();
         break;
       case INTERACTIVE:
         setLockState(LockState.FULL);
+        accelerometerListener.enable(false);
         disableKeyguard();
         break;
       case IN_CALL:
-        //TODO(Stuart Anderson): Use proximity wake mode during calls.
-        setLockState(LockState.PARTIAL);
+        accelerometerListener.enable(true);
+        updateInCallLockState();
         disableKeyguard();
         break;
     }
   }
 
-  private void setLockState(LockState newState) {
+  private synchronized void setLockState(LockState newState) {
     switch(newState) {
       case FULL:
         fullLock.acquire();
         partialLock.acquire();
         wifiLock.acquire();
+        proximityLock.release();
         break;
       case PARTIAL:
         partialLock.acquire();
         wifiLock.acquire();
         fullLock.release();
+        proximityLock.release();
         break;
       case SLEEP:
         fullLock.release();
         partialLock.release();
         wifiLock.release();
+        proximityLock.release();
+        break;
+      case PROXIMITY:
+        partialLock.acquire();
+        proximityLock.acquire();
+        wifiLock.acquire();
+        fullLock.release();
         break;
       default:
         throw new IllegalArgumentException("Unhandled Mode: " + newState);
@@ -100,7 +132,7 @@ public class LockManager {
   }
 
   private void disableKeyguard() {
-    if(km.isKeyguardLocked()) {
+    if(keyguardLocked()) {
       keyGuardLock.disableKeyguard();
       keyguardDisabled = true;
     }
@@ -111,5 +143,12 @@ public class LockManager {
       keyGuardLock.reenableKeyguard();
       keyguardDisabled = false;
     }
+  }
+
+  private boolean keyguardLocked() {
+    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+      return km.isKeyguardLocked();
+    }
+    return true;
   }
 }
