@@ -233,7 +233,6 @@ public class CreateAccountActivity extends SherlockActivity implements Runnable 
   }
 
   private synchronized void setChallenge(String challenge) {
-    Log.w("CreateAccountActivity", "Setting challenge: " + challenge);
     this.challenge = challenge;
     notifyAll();
   }

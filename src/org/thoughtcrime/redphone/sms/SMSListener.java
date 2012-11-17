@@ -46,7 +46,7 @@ public class SMSListener extends BroadcastReceiver {
 
   private void checkForIncomingCallSMS(Context context, String[] messages) {
     IncomingCallDetails call = SMSProcessor.checkMessagesForInitiate(context, messages);
-    Log.w("SMSListener", "Incoming call details: " + call);
+
     if (call == null) return;
 
     if(isOrderedBroadcast()) {
