@@ -57,9 +57,10 @@ public class NumberFilter {
   }
 
   public boolean containsNumber(Context context, String number) {
-    if (bloomFilter == null) return false;
-    else 					           return bloomFilter.contains(PhoneNumberFormatter.formatNumber(context,
-                                                                                           number));
+    if      (bloomFilter == null)                    return false;
+    else if (number == null || number.length() == 0) return false;
+
+    return bloomFilter.contains(PhoneNumberFormatter.formatNumber(context, number));
   }
 
   public void serializeToFile(Context context) {
