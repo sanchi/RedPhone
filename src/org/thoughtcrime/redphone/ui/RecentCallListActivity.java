@@ -176,9 +176,20 @@ public class RecentCallListActivity extends SherlockListFragment
 
   @Override
   public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
+    // NOTE: To fix a weird bug:
+    // http://stackoverflow.com/questions/11810547/runtimeexception-at-calllog-calls
+    String[] projection = {
+        Calls._ID,
+        Calls.CACHED_NAME,
+        Calls.CACHED_NUMBER_LABEL,
+        Calls.NUMBER,
+        Calls.TYPE,
+        Calls.DATE
+    };
+
     ((TextView)getListView().getEmptyView()).setText(R.string.RecentCallListActivity_loading);
     return new CursorLoader(getActivity(), Calls.CONTENT_URI,
-                            null, null, null, Calls.DEFAULT_SORT_ORDER);
+                            projection, null, null, Calls.DEFAULT_SORT_ORDER);
   }
 
   @Override
