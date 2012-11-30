@@ -207,6 +207,9 @@ public class RedPhoneService extends Service implements CallStateListener, CallS
   private void handleOutgoingCall(Intent intent) {
     remoteNumber = extractRemoteNumber(intent);
 
+    if (remoteNumber == null || remoteNumber.length() == 0)
+      return;
+
     sendMessage(RedPhone.HANDLE_OUTGOING_CALL, remoteNumber);
 
     state = RedPhone.STATE_DIALING;
