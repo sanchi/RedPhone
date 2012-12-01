@@ -5,7 +5,9 @@ import android.content.Context;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.PowerManager;
+import android.provider.Settings;
 import android.util.Log;
+import org.thoughtcrime.redphone.Release;
 
 /**
  * Maintains wake lock state.
@@ -21,6 +23,7 @@ public class LockManager {
   private final ProximityLock proximityLock;
 
   private final AccelerometerListener accelerometerListener;
+  private final boolean wifiLockEnforced;
 
   private boolean keyguardDisabled;
 
@@ -64,13 +67,27 @@ public class LockManager {
         updateInCallLockState();
       }
     });
+
+    wifiLockEnforced = isWifiPowerActiveModeEnabled(context);
+  }
+
+  private boolean isWifiPowerActiveModeEnabled(Context context) {
+    int wifi_pwr_active_mode = Settings.Secure.getInt(context.getContentResolver(), "wifi_pwr_active_mode", -1);
+    Log.d("LockManager", "Wifi Activity Policy: " + wifi_pwr_active_mode);
+
+    if (wifi_pwr_active_mode == 0) {
+      return false;
+    }
+
+    return true;
   }
 
   private void updateInCallLockState() {
-    if (orientation != AccelerometerListener.ORIENTATION_HORIZONTAL) {
+    if (orientation != AccelerometerListener.ORIENTATION_HORIZONTAL
+      && wifiLockEnforced) {
       setLockState(LockState.PROXIMITY);
     } else {
-      setLockState(LockState.PARTIAL);
+      setLockState(LockState.FULL);
     }
   }
 
