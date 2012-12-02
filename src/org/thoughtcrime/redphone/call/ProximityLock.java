@@ -24,14 +24,14 @@ class ProximityLock {
   }
 
   private PowerManager.WakeLock maybeGetProximityLock(PowerManager pm) {
-    try {
+    /*try {
       PowerManager.WakeLock lock = pm.newWakeLock(PROXIMITY_SCREEN_OFF_WAKE_LOCK, "RedPhone Incall");
       if (lock != null) {
         return lock;
       }
     } catch (Throwable t) {
       Log.e("LockManager", "Failed to create proximity lock", t);
-    }
+    }*/
     return null;
   }
 
