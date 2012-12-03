@@ -51,11 +51,11 @@
   <string name="QualityReporting_would_you_like_to_send_diagnostic_information_about_this_call_to_whisper_systems">Você gostaria de enviar informação de diagnóstico sobre esta chamada para Whisper Systems?</string>
   <string name="QualityReporting_never">Nunca</string>
   <string name="QualityReporting_send_diagnostics">Enviar Diagnóstico?</string>
+  <string name="RecentCallListActivity_empty_call_log">Log de chamadas vazio.</string>
   <string name="RedPhoneChooser_upgrade_to_redphone">Atualizar para RedPhone?</string>
   <string name="RedPhoneChooser_this_contact_also_uses_redphone_would_you_like_to_upgrade_to_a_secure_call">Este contato também utiliza RedPhone. Você gostaria de atualizar para uma chamada segura?</string>
   <string name="RedPhoneChooser_secure_call">Chamada Segura</string>
   <string name="RedPhoneChooser_insecure_call">Chamada não Segura</string>
-  <string name="StatusBarManager_redphone_call_in_progress">Chamada RedPhone em Progresso</string>
   <string name="about_activity__additional_information">Informações Adicionais</string>
   <string name="about_activity__attribution">Atribuição:</string>
   <string name="about_activity__aboutText">Por favor visite whispersystems.org para informações adicionais, ou contate support@whispersystems.org se tiver problemas, questões, ou comentários.</string>
@@ -66,10 +66,10 @@
   <string name="outbound_chooser__you_ve_initiated_a_call_with_a_contact_who_also_uses_redphone_would_you_like_to_upgrade_this_to_a_redphone_call">Você iniciou uma chamada com um contato que também usa RedPhone. Você gostaria de atualizar esta chamada para RedPhone?</string>
   <string name="outbound_chooser__secure_call">Chamada Segura</string>
   <string name="outbound_chooser__insecure_call">Chamada não Segura</string>
-  <string name="recent_calls__empty_call_log">Log de chamadas vazio.</string>
   <string name="about_menu__about">Sobre</string>
   <string name="contact_list_options_menu__search">Busca</string>
   <string name="dialer_options_menu__re_register">Recadastrar</string>
   <string name="dialer_options_menu__about">Sobre</string>
   <string name="dialer_options_menu__settings">Configurações</string>
+  <!--EOF-->
 </resources>
