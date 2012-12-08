@@ -18,24 +18,24 @@
 package org.thoughtcrime.redphone.ui;
 
 import android.app.ProgressDialog;
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.os.Build;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.CheckBoxPreference;
+import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockPreferenceActivity;
 import com.actionbarsherlock.view.MenuItem;
+import com.google.android.gcm.GCMRegistrar;
 
 import org.thoughtcrime.redphone.R;
 import org.thoughtcrime.redphone.Release;
 import org.thoughtcrime.redphone.audio.DeviceAudioSettings;
-import org.thoughtcrime.redphone.c2dm.C2DMRegistrationService;
+import org.thoughtcrime.redphone.signaling.SignalingException;
+import org.thoughtcrime.redphone.signaling.SignalingSocket;
 
 /**
  * Preferences menu Activity.
@@ -55,18 +55,19 @@ public class ApplicationPreferencesActivity extends SherlockPreferenceActivity {
   public static final String SIMULATE_PACKET_DROPS      = "pref_simulate_packet_loss";
   public static final String MINIMIZE_LATENCY           = "pref_min_latency";
   public static final String SINGLE_THREAD		          = "pref_singlethread";
-  public static final String USE_C2DM                   = "pref_use_c2dm";
+  public static final String USE_C2DM_LEGACY            = "pref_use_c2dm";
+  public static final String SIGNALING_METHOD           = "pref_signaling_method";
   public static final String AUDIO_TRACK_DES_LEVEL      = "pref_audio_track_des_buffer_level";
   public static final String CALL_STREAM_DES_LEVEL      = "pref_call_stream_des_buffer_level";
   public static final String ASK_DIAGNOSTIC_REPORTING   = "pref_ask_diagnostic_reporting";
   public static final String OPPORTUNISTIC_UPGRADE_PREF = "pref_prompt_upgrade";
 
   private ProgressDialog progressDialog;
-  private C2DMCompleteReceiver completeReceiver;
 
   @Override
   protected void onCreate(Bundle icicle) {
     super.onCreate(icicle);
+    initializeLegacyPreferencesMigration();
     addPreferencesFromResource(R.xml.preferences);
 
     getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -76,9 +77,8 @@ public class ApplicationPreferencesActivity extends SherlockPreferenceActivity {
       addPreferencesFromResource(R.xml.debug);
     }
 
-    initializeIntentFilters();
-    initializePreferenceDisplay();
     initializeListeners();
+    initializeDecorators();
   }
 
   @Override
@@ -87,9 +87,6 @@ public class ApplicationPreferencesActivity extends SherlockPreferenceActivity {
 
     if (progressDialog != null)
       progressDialog.dismiss();
-
-    if (completeReceiver != null)
-      unregisterReceiver(completeReceiver);
   }
 
   @Override
@@ -104,19 +101,38 @@ public class ApplicationPreferencesActivity extends SherlockPreferenceActivity {
   }
 
   private void initializeListeners() {
-    CheckBoxPreference c2dmPreference = (CheckBoxPreference)this.findPreference(USE_C2DM);
-    c2dmPreference.setOnPreferenceClickListener(new C2DMToggleListener());
+    final ListPreference signalingMethodPreference = (ListPreference)this.findPreference(SIGNALING_METHOD);
+    signalingMethodPreference.setOnPreferenceChangeListener(new GCMToggleListener());
+    signalingMethodPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+      @Override
+      public boolean onPreferenceClick(Preference preference) {
+        try {
+          GCMRegistrar.checkDevice(ApplicationPreferencesActivity.this);
+          signalingMethodPreference.setEntries(R.array.signaling_method_names);
+          signalingMethodPreference.setEntryValues(R.array.signaling_method_values);
+        } catch (UnsupportedOperationException uoe) {
+          signalingMethodPreference.setEntries(R.array.signaling_method_names_no_push);
+          signalingMethodPreference.setEntryValues(R.array.signaling_method_values_no_push);
+        }
+
+        return false;
+      }
+    });
   }
 
-  private void initializeIntentFilters() {
-    completeReceiver = new C2DMCompleteReceiver();
-    registerReceiver(completeReceiver,
-                     new IntentFilter(C2DMRegistrationService.C2DM_ACTION_COMPLETE));
+  private void initializeLegacyPreferencesMigration() {
+    if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean(USE_C2DM_LEGACY, false)) {
+      PreferenceManager.getDefaultSharedPreferences(this).edit()
+        .putString(SIGNALING_METHOD, "gcm")
+        .remove(USE_C2DM_LEGACY)
+        .commit();
+    }
   }
 
-  private void initializePreferenceDisplay() {
-    if (Build.VERSION.SDK_INT < 8)
-      ((CheckBoxPreference)findPreference(USE_C2DM)).setEnabled(false);
+  private void initializeDecorators() {
+    ListPreference signalingPreference = (ListPreference)this.findPreference(SIGNALING_METHOD);
+    signalingPreference.setTitle(getString(R.string.preferences__signaling_method) +
+                                 " (" + signalingPreference.getValue().toUpperCase() + ")");
   }
 
   public static boolean getPromptUpgradePreference(Context context) {
@@ -124,9 +140,8 @@ public class ApplicationPreferencesActivity extends SherlockPreferenceActivity {
            .getDefaultSharedPreferences(context).getBoolean(OPPORTUNISTIC_UPGRADE_PREF, true);
   }
 
-  public static void setC2dm(Context context, boolean enabled) {
-    PreferenceManager
-    .getDefaultSharedPreferences(context).edit().putBoolean(USE_C2DM, enabled).commit();
+  public static void setSignalingMethod(Context context, String value) {
+    PreferenceManager.getDefaultSharedPreferences(context).edit().putString(SIGNALING_METHOD, value);
   }
 
   public static void setAudioTrackDesBufferLevel( Context context, int level ) {
@@ -188,60 +203,62 @@ public class ApplicationPreferencesActivity extends SherlockPreferenceActivity {
     return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(SINGLE_THREAD, false);
   }
 
-  private class C2DMToggleListener implements Preference.OnPreferenceClickListener {
-    public boolean onPreferenceClick(Preference preference) {
-      boolean enabled = ((CheckBoxPreference)preference).isChecked();
-      ((CheckBoxPreference)preference).setChecked(!enabled);
 
-      progressDialog  = ProgressDialog.show(ApplicationPreferencesActivity.this,
-                                            getString(R.string.ApplicationPreferencesActivity_updating_signaling_method),
-                                            getString(R.string.ApplicationPreferencesActivity_changing_signaling_method_this_could_take_a_second),
-                                            true, false);
-
-      Intent intent = new Intent(ApplicationPreferencesActivity.this,
-                                 C2DMRegistrationService.class);
-
-      if (enabled) intent.setAction(C2DMRegistrationService.REGISTER_ACTION);
-      else         intent.setAction(C2DMRegistrationService.UNREGISTER_ACTION);
-
-      startService(intent);
-      return true;
-    }
-  }
-
-  private class C2DMCompleteReceiver extends BroadcastReceiver {
+  private class GCMToggleListener implements Preference.OnPreferenceChangeListener {
     @Override
-    public void onReceive(Context context, Intent intent) {
-      if (progressDialog != null)
-        progressDialog.dismiss();
+    public boolean onPreferenceChange(Preference preference, Object newValue) {
+      if (((ListPreference)preference).getValue().equals((String)newValue))
+        return false;
 
-      if (intent.getStringExtra("type").equals(C2DMRegistrationService.REGISTER_ACTION)) {
-        if (!intent.getBooleanExtra("success", false)) {
-          Toast.makeText(ApplicationPreferencesActivity.this,
-                         R.string.ApplicationPreferencesActivity_error_registering_with_c2dm_server,
-                         Toast.LENGTH_LONG).show();
-        } else {
-          ((CheckBoxPreference)findPreference(USE_C2DM)).setChecked(true);
+      new AsyncTask<String, Void, String>() {
+        @Override
+        protected void onPreExecute() {
+          progressDialog = ProgressDialog.show(ApplicationPreferencesActivity.this,
+                                               getString(R.string.ApplicationPreferencesActivity_updating_signaling_method),
+                                               getString(R.string.ApplicationPreferencesActivity_changing_signaling_method_this_could_take_a_second),
+                                               true, false);
         }
-      }
 
-      if (intent.getStringExtra("type").equals(C2DMRegistrationService.UNREGISTER_ACTION)) {
-        if (!intent.getBooleanExtra("success", false)) {
-          Toast.makeText(ApplicationPreferencesActivity.this,
-                         R.string.ApplicationPreferencesActivity_error_unregistering_with_c2dm_server,
-                         Toast.LENGTH_LONG).show();
-        } else {
-          ((CheckBoxPreference)findPreference(USE_C2DM)).setChecked(false);
+        @Override
+        protected String doInBackground(String... signalingPreference) {
+          for (int i=0;i<3;i++) {
+            try {
+              SignalingSocket signalingSocket = new SignalingSocket(ApplicationPreferencesActivity.this);
+              signalingSocket.registerSignalingPreference(signalingPreference[0]);
+              return signalingPreference[0];
+            } catch (SignalingException se) {
+              Log.w("ApplicationPreferencesActivity", se);
+            }
+          }
+
+          return null;
         }
-      }
 
-      if (intent.getStringExtra("type").equals(C2DMRegistrationService.ERROR_ACTION)) {
-        Toast.makeText(ApplicationPreferencesActivity.this,
-                       R.string.ApplicationPreferencesActivity_error_communicating_with_c2dm_server,
-                       Toast.LENGTH_LONG).show();
-      }
+        @Override
+        protected void onPostExecute(String result) {
+          if (progressDialog != null)
+            progressDialog.dismiss();
+
+          if (result != null) {
+            ((ListPreference)findPreference(SIGNALING_METHOD)).setValue(result);
+
+            Toast.makeText(ApplicationPreferencesActivity.this,
+                           "Successfully updated signaling preference",
+                           Toast.LENGTH_SHORT).show();
+          } else {
+            Toast.makeText(ApplicationPreferencesActivity.this,
+                           "Error communicating signaling preference to server!",
+                           Toast.LENGTH_LONG).show();
+          }
+
+          initializeDecorators();
+        }
+      }.execute((String)newValue);
+
+      return false;
     }
   }
+
 
   public static void setAskUserToSendDiagnosticData(Context context, boolean enabled) {
     PreferenceManager

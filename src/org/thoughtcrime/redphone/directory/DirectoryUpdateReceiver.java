@@ -26,7 +26,6 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import org.thoughtcrime.redphone.Release;
 import org.thoughtcrime.redphone.signaling.DirectoryResponse;
 import org.thoughtcrime.redphone.signaling.SignalingException;
 import org.thoughtcrime.redphone.signaling.SignalingSocket;
@@ -48,13 +47,7 @@ public class DirectoryUpdateReceiver extends BroadcastReceiver {
     Log.w("DirectoryUpdateReceiver", "Initiating scheduled directory update...");
 
     try {
-      SharedPreferences preferences   = PreferenceManager.getDefaultSharedPreferences(context);
-      String number                   = preferences.getString("Number", "NO_SAVED_NUMBER!");
-      String password                 = preferences.getString("Password", "NO_SAVED_PASSWORD!");
-      SignalingSocket signalingSocket = new SignalingSocket(context, Release.MASTER_SERVER_HOST,
-                                                            Release.SERVER_PORT, number, password,
-                                                            null);
-
+      SignalingSocket signalingSocket = new SignalingSocket(context);
       DirectoryResponse response      = signalingSocket.getNumberFilter();
 
       if (response != null) {

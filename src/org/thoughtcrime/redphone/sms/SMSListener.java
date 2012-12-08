@@ -111,7 +111,7 @@ public class SMSListener extends BroadcastReceiver {
       return;
     }
 
-    if (preferences.getBoolean("REGISTERED", false)) {
+    if (preferences.getBoolean(Constants.REGISTERED_PREFERENCE, false)) {
       checkForIncomingCallSMS(context, messages);
     }
 

@@ -84,7 +84,8 @@
                   android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize"/>
 
         <service android:enabled="true" android:name=".RedPhoneService"/>
-        <service android:enabled="true" android:name=".c2dm.C2DMRegistrationService"/>
+        <service android:enabled="true" android:name=".gcm.GCMRegistrationService"/>
+        <service android:enabled="true" android:name=".gcm.GCMIntentService"/>        
 
         <receiver android:name=".call.CallListener"
                   android:enabled="true"
@@ -113,20 +114,13 @@
             </intent-filter>
         </receiver>
 
-        <receiver android:name=".c2dm.C2DMRegistrationReceiver"
-                  android:permission="com.google.android.c2dm.permission.SEND">
+        <receiver android:name=".gcm.GCMBroadcastReceiver"
+                  android:permission="com.google.android.c2dm.permission.SEND" >
             <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
                 <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
                 <category android:name="org.thoughtcrime.redphone" />
             </intent-filter>
-        </receiver>
-
-        <receiver android:name=".c2dm.C2DMSignalListener"
-                  android:permission="com.google.android.c2dm.permission.SEND">
-            <intent-filter>
-                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
-                <category android:name="org.thoughtcrime.redphone" />
-            </intent-filter>
-        </receiver>
+        </receiver>        
     </application>
 </manifest>

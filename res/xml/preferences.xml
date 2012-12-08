@@ -1,22 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-/*
- * Copyright (C) 2007-2008 Esmertec AG.
- * Copyright (C) 2007-2008 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
--->
+
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
   <PreferenceCategory android:title="@string/preferences__general_settings">
     <CheckBoxPreference android:defaultValue="true"
@@ -24,20 +7,15 @@
                         android:title="@string/preferences__prompt_for_call_upgrade"
                         android:summary="@string/preferences__when_making_insecure_calls_prompt_for_upgrade_to_redphone_if_contact_is_redphone_enabled"/>
   </PreferenceCategory>
-  <PreferenceCategory android:title="@string/preferences__signaling_settings">
-    <CheckBoxPreference android:defaultValue="false"
-                        android:key="pref_use_c2dm"
-                        android:title="@string/preferences__use_c2dm_for_signaling"
-                        android:summary="@string/preferences__use_google_s_push_messaging_rather_than_sms_for_signaling" />
+  <PreferenceCategory android:title="@string/preferences__advanced_signaling_settings">
+    <ListPreference android:title="@string/preferences__signaling_method"
+                    android:summary="@string/preferences__modify_the_method_used_to_notify_your_device_of_incoming_calls"
+                    android:key="pref_signaling_method"
+                    android:defaultValue="auto"
+                    android:entries="@array/signaling_method_names"
+                    android:entryValues="@array/signaling_method_values" />      
   </PreferenceCategory>
-  <!--   <PreferenceCategory android:title="Privacy Settings">
-    <CheckBoxPreference android:defaultValue="true"
-    					android:key="pref_ask_diagnostic_reporting"
-    					android:title="Send Diagnostics"
-    					android:summary="Display an option to send diagnostic data to Whisper Systems when a call ends" />
-    				    		
-  </PreferenceCategory>-->
-  <PreferenceCategory android:title="@string/preferences__audio_settings">
+  <PreferenceCategory android:title="@string/preferences__advanced_audio_settings">
     <CheckBoxPreference android:defaultValue="false"
                         android:key="pref_audio_compat"
                         android:summary="@string/preferences__enable_audio_compatibility_mode_higher_latency"

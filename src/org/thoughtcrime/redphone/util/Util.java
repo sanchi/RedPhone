@@ -34,6 +34,14 @@ import java.security.SecureRandom;
 
 public class Util {
 
+  public static void sleep(long millis) {
+    try {
+      Thread.sleep(millis);
+    } catch (InterruptedException ie) {
+      throw new AssertionError(ie);
+    }
+  }
+
   public static byte[] getBytes(String fromString) {
     try {
       return fromString.getBytes("UTF8");
