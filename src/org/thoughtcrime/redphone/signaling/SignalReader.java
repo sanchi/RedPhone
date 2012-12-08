@@ -84,7 +84,7 @@ public class SignalReader {
       }
     }
 
-    return null;
+    return new byte[0];
   }
 
 }

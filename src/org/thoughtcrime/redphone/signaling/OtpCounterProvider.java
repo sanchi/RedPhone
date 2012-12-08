@@ -21,6 +21,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import org.thoughtcrime.redphone.Constants;
+
 /**
  * The authentication mechanism uses HOTP, which requires
  * the client to keep track of a monotonically increasing counter.
@@ -40,9 +42,9 @@ public class OtpCounterProvider {
 
   public synchronized long getOtpCounter(Context context) {
     SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
-    long counter                  = preferences.getLong("PasswordCounter", 1L);
+    long counter                  = preferences.getLong(Constants.PASSWORD_COUNTER_PREFERENCE, 1L);
 
-    preferences.edit().putLong("PasswordCounter", counter+1).commit();
+    preferences.edit().putLong(Constants.PASSWORD_COUNTER_PREFERENCE, counter+1).commit();
 
     return counter;
   }

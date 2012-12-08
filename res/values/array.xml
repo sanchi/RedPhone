@@ -1,6 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <string-array name="signaling_method_names">
+        <item>@string/array__google_push_notifications</item>
+        <item>@string/array__sms_push_notifications</item>
+        <item>@string/array__auto_recommended</item>
+    </string-array>
+    
+    <string-array name="signaling_method_values">
+        <item>gcm</item>
+        <item>sms</item>
+        <item>auto</item>
+    </string-array>
+
+    <string-array name="signaling_method_names_no_push">
+        <item>@string/array__sms_push_notifications</item>
+        <item>@string/array__auto_recommended</item>
+    </string-array>
+    
+    <string-array name="signaling_method_values_no_push">
+        <item>sms</item>
+        <item>auto</item>
+    </string-array>        
+    
     <array name="incoming_call_widget_targets">
         <item>@drawable/ic_lockscreen_answer</item>
 <!--         <item>@drawable/ic_lockscreen_send_sms</item> -->

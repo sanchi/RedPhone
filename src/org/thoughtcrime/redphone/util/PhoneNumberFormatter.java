@@ -28,6 +28,7 @@ import com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberFormat;
 import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber;
 
 import org.thoughtcrime.redphone.ApplicationContext;
+import org.thoughtcrime.redphone.Constants;
 
 /**
  * Phone number formats are a pain.
@@ -61,7 +62,7 @@ public class PhoneNumberFormatter {
 
   public static String formatNumber(Context context, String number) {
     SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
-    String localNumber            = preferences.getString("Number", "No Stored Number");
+    String localNumber            = preferences.getString(Constants.NUMBER_PREFERENCE, "No Stored Number");
     number                        = number.replaceAll("[^0-9+]", "");
 
     if (number.charAt(0) == '+')

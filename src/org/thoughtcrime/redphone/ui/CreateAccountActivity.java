@@ -44,11 +44,12 @@ import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 
 import org.thoughtcrime.redphone.ApplicationContext;
+import org.thoughtcrime.redphone.Constants;
 import org.thoughtcrime.redphone.R;
 import org.thoughtcrime.redphone.RedPhoneService;
-import org.thoughtcrime.redphone.Release;
 import org.thoughtcrime.redphone.directory.DirectoryUpdateReceiver;
 import org.thoughtcrime.redphone.directory.NumberFilter;
+import org.thoughtcrime.redphone.gcm.GCMRegistrarHelper;
 import org.thoughtcrime.redphone.signaling.AccountCreationException;
 import org.thoughtcrime.redphone.signaling.AccountCreationSocket;
 import org.thoughtcrime.redphone.signaling.DirectoryResponse;
@@ -131,11 +132,11 @@ public class CreateAccountActivity extends SherlockActivity implements Runnable 
     SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
     Editor editor                 = preferences.edit();
 
-    editor.putBoolean("REGISTERED", true);
-    editor.putString("Number", number);
-    editor.putString("Password", password);
-    editor.putString("Key", key);
-    editor.putLong("PasswordCounter", 1L);
+    editor.putBoolean(Constants.REGISTERED_PREFERENCE, true);
+    editor.putString(Constants.NUMBER_PREFERENCE, number);
+    editor.putString(Constants.PASSWORD_PREFERENCE, password);
+    editor.putString(Constants.KEY_PREFERENCE, key);
+    editor.putLong(Constants.PASSWORD_COUNTER_PREFERENCE, 1L);
     editor.commit();
 
     this.stopService(new Intent(this, RedPhoneService.class));
@@ -187,6 +188,7 @@ public class CreateAccountActivity extends SherlockActivity implements Runnable 
       String key = verifyAccount(socket, number, password);
       markAsVerified(number, password, key);
 
+      GCMRegistrarHelper.registerClient(CreateAccountActivity.this, true);
       retrieveDirectory(socket);
 
       Message message = handler.obtainMessage(SUCCESS);
@@ -199,7 +201,7 @@ public class CreateAccountActivity extends SherlockActivity implements Runnable 
     } catch (SignalingException e) {
       Log.w("CreateAccountActivity", e);
       Message message = handler.obtainMessage(FAILURE);
-      message.obj     = R.string.CreateAccountActivity_error_connecting_to_server_got_internet_connectivity;
+      message.obj     = getString(R.string.CreateAccountActivity_error_connecting_to_server_got_internet_connectivity);
       handler.sendMessage(message);
     } catch (AccountVerificationTimeoutException e) {
       Log.w("CreateAccountActivity", e);
@@ -254,7 +256,8 @@ public class CreateAccountActivity extends SherlockActivity implements Runnable 
         Toast.makeText(CreateAccountActivity.this,
                        R.string.CreateAccountActivity_account_created,
                        Toast.LENGTH_LONG).show();
-        ApplicationPreferencesActivity.setC2dm(CreateAccountActivity.this, false);
+
+        ApplicationPreferencesActivity.setSignalingMethod(CreateAccountActivity.this, "auto");
 
         Intent intent = new Intent("org.thoughtcrime.redphone.ui.DialerActivity");
         intent.setClass(CreateAccountActivity.this, DialerActivity.class);
@@ -295,17 +298,6 @@ public class CreateAccountActivity extends SherlockActivity implements Runnable 
       if (!PhoneNumberFormatter.isValidNumber(self.number.getText().toString())) {
         showAlertDialog(getString(R.string.CreateAccountActivity_incorrect_number_format),
                         getString(R.string.CreateAccountActivity_you_must_specify_your_number_in_international_format_eg_14151231234));
-        return;
-      }
-
-      if ((!Release.INTERNATIONAL) &&
-        (CreateAccountActivity.this.number.getText().length() != 12 ||
-        !CreateAccountActivity.this.number.getText().toString().startsWith("+1")))
-      {
-        Toast toast = Toast.makeText(CreateAccountActivity.this,
-                                     getString(R.string.CreateAccountActivity_sorry_only_usa_numbers_are_supported_in_the_beta),
-                                     Toast.LENGTH_LONG);
-        toast.show();
         return;
       }
 

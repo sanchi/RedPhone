@@ -39,6 +39,7 @@ import org.thoughtcrime.redphone.call.LockManager;
 import org.thoughtcrime.redphone.call.ResponderCallManager;
 import org.thoughtcrime.redphone.codec.CodecSetupException;
 import org.thoughtcrime.redphone.contacts.PersonInfo;
+import org.thoughtcrime.redphone.gcm.GCMRegistrarHelper;
 import org.thoughtcrime.redphone.pstn.CallStateView;
 import org.thoughtcrime.redphone.pstn.IncomingPstnCallListener;
 import org.thoughtcrime.redphone.signaling.OtpCounterProvider;
@@ -113,6 +114,8 @@ public class RedPhoneService extends Service implements CallStateListener, CallS
     if (Release.DEBUG) Log.w("RedPhoneService", "Service onStart() called...");
     if (intent == null) return;
     new Thread(new IntentRunnable(intent)).start();
+
+    GCMRegistrarHelper.registerClient(this, false);
   }
 
   @Override
@@ -180,8 +183,8 @@ public class RedPhoneService extends Service implements CallStateListener, CallS
 
     this.state            = RedPhone.STATE_IDLE;
     this.zid              = getZID();
-    this.localNumber      = preferences.getString("Number", "NO_SAVED_NUMBER!");
-    this.password         = preferences.getString("Password", "NO_SAVED_PASSWORD!");
+    this.localNumber      = preferences.getString(Constants.NUMBER_PREFERENCE, "NO_SAVED_NUMBER!");
+    this.password         = preferences.getString(Constants.PASSWORD_PREFERENCE, "NO_SAVED_PASSWORD!");
 
     this.lockManager      = new LockManager(this);
   }

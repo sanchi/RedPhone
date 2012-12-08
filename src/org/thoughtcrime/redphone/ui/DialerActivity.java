@@ -34,8 +34,10 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 
+import org.thoughtcrime.redphone.Constants;
 import org.thoughtcrime.redphone.R;
 import org.thoughtcrime.redphone.directory.DirectoryUpdateReceiver;
+import org.thoughtcrime.redphone.gcm.GCMRegistrarHelper;
 
 /**
  * The base dialer activity.  A tab container for the contacts, call log, and favorites tab.
@@ -67,6 +69,8 @@ public class DialerActivity extends SherlockFragmentActivity {
     setupContactsTab();
     setupCallLogTab();
     setupFavoritesTab();
+
+    GCMRegistrarHelper.registerClient(this, false);
   }
 
   @Override
@@ -144,7 +148,7 @@ public class DialerActivity extends SherlockFragmentActivity {
   private void checkForFreshInstall() {
     SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
 
-    if (!preferences.getBoolean("REGISTERED", false)) {
+    if (!preferences.getBoolean(Constants.REGISTERED_PREFERENCE, false)) {
       Log.w("DialerActivity", "not registered...");
       Intent intent = new Intent("org.thoughtcrime.redphone.ui.CreateAccountActivity");
       intent.setClass(this, CreateAccountActivity.class);

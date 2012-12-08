@@ -19,22 +19,27 @@ package org.thoughtcrime.redphone.signaling;
 
 import android.content.Context;
 import android.content.res.AssetManager;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.google.thoughtcrimegson.Gson;
 
 import org.apache.http.conn.ssl.SSLSocketFactory;
+import org.thoughtcrime.redphone.Constants;
 import org.thoughtcrime.redphone.Release;
 import org.thoughtcrime.redphone.network.LowLatencySocketConnector;
 import org.thoughtcrime.redphone.signaling.signals.BusySignal;
 import org.thoughtcrime.redphone.signaling.signals.C2DMRegistrationSignal;
 import org.thoughtcrime.redphone.signaling.signals.C2DMUnregistrationSignal;
 import org.thoughtcrime.redphone.signaling.signals.DirectoryRequestSignal;
+import org.thoughtcrime.redphone.signaling.signals.GCMRegistrationSignal;
+import org.thoughtcrime.redphone.signaling.signals.GCMUnregistrationSignal;
 import org.thoughtcrime.redphone.signaling.signals.HangupSignal;
 import org.thoughtcrime.redphone.signaling.signals.InitiateSignal;
 import org.thoughtcrime.redphone.signaling.signals.RingingSignal;
 import org.thoughtcrime.redphone.signaling.signals.ServerSignal;
 import org.thoughtcrime.redphone.signaling.signals.Signal;
+import org.thoughtcrime.redphone.signaling.signals.SignalPreferenceSignal;
 import org.thoughtcrime.redphone.util.LineReader;
 import org.thoughtcrime.redphone.util.PhoneNumberFormatter;
 
@@ -84,6 +89,15 @@ public class SignalingSocket {
   protected final OtpCounterProvider counterProvider;
 
   private boolean connectionAttemptComplete;
+
+  public SignalingSocket(Context context) throws SignalingException {
+    this(context,
+        Release.MASTER_SERVER_HOST,
+        Release.SERVER_PORT,
+        PreferenceManager.getDefaultSharedPreferences(context).getString(Constants.NUMBER_PREFERENCE, "NO_SAVED_NUMBER!"),
+        PreferenceManager.getDefaultSharedPreferences(context).getString(Constants.PASSWORD_PREFERENCE,  "NO_SAVED_PASSWORD!"),
+        null);
+  }
 
   public SignalingSocket(Context context, String host, int port,
                          String localNumber, String password,
@@ -226,6 +240,39 @@ public class SignalingSocket {
                               counterProvider.getOtpCounter(context),
                               sessionId));
     readSignalResponse();
+  }
+
+  public void registerSignalingPreference(String preference) throws SignalingException {
+    sendSignal(new SignalPreferenceSignal(localNumber, password, preference));
+    SignalResponse response = readSignalResponse();
+
+    switch (response.getStatusCode()) {
+    case 200: return;
+    default: throw new SignalingException("Received error from server: " +
+                                          new String(response.getBody()));
+    }
+  }
+
+  public void registerGcm(String registrationId) throws SignalingException {
+    sendSignal(new GCMRegistrationSignal(localNumber, password, registrationId));
+    SignalResponse response = readSignalResponse();
+
+    switch (response.getStatusCode()) {
+    case 200: return;
+    default: throw new SignalingException("Received error from server: " +
+                                          new String(response.getBody()));
+    }
+  }
+
+  public void unregisterGcm(String registrationId) throws SignalingException {
+    sendSignal(new GCMUnregistrationSignal(localNumber, password, registrationId));
+    SignalResponse response = readSignalResponse();
+
+    switch (response.getStatusCode()) {
+    case 200: return;
+    default: throw new SignalingException("Received error from server: " +
+                                          new String(response.getBody()));
+    }
   }
 
   public void registerC2dm(String registrationId) throws SignalingException {

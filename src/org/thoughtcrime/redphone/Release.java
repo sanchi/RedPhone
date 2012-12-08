@@ -26,7 +26,6 @@ package org.thoughtcrime.redphone;
 public interface Release {
   public static final boolean SSL                     = true;
   public static final boolean DEBUG                   = false;
-  public static final boolean INTERNATIONAL           = true;
   public static final boolean DELIVER_DIAGNOSTIC_DATA = false;
   public static final String  SERVER_ROOT             = ".whispersystems.org";
   public static final String MASTER_SERVER_HOST       = "master.whispersystems.org";
