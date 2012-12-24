@@ -141,7 +141,7 @@ public class ApplicationPreferencesActivity extends SherlockPreferenceActivity {
   }
 
   public static void setSignalingMethod(Context context, String value) {
-    PreferenceManager.getDefaultSharedPreferences(context).edit().putString(SIGNALING_METHOD, value);
+    PreferenceManager.getDefaultSharedPreferences(context).edit().putString(SIGNALING_METHOD, value).commit();
   }
 
   public static void setAudioTrackDesBufferLevel( Context context, int level ) {
