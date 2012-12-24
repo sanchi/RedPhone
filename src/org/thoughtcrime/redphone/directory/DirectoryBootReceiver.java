@@ -21,6 +21,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
+import org.thoughtcrime.redphone.gcm.GCMRegistrarHelper;
+
 /**
  * Broadcast receiver that's notified of a boot event,
  * allowing us to schedule a directory update request.
@@ -34,6 +36,7 @@ public class DirectoryBootReceiver extends BroadcastReceiver {
   @Override
   public void onReceive(Context context, Intent intent) {
     DirectoryUpdateReceiver.scheduleDirectoryUpdate(context);
+    GCMRegistrarHelper.registerClient(context, false);
   }
 
 }

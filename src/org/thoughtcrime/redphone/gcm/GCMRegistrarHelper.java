@@ -20,7 +20,7 @@ public class GCMRegistrarHelper {
 
     try {
       GCMRegistrar.checkDevice(context);
-      GCMRegistrar.checkManifest(context);
+//      GCMRegistrar.checkManifest(context);
 
       Intent intent = new Intent(GCMRegistrationService.REGISTER_GCM_ACTION, null,
                                  context, GCMRegistrationService.class);
