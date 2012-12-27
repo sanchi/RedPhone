@@ -48,9 +48,15 @@
   <string name="CreateAccountActivity_sorry_only_usa_numbers_are_supported_in_the_beta">Lamentamos, apenas números dos EUA são suportados no Beta.</string>
   <string name="CreateAccountActivity_creating_account">Criando conta</string>
   <string name="CreateAccountActivity_this_could_take_a_moment">Isso pode levar um momento...</string>
+  <string name="ContactsListActivity_loading">Carregando...</string>
+  <string name="ContactsListActivity_no_contacts_found">Nenhum contato encontrado.</string>
+  <string name="NotificationBarManager_redphone_call_in_progress">Chamada RedPhone em andamento</string>
+  <string name="NotificationBarManager_missed_redphone_call_from_s">Chamada RedPhone perdida de %s</string>
+  <string name="NotificationBarManager_missed_redphone_call">Chamada RedPhone perdida</string>
   <string name="QualityReporting_would_you_like_to_send_diagnostic_information_about_this_call_to_whisper_systems">Você gostaria de enviar informação de diagnóstico sobre esta chamada para Whisper Systems?</string>
   <string name="QualityReporting_never">Nunca</string>
   <string name="QualityReporting_send_diagnostics">Enviar Diagnóstico?</string>
+  <string name="RecentCallListActivity_loading">Carregando...</string>
   <string name="RecentCallListActivity_empty_call_log">Log de chamadas vazio.</string>
   <string name="RedPhoneChooser_upgrade_to_redphone">Atualizar para RedPhone?</string>
   <string name="RedPhoneChooser_this_contact_also_uses_redphone_would_you_like_to_upgrade_to_a_secure_call">Este contato também utiliza RedPhone. Você gostaria de atualizar para uma chamada segura?</string>
@@ -71,5 +77,23 @@
   <string name="dialer_options_menu__re_register">Recadastrar</string>
   <string name="dialer_options_menu__about">Sobre</string>
   <string name="dialer_options_menu__settings">Configurações</string>
+  <string name="array__google_push_notifications">Notificações push do Google</string>
+  <string name="array__sms_push_notifications">Notificações push via SMS</string>
+  <string name="array__auto_recommended">Automático (recomendado)</string>
+  <string name="preferences__general_settings">Configurações Gerais</string>
+  <string name="preferences__prompt_for_call_upgrade">Recomendar chamada RedPhone</string>
+  <string name="preferences__when_making_insecure_calls_prompt_for_upgrade_to_redphone_if_contact_is_redphone_enabled">Quando fizer chamadas inseguras, recomendar uso do RedPhone caso o contato seja registrado no RedPhone.</string>
+  <string name="preferences__advanced_signaling_settings">Avançado: Configurações de Sinalização</string>
+  <string name="preferences__advanced_audio_settings">Avançado: Configurações de Áudio</string>
+  <string name="preferences__enable_audio_compatibility_mode_higher_latency">Habilitar Modo de Compatibilidade de Áudio [maior latência]</string>
+  <string name="preferences__compatibility_mode">Modo de Compatibilidade</string>
+  <string name="preferences__use_in_call_audio_mode">Usar Modo de Áudio Em Chamada</string>
+  <string name="preferences__enable_if_audio_comes_from_rear_speaker">Habilitar se áudio é recebido do alto-falante traseiro</string>
+  <string name="preferences__single_thread_mode">Modo de Tarefa Única</string>
+  <string name="preferences__may_improve_performance_on_some_devices">Pode melhorar a performance em alguns aparelhos</string>
+  <string name="preferences__force_minimum_latency">Forçar latência mínima</string>
+  <string name="preferences__reduce_latency_at_the_expense_of_audio_quality">Reduzir a latência em troca de qualidade de áudio</string>
+  <string name="preferences__signaling_method">Método de Sinalização</string>
+  <string name="preferences__modify_the_method_used_to_notify_your_device_of_incoming_calls">Modifica o método usado para notificar seu aparelho sobre chamadas recebidas.</string>
   <!--EOF-->
 </resources>
