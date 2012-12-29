@@ -29,6 +29,13 @@ whispersystems@lists.riseup.net
 
 https://lists.riseup.net/www/info/whispersystems
 
+Translation
+------------
+
+Interested in helping to translate RedPhone? Contribute here:
+
+https://www.transifex.com/projects/p/redphone/
+
 Cryptography Notice
 ------------
 
