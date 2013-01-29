@@ -22,13 +22,15 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import org.thoughtcrime.redphone.ApplicationContext;
+import org.thoughtcrime.redphone.Constants;
+
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberFormat;
 import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber;
 
-import org.thoughtcrime.redphone.ApplicationContext;
-import org.thoughtcrime.redphone.Constants;
+import java.util.Locale;
 
 /**
  * Phone number formats are a pain.
@@ -60,6 +62,17 @@ public class PhoneNumberFormatter {
     return "+" + localNumber.substring(0, difference) + number;
   }
 
+  public static String formatNumberInternational(String number) {
+    try {
+      PhoneNumberUtil util     = PhoneNumberUtil.getInstance();
+      PhoneNumber parsedNumber = util.parse(number, null);
+      return util.format(parsedNumber, PhoneNumberFormat.INTERNATIONAL);
+    } catch (NumberParseException e) {
+      Log.w("PhoneNumberFormatter", e);
+      return number;
+    }
+  }
+
   public static String formatNumber(Context context, String number) {
     SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
     String localNumber            = preferences.getString(Constants.NUMBER_PREFERENCE, "No Stored Number");
@@ -86,5 +99,11 @@ public class PhoneNumberFormatter {
   public static String formatNumber(String number) {
     return formatNumber(ApplicationContext.getInstance().getContext(), number);
   }
+
+  public static String getRegionDisplayName(String regionCode) {
+    return (regionCode == null || regionCode.equals("ZZ") || regionCode.equals(PhoneNumberUtil.REGION_CODE_FOR_NON_GEO_ENTITY))
+          ? "Unknown country" : new Locale("", regionCode).getDisplayCountry(Locale.getDefault());
+  }
+
 
 }

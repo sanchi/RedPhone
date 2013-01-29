@@ -43,22 +43,15 @@
     
     <string name="CallScreen_incoming_call">Incoming call...</string>
 
-    <string name="CreateAccountActivity_register_with_redphone">Register with RedPhone</string>
-    <string name="CreateAccountActivity_error_connecting_to_server_got_internet_connectivity">Error connecting to server.  Got internet connectivity?</string>
-    <string name="CreateAccountActivity_account_created">Account Created</string>
-    <string name="CreateAccountActivity_error_creating_account">Error creating account</string>
-    <string name="CreateAccountActivity_timeout_while_waiting_for_verification">Timeout while waiting for verification</string>
-    <string name="CreateAccountActivity_redphone_timed_out_while_waiting_for_an_sms_message_explanation">RedPhone timed out while waiting for an SMS message used to verify your phone number. Possible reasons for this might include: \n\n* Some third party text messaging clients, such as Handcent or GoSMS, behave poorly and intercept all incoming SMS messages.  Check to see if you received a text message that starts with \'A RedPhone is trying to verify you\', in which case you\'ll need to configure your third party text messaging app to let text messages through.\n\n* Registering with the wrong phone number.  Please check to make sure you entered your number correctly.\n\n* Using a Google Voice number for registration with an older version of GoogleVoice installed.  RedPhone is now compatible with Google Voice numbers, but only with recent versions of Google Voice installed.</string>
-    <string name="CreateAccountActivity_retrieving_updates">Retrieving updates...</string>
-    <string name="CreateAccountActivity_you_must_specify_your_phone_number">You must specify your phone number!</string>
-    <string name="CreateAccountActivity_incorrect_number_format">Incorrect number format</string>
-    <string name="CreateAccountActivity_you_must_specify_your_number_in_international_format_eg_14151231234">You must specify your number in international format, eg: +14151231234</string>
-    <string name="CreateAccountActivity_sorry_only_usa_numbers_are_supported_in_the_beta">Sorry, only USA numbers are supported in the Beta.</string>
-    <string name="CreateAccountActivity_creating_account">Creating account</string>
-    <string name="CreateAccountActivity_this_could_take_a_moment">This could take a moment...</string>
-
     <string name="ContactsListActivity_loading">Loading...</string>
     <string name="ContactsListActivity_no_contacts_found">No contacts found.</string>    
+    
+    <string name="CreateAccountActivity_register_with_redphone">Register with RedPhone</string>
+    <string name="CreateAccountActivity_you_must_specify_your_phone_number">You must specify your phone number!</string>    
+    <string name="CreateAccountActivity_select_your_country">Select your country</string>
+    <string name="CreateAccountActivity_you_must_specify_your_country_code">You must specify your country code</string>
+    <string name="CreateAccountActivity_the_number_you_specified_s_is_invalid">The number you specified (%s) is invalid.</string>
+    <string name="CreateAccountActivity_invalid_number">Invalid number</string>
     
     <string name="NotificationBarManager_redphone_call_in_progress">RedPhone call in progress</string>
     <string name="NotificationBarManager_missed_redphone_call_from_s">Missed RedPhone call from %s</string>
@@ -75,17 +68,32 @@
     <string name="RedPhoneChooser_this_contact_also_uses_redphone_would_you_like_to_upgrade_to_a_secure_call">This contact also uses RedPhone. Would you like to upgrade to a secure call?</string>
     <string name="RedPhoneChooser_secure_call">Secure Call</string>
     <string name="RedPhoneChooser_insecure_call">Insecure Call</string>
-        
+    
+    <string name="RegistrationProgressActivity_verifying_number">Verifying number</string>
+    <string name="RegistrationProgressActivity_edit_s">Edit %s</string>
+    <string name="RegistrationProgressActivity_registration_complete">Registration complete!</string>
+
+    <string name="RegistrationService_registration_complete">Registration complete</string>
+    <string name="RegistrationService_redphone_registration_has_successfully_completed">RedPhone registration has successfully completed.</string>
+    <string name="RegistrationService_registration_error">Registration error</string>
+    <string name="RegistrationService_redphone_registration_has_encountered_a_problem">RedPhone registration has encountered a problem.</string>
+    
     <string name="about_activity__additional_information">Additional information:</string>
     <string name="about_activity__attribution">Attribution:</string>
     <string name="about_activity__aboutText">Please see whispersystems.org for additional information, or contact support@whispersystems.org with problems, questions, or comments.</string>
     <string name="about_activity__attributionText">RedPhone links to the SpanDSP library, which is licensed under the LGPL.\n\nRedPhone uses the SPEEX Codec, which is used under the Xiph.Org variant of the BSD license: © 2002-2003, Jean-Marc Valin/Xiph.Org Foundation\n\nRedistribution and use of the SPEEX library in source and binary forms, with or without modification, are permitted provided that the following conditions are met:\n\n\t* Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.\n\t* Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.\n\t* Neither the name of the Xiph.org Foundation nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.\n\nThe SPEEX library is provided by the copyright holders and contributors “as is” and any express or implied warranties, including, but not limited to, the implied warranties of merchantability and fitness for a particular purpose are disclaimed. In no event shall the foundation or contributors be liable for any direct, indirect, incidental, special, exemplary, or consequential damages (including, but not limited to, procurement of substitute goods or services; loss of use, data, or profits; or business interruption) however caused and on any theory of liability, whether in contract, strict liability, or tort (including negligence or otherwise) arising in any way out of the use of this software, even if advised of the possibility of such damage.\n\n\nSome sound samples are licensed under the Creative Commons Sampling Plus License: http://creativecommons.org/licenses/sampling+/1.0/\n\nBy acclivity (http://www.freesound.org/usersViewSingle.php?id=37876):\nShipsBell.wav (http://www.freesound.org/samplesViewSingle.php?id=32304)\n\nBy Splashdust (http://www.freesound.org/usersViewSingle.php?id=754949):\nnegativebeep.wav (http://www.freesound.org/samplesViewSingle.php?id=67454)\n\nBy Peter_Gross (http://www.freesound.org/usersViewSingle.php?id=33429):\nSonar_pings.ogg (http://www.freesound.org/samplesViewSingle.php?id=12677\n\nBy suonho: http://www.freesound.org/samplesViewSingle.php?id=58348: ambienta_soundtrack_moog_sweep\n\nBy Mike Koenig: Busy Signal</string>    
     
-    <string name="account_creation__this_devices_phone_number">This device\'s phone number:</string>
-    <string name="account_creation__register">Register</string>
-
+    <string name="create_account__register">Register</string>
+    <string name="create_acount__please_confirm_your_country_code_and_phone_number">Please confirm your country code and phone number.</string>
+    <string name="create_account__your_country">YOUR COUNTRY</string>
+    <string name="create_account__your_country_code_and_phone_number">YOUR COUNTRY CODE AND PHONE NUMBER</string>
+    <string name="create_account__phone_number">phone number</string>
+    
     <string name="contacts_list_content__search">Search</string>
 
+    <string name="country_selection_fragment__search">Search...</string>
+    <string name="country_selection_fragment__loading_countries">Loading countries...</string>
+    
     <string name="outbound_chooser__you_ve_initiated_a_call_with_a_contact_who_also_uses_redphone_would_you_like_to_upgrade_this_to_a_redphone_call">You\'ve initiated a call with a contact who also uses RedPhone. Would you like to upgrade this to a RedPhone call?</string>
     <string name="outbound_chooser__secure_call">Secure Call</string>
     <string name="outbound_chooser__insecure_call">Insecure Call</string>
@@ -118,5 +126,27 @@
     <string name="preferences__signaling_method">Signaling Method</string>
     <string name="preferences__modify_the_method_used_to_notify_your_device_of_incoming_calls">Modify the method used to notify your device of incoming calls.</string>
     
+    <string name="registration_progress__sms_verification_failed">SMS verification failed.</string>
+    <string name="registration_progress__redphone_timed_out_while_waiting_for_an_sms_message_to_verify_your_phone_number">RedPhone timed out while waiting for an SMS message to verify your phone number.</string>
+    <string name="registration_progress__edit_number">Edit Number</string>
+    <string name="registration_progress__some_possible_problems_include">Some possible problems include:</string>
+    <string name="registration_progress__sms_interceptors">SMS Interceptors.</string>
+    <string name="registration_progress__some_third_party_text_messaging_clients_explanation">Some third party text messaging clients, such as Handcent or GoSMS, behave poorly and intercept all incoming SMS messages.  Check to see if you received a text message that starts with \'A RedPhone is trying to verify you\' in which case you\'ll need to configure your third party text messaging app to let text messages through.</string>
+    <string name="registration_progress__incorrect_number">Incorrect Number.</string>
+    <string name="registration_progress__please_check_to_make_sure_you_entered_your_number_correctly">Please check to make sure you entered your number correctly, and that it is formatted for correctly your region.</string>
+    <string name="registration_progress__old_versions_of_google_voice">Old versions of Google Voice.</string>
+    <string name="registration_progress__if_youre_attempting_to_register_a_google_voice_number_explanation">If you\'re attempting to register a Google Voice number, ensure that you are running the most recent version of the Google Voice app.</string>
+    <string name="registration_progress__connectivity_error">Connectivity error.</string>
+    <string name="registration_progress__redphone_was_unable_to_connect_to_the_switch">RedPhone was unable to connect to the switch.</string>
+    <string name="registration_progress__no_network_connectivity">No network connectivity.</string>
+    <string name="registration_progress__your_device_needs_network_connectivity_explanation">Your device needs network connectivity in order to use RedPhone.  Check to ensure that it is connected to the internet.</string>
+    <string name="registration_progress__restrictive_firewall">Restrictive firewall.</string>
+    <string name="registration_progress__if_you_are_connected_via_wifi_explanation">If you are connected via wifi, it\'s possible that there is a firewall blocking access to the RedPhone signaling ports.  Try another network or mobile data.</string>
+    <string name="registration_progress__redphone_will_now_automatically_verify_your_number_with_a_confirmation_sms_message">RedPhone will now automatically verify your number with a confirmation SMS message.</string>
+    <string name="registration_progress__registering_with_server">Registering with server...</string>
+    <string name="registration_progress__waiting_for_sms_verification">Waiting for SMS verification...</string>
+    <string name="registration_progress__this_could_take_a_moment_please_be_patient_well_notify_you_when_verification_is_complete">This could take a moment. Please be patient, we\'ll notify you when verification is complete.</string>
+    <string name="registration_progress__waiting_for_sms">WAITING FOR SMS</string>
+        
     <!-- EOF -->
 </resources>
