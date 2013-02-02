@@ -214,6 +214,7 @@ public class CreateAccountActivity extends SherlockActivity {
       Intent intent = new Intent(self, RegistrationProgressActivity.class);
       intent.putExtra("e164number", e164number);
       startActivity(intent);
+      finish();
     }
   }
 

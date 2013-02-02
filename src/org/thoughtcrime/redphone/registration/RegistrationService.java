@@ -115,10 +115,14 @@ public class RegistrationService extends Service {
       setState(RegistrationProgressActivity.STATE_CONNECTING);
       socket = new AccountCreationSocket(this, number, password);
       socket.createAccount();
+      socket.close();
 
       setState(RegistrationProgressActivity.STATE_VERIFYING);
       String challenge = waitForChallenge();
+      socket           = new AccountCreationSocket(this, number, password);
       socket.verifyAccount(challenge, key);
+      socket.close();
+
       markAsVerified(number, password, key);
 
       GCMRegistrarHelper.registerClient(this, true);
