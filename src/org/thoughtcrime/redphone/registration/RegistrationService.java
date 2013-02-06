@@ -24,7 +24,6 @@ import org.thoughtcrime.redphone.signaling.AccountCreationSocket;
 import org.thoughtcrime.redphone.signaling.DirectoryResponse;
 import org.thoughtcrime.redphone.signaling.SignalingException;
 import org.thoughtcrime.redphone.ui.AccountVerificationTimeoutException;
-import org.thoughtcrime.redphone.ui.RegistrationProgressActivity;
 import org.thoughtcrime.redphone.util.Util;
 
 import java.util.concurrent.ExecutorService;
@@ -42,7 +41,8 @@ public class RegistrationService extends Service {
   private final ExecutorService executor = Executors.newSingleThreadExecutor();
   private final Binder          binder   = new RegistrationServiceBinder();
 
-  private volatile int               registrationState = RegistrationProgressActivity.STATE_IDLE;
+  private volatile RegistrationState registrationState = new RegistrationState(RegistrationState.STATE_IDLE);
+
   private volatile Handler           registrationStateHandler;
   private volatile ChallengeReceiver receiver;
   private          String            challenge;
@@ -59,26 +59,29 @@ public class RegistrationService extends Service {
       });
     }
 
-    return START_STICKY;
+    return START_NOT_STICKY;
   }
 
   @Override
   public void onDestroy() {
+    super.onDestroy();
     executor.shutdown();
+    shutdown();
+  }
 
+  @Override
+  public IBinder onBind(Intent intent) {
+    return binder;
+  }
+
+  public void shutdown() {
     if (receiver != null) {
       unregisterReceiver(receiver);
       receiver = null;
     }
 
     markAsVerifying(false);
-
-    super.onDestroy();
-  }
-
-  @Override
-  public IBinder onBind(Intent intent) {
-    return binder;
+    registrationState = new RegistrationState(RegistrationState.STATE_IDLE);
   }
 
   public synchronized int getSecondsRemaining() {
@@ -90,7 +93,7 @@ public class RegistrationService extends Service {
     return Math.max((int)(120000 - millisPassed) / 1000, 0);
   }
 
-  public int getRegistrationState() {
+  public RegistrationState getRegistrationState() {
     return registrationState;
   }
 
@@ -103,21 +106,22 @@ public class RegistrationService extends Service {
 
   private void handleRegistrationIntent(Intent intent) {
     markAsVerifying(true);
+
     AccountCreationSocket socket = null;
+    String number                = intent.getStringExtra("e164number");
 
     try {
-      String number   = intent.getStringExtra("e164number");
       String password = Util.getSecret(18);
       String key      = Util.getSecret(40);
 
       initializeChallengeListener();
 
-      setState(RegistrationProgressActivity.STATE_CONNECTING);
+      setState(new RegistrationState(RegistrationState.STATE_CONNECTING, number));
       socket = new AccountCreationSocket(this, number, password);
       socket.createAccount();
       socket.close();
 
-      setState(RegistrationProgressActivity.STATE_VERIFYING);
+      setState(new RegistrationState(RegistrationState.STATE_VERIFYING, number));
       String challenge = waitForChallenge();
       socket           = new AccountCreationSocket(this, number, password);
       socket.verifyAccount(challenge, key);
@@ -127,20 +131,20 @@ public class RegistrationService extends Service {
 
       GCMRegistrarHelper.registerClient(this, true);
       retrieveDirectory(socket);
-      setState(RegistrationProgressActivity.STATE_COMPLETE);
+      setState(new RegistrationState(RegistrationState.STATE_COMPLETE, number));
       broadcastComplete(true);
       stopService(new Intent(this, RedPhoneService.class));
     } catch (SignalingException se) {
       Log.w("RegistrationService", se);
-      setState(RegistrationProgressActivity.STATE_NETWORK_ERROR);
+      setState(new RegistrationState(RegistrationState.STATE_NETWORK_ERROR, number));
       broadcastComplete(false);
     } catch (AccountVerificationTimeoutException avte) {
       Log.w("RegistrationService", avte);
-      setState(RegistrationProgressActivity.STATE_TIMEOUT);
+      setState(new RegistrationState(RegistrationState.STATE_TIMEOUT, number));
       broadcastComplete(false);
     } catch (AccountCreationException ace) {
       Log.w("RegistrationService", ace);
-      setState(RegistrationProgressActivity.STATE_NETWORK_ERROR);
+      setState(new RegistrationState(RegistrationState.STATE_NETWORK_ERROR, number));
       broadcastComplete(false);
     } finally {
       if (socket != null)
@@ -206,10 +210,11 @@ public class RegistrationService extends Service {
     editor.commit();
   }
 
-  private void setState(int state) {
+  private void setState(RegistrationState state) {
     this.registrationState = state;
+
     if (registrationStateHandler != null) {
-      registrationStateHandler.obtainMessage(state).sendToTarget();
+      registrationStateHandler.obtainMessage(state.state, state.number).sendToTarget();
     }
   }
 
@@ -218,11 +223,11 @@ public class RegistrationService extends Service {
     intent.setAction(REGISTRATION_EVENT);
 
     if (success) {
-      intent.putExtra(NOTIFICATION_TITLE, R.string.RegistrationService_registration_complete);
-      intent.putExtra(NOTIFICATION_TEXT, R.string.RegistrationService_redphone_registration_has_successfully_completed);
+      intent.putExtra(NOTIFICATION_TITLE, getString(R.string.RegistrationService_registration_complete));
+      intent.putExtra(NOTIFICATION_TEXT, getString(R.string.RegistrationService_redphone_registration_has_successfully_completed));
     } else {
-      intent.putExtra(NOTIFICATION_TITLE, R.string.RegistrationService_registration_error);
-      intent.putExtra(NOTIFICATION_TEXT, R.string.RegistrationService_redphone_registration_has_encountered_a_problem);
+      intent.putExtra(NOTIFICATION_TITLE, getString(R.string.RegistrationService_registration_error));
+      intent.putExtra(NOTIFICATION_TEXT, getString(R.string.RegistrationService_redphone_registration_has_encountered_a_problem));
     }
 
     this.sendOrderedBroadcast(intent, null);
@@ -243,6 +248,29 @@ public class RegistrationService extends Service {
     public void onReceive(Context context, Intent intent) {
       Log.w("RegistrationService", "Got a challenge broadcast...");
       challengeReceived(intent.getStringExtra(CHALLENGE_EXTRA));
+    }
+  }
+
+  public static class RegistrationState {
+
+    public static final int STATE_IDLE          = 0;
+    public static final int STATE_CONNECTING    = 1;
+    public static final int STATE_VERIFYING     = 2;
+    public static final int STATE_TIMER         = 3;
+    public static final int STATE_COMPLETE      = 4;
+    public static final int STATE_TIMEOUT       = 5;
+    public static final int STATE_NETWORK_ERROR = 6;
+
+    public final int    state;
+    public final String number;
+
+    public RegistrationState(int state) {
+      this(state, null);
+    }
+
+    public RegistrationState(int state, String number) {
+      this.state  = state;
+      this.number = number;
     }
   }
 }

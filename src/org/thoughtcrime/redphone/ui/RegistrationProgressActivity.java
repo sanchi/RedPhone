@@ -21,19 +21,12 @@ import android.widget.Toast;
 
 import org.thoughtcrime.redphone.R;
 import org.thoughtcrime.redphone.registration.RegistrationService;
+import org.thoughtcrime.redphone.registration.RegistrationService.RegistrationState;
 import org.thoughtcrime.redphone.util.PhoneNumberFormatter;
 
 import com.actionbarsherlock.app.SherlockActivity;
 
 public class RegistrationProgressActivity extends SherlockActivity {
-
-  public static final int STATE_IDLE          = 0;
-  public static final int STATE_CONNECTING    = 1;
-  public static final int STATE_VERIFYING     = 2;
-  public static final int STATE_TIMER         = 3;
-  public static final int STATE_COMPLETE      = 4;
-  public static final int STATE_TIMEOUT       = 5;
-  public static final int STATE_NETWORK_ERROR = 6;
 
   private static final int FOCUSED_COLOR   = Color.parseColor("#ff333333");
   private static final int UNFOCUSED_COLOR = Color.parseColor("#ff808080");
@@ -43,7 +36,6 @@ public class RegistrationProgressActivity extends SherlockActivity {
   private RegistrationReceiver registrationReceiver     = new RegistrationReceiver();
 
   private RegistrationService registrationService;
-  private String number;
 
   private LinearLayout registrationLayout;
   private LinearLayout verificationFailureLayout;
@@ -76,9 +68,7 @@ public class RegistrationProgressActivity extends SherlockActivity {
   @Override
   public void onDestroy() {
     super.onDestroy();
-    if (serviceConnection != null) {
-      unbindService(serviceConnection);
-    }
+    shutdownServiceBinding();
   }
 
   @Override
@@ -118,11 +108,6 @@ public class RegistrationProgressActivity extends SherlockActivity {
     this.editButton                = (Button)      findViewById(R.id.edit_button);
     this.verificationFailureButton = (Button)      findViewById(R.id.verification_failure_edit_button);
     this.connectivityFailureButton = (Button)      findViewById(R.id.connectivity_failure_edit_button);
-    this.number                    = getIntent().getStringExtra("e164number");
-
-    this.editButton.setText(String.format(getString(R.string.RegistrationProgressActivity_edit_s), PhoneNumberFormatter.formatNumberInternational(this.number)));
-    this.verificationFailureButton.setText(String.format(getString(R.string.RegistrationProgressActivity_edit_s), PhoneNumberFormatter.formatNumberInternational(this.number)));
-    this.connectivityFailureButton.setText(String.format(getString(R.string.RegistrationProgressActivity_edit_s), PhoneNumberFormatter.formatNumberInternational(this.number)));
 
     this.editButton.setOnClickListener(new EditButtonListener());
     this.verificationFailureButton.setOnClickListener(new EditButtonListener());
@@ -142,10 +127,10 @@ public class RegistrationProgressActivity extends SherlockActivity {
   }
 
   private void handleStateIdle() {
-    if (this.number != null) {
+    if (hasNumberDirective()) {
       Intent intent = new Intent(this, RegistrationService.class);
       intent.setAction(RegistrationService.REGISTER_NUMBER_ACTION);
-      intent.putExtra("e164number", this.number);
+      intent.putExtra("e164number", getNumberDirective());
       startService(intent);
     } else {
       startActivity(new Intent(this, CreateAccountActivity.class));
@@ -177,16 +162,20 @@ public class RegistrationProgressActivity extends SherlockActivity {
     this.verificationText.setTextColor(FOCUSED_COLOR);
   }
 
-  private void handleVerificationTimeout() {
+  private void handleVerificationTimeout(String number) {
     this.registrationLayout.setVisibility(View.GONE);
     this.connectivityFailureLayout.setVisibility(View.GONE);
     this.verificationFailureLayout.setVisibility(View.VISIBLE);
+    this.verificationFailureButton.setText(String.format(getString(R.string.RegistrationProgressActivity_edit_s),
+                                                          PhoneNumberFormatter.formatNumberInternational(number)));
   }
 
-  private void handleConnectivityError() {
+  private void handleConnectivityError(String number) {
     this.registrationLayout.setVisibility(View.GONE);
     this.verificationFailureLayout.setVisibility(View.GONE);
     this.connectivityFailureLayout.setVisibility(View.VISIBLE);
+    this.connectivityFailureButton.setText(String.format(getString(R.string.RegistrationProgressActivity_edit_s),
+                                                         PhoneNumberFormatter.formatNumberInternational(number)));
   }
 
   private void handleVerificationComplete() {
@@ -194,12 +183,15 @@ public class RegistrationProgressActivity extends SherlockActivity {
       Toast.makeText(this, R.string.RegistrationProgressActivity_registration_complete, Toast.LENGTH_LONG).show();
     }
 
-    stopService(new Intent(this, RegistrationService.class));
+    shutdownService();
     startActivity(new Intent(this, DialerActivity.class));
     finish();
   }
 
   private void handleTimerUpdate() {
+    if (registrationService == null)
+      return;
+
     int totalSecondsRemaining = registrationService.getSecondsRemaining();
     int minutesRemaining      = totalSecondsRemaining / 60;
     int secondsRemaining      = totalSecondsRemaining - (minutesRemaining * 60);
@@ -211,7 +203,34 @@ public class RegistrationProgressActivity extends SherlockActivity {
                                        (secondsRemaining < 10 ? "0" : "") +
                                        secondsRemaining);
 
-    registrationStateHandler.sendEmptyMessageDelayed(STATE_TIMER, 1000);
+    registrationStateHandler.sendEmptyMessageDelayed(RegistrationState.STATE_TIMER, 1000);
+  }
+
+  private boolean hasNumberDirective() {
+    return getIntent().getStringExtra("e164number") != null;
+  }
+
+  private String getNumberDirective() {
+    return getIntent().getStringExtra("e164number");
+  }
+
+  private void shutdownServiceBinding() {
+    if (serviceConnection != null) {
+      unbindService(serviceConnection);
+      serviceConnection = null;
+    }
+  }
+
+  private void shutdownService() {
+    if (registrationService != null) {
+      registrationService.shutdown();
+      registrationService = null;
+    }
+
+    shutdownServiceBinding();
+
+    Intent serviceIntent = new Intent(RegistrationProgressActivity.this, RegistrationService.class);
+    stopService(serviceIntent);
   }
 
   private class RegistrationServiceConnection implements ServiceConnection {
@@ -219,7 +238,9 @@ public class RegistrationProgressActivity extends SherlockActivity {
     public void onServiceConnected(ComponentName className, IBinder service) {
       registrationService  = ((RegistrationService.RegistrationServiceBinder)service).getService();
       registrationService.setRegistrationStateHandler(registrationStateHandler);
-      registrationStateHandler.sendEmptyMessage(registrationService.getRegistrationState());
+
+      RegistrationState state = registrationService.getRegistrationState();
+      registrationStateHandler.obtainMessage(state.state, state.number).sendToTarget();
 
       handleTimerUpdate();
     }
@@ -234,13 +255,13 @@ public class RegistrationProgressActivity extends SherlockActivity {
     @Override
     public void handleMessage(Message message) {
       switch (message.what) {
-      case STATE_IDLE:          handleStateIdle();            break;
-      case STATE_CONNECTING:    handleStateConnecting();      break;
-      case STATE_VERIFYING:     handleStateVerifying();       break;
-      case STATE_TIMER:         handleTimerUpdate();          break;
-      case STATE_TIMEOUT:       handleVerificationTimeout();  break;
-      case STATE_COMPLETE:      handleVerificationComplete(); break;
-      case STATE_NETWORK_ERROR: handleConnectivityError();    break;
+      case RegistrationState.STATE_IDLE:          handleStateIdle();                               break;
+      case RegistrationState.STATE_CONNECTING:    handleStateConnecting();                         break;
+      case RegistrationState.STATE_VERIFYING:     handleStateVerifying();                          break;
+      case RegistrationState.STATE_TIMER:         handleTimerUpdate();                             break;
+      case RegistrationState.STATE_TIMEOUT:       handleVerificationTimeout((String)message.obj);  break;
+      case RegistrationState.STATE_COMPLETE:      handleVerificationComplete();                    break;
+      case RegistrationState.STATE_NETWORK_ERROR: handleConnectivityError((String)message.obj);    break;
       }
     }
   }
@@ -248,8 +269,7 @@ public class RegistrationProgressActivity extends SherlockActivity {
   private class EditButtonListener implements View.OnClickListener {
     @Override
     public void onClick(View v) {
-      Intent serviceIntent = new Intent(RegistrationProgressActivity.this, RegistrationService.class);
-      stopService(serviceIntent);
+      shutdownService();
 
       Intent activityIntent = new Intent(RegistrationProgressActivity.this, CreateAccountActivity.class);
       startActivity(activityIntent);
