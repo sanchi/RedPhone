@@ -29,6 +29,24 @@ import org.thoughtcrime.redphone.util.Util;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+/**
+ * The RegisterationService handles the actual process of registration.  If it receives an
+ * intent with a REGISTER_NUMBER_ACTION, it does the following through an executor:
+ *
+ * 1) Generate secrets.
+ * 2) Register the specified number and those secrets with the server.
+ * 3) Wait for a challenge SMS.
+ * 4) Verify the challenge with the server.
+ * 5) Start the GCM registration process.
+ * 6) Retrieve the current directory.
+ *
+ * The RegistrationService broadcasts its state throughout this process, and also makes its
+ * state available through service binding.  This enables a View to display progress.
+ *
+ * @author Moxie Marlinspike
+ *
+ */
+
 public class RegistrationService extends Service {
 
   public static final String NOTIFICATION_TITLE     = "org.thoughtcrime.redphone.NOTIFICATION_TITLE";
@@ -37,6 +55,8 @@ public class RegistrationService extends Service {
   public static final String CHALLENGE_EVENT        = "org.thoughtcrime.redphone.CHALLENGE_EVENT";
   public static final String REGISTRATION_EVENT     = "org.thoughtcrime.redphone.REGISTRATION_EVENT";
   public static final String CHALLENGE_EXTRA        = "CAAChallenge";
+
+  private static final long REGISTRATION_TIMEOUT_MILLIS = 120000;
 
   private final ExecutorService executor = Executors.newSingleThreadExecutor();
   private final Binder          binder   = new RegistrationServiceBinder();
@@ -75,11 +95,7 @@ public class RegistrationService extends Service {
   }
 
   public void shutdown() {
-    if (receiver != null) {
-      unregisterReceiver(receiver);
-      receiver = null;
-    }
-
+    shutdownChallengeListener();
     markAsVerifying(false);
     registrationState = new RegistrationState(RegistrationState.STATE_IDLE);
   }
@@ -90,7 +106,7 @@ public class RegistrationService extends Service {
     if (verificationStartTime == 0) millisPassed = 0;
     else                            millisPassed = System.currentTimeMillis() - verificationStartTime;
 
-    return Math.max((int)(120000 - millisPassed) / 1000, 0);
+    return Math.max((int)(REGISTRATION_TIMEOUT_MILLIS - millisPassed) / 1000, 0);
   }
 
   public RegistrationState getRegistrationState() {
@@ -102,6 +118,13 @@ public class RegistrationService extends Service {
     receiver            = new ChallengeReceiver();
     IntentFilter filter = new IntentFilter(CHALLENGE_EVENT);
     registerReceiver(receiver, filter);
+  }
+
+  private void shutdownChallengeListener() {
+    if (receiver != null) {
+      unregisterReceiver(receiver);
+      receiver = null;
+    }
   }
 
   private void handleRegistrationIntent(Intent intent) {
@@ -149,6 +172,8 @@ public class RegistrationService extends Service {
     } finally {
       if (socket != null)
         socket.close();
+
+      shutdownChallengeListener();
     }
   }
 
@@ -157,7 +182,7 @@ public class RegistrationService extends Service {
 
     if (this.challenge == null) {
       try {
-        wait(120000);
+        wait(REGISTRATION_TIMEOUT_MILLIS);
       } catch (InterruptedException e) {
         throw new IllegalArgumentException(e);
       }

@@ -31,7 +31,7 @@ public class RegistrationProgressActivity extends SherlockActivity {
   private static final int FOCUSED_COLOR   = Color.parseColor("#ff333333");
   private static final int UNFOCUSED_COLOR = Color.parseColor("#ff808080");
 
-  private ServiceConnection     serviceConnection       = new RegistrationServiceConnection();
+  private ServiceConnection    serviceConnection        = new RegistrationServiceConnection();
   private Handler              registrationStateHandler = new RegistrationStateHandler();
   private RegistrationReceiver registrationReceiver     = new RegistrationReceiver();
 
@@ -199,9 +199,7 @@ public class RegistrationProgressActivity extends SherlockActivity {
     int progress              = (int)Math.round(((double)registrationProgress.getMax()) * percentageComplete);
 
     this.registrationProgress.setProgress(progress);
-    this.registrationTimerText.setText("0" + minutesRemaining + ":"       +
-                                       (secondsRemaining < 10 ? "0" : "") +
-                                       secondsRemaining);
+    this.registrationTimerText.setText(String.format("%02d:%02d", minutesRemaining, secondsRemaining));
 
     registrationStateHandler.sendEmptyMessageDelayed(RegistrationState.STATE_TIMER, 1000);
   }

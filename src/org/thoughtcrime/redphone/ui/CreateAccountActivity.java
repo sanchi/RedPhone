@@ -17,7 +17,9 @@
 
 package org.thoughtcrime.redphone.ui;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.telephony.TelephonyManager;
@@ -74,7 +76,7 @@ public class CreateAccountActivity extends SherlockActivity {
     setContentView(R.layout.create_account);
 
     ActionBar actionBar = this.getSupportActionBar();
-    actionBar.setTitle(R.string.CreateAccountActivity_register_with_redphone);
+    actionBar.setTitle(R.string.CreateAccountActivity_register_your_redphone);
 
     initializeResources();
     initializeNumber();
@@ -186,7 +188,7 @@ public class CreateAccountActivity extends SherlockActivity {
   private class CreateButtonListener implements View.OnClickListener {
     @Override
     public void onClick(View v) {
-      CreateAccountActivity self = CreateAccountActivity.this;
+      final CreateAccountActivity self = CreateAccountActivity.this;
 
       if (Util.isEmpty(countryCode.getText())) {
         Toast.makeText(self,
@@ -202,7 +204,7 @@ public class CreateAccountActivity extends SherlockActivity {
         return;
       }
 
-      String e164number = getConfiguredE164Number();
+      final String e164number = getConfiguredE164Number();
 
       if (!PhoneNumberFormatter.isValidNumber(e164number)) {
         Util.showAlertDialog(self,
@@ -211,10 +213,19 @@ public class CreateAccountActivity extends SherlockActivity {
         return;
       }
 
-      Intent intent = new Intent(self, RegistrationProgressActivity.class);
-      intent.putExtra("e164number", e164number);
-      startActivity(intent);
-      finish();
+      AlertDialog.Builder dialog = new AlertDialog.Builder(self);
+      dialog.setMessage(String.format("We will now verify that the following number is associated with this device:\n\n%s\n\nIs this number correct, or would you like to edit it before continuing?", PhoneNumberFormatter.getInternationalFormatFromE164(e164number)));
+      dialog.setPositiveButton("Continue", new DialogInterface.OnClickListener() {
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+          Intent intent = new Intent(self, RegistrationProgressActivity.class);
+          intent.putExtra("e164number", e164number);
+          startActivity(intent);
+          finish();
+        }
+      });
+      dialog.setNegativeButton("Edit", null);
+      dialog.show();
     }
   }
 

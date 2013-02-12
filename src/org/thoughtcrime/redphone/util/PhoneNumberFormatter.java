@@ -41,8 +41,7 @@ import java.util.Locale;
 public class PhoneNumberFormatter {
 
   public static boolean isValidNumber(String number) {
-    return number.startsWith("+") && !number.contains(".") &&
-          !number.contains("-") && !number.contains(" ") && number.length() >= 11;
+    return number.matches("^\\+[0-9]{11,}");
   }
 
   private static String impreciseFormatNumber(String number, String localNumber) {
@@ -103,6 +102,17 @@ public class PhoneNumberFormatter {
   public static String getRegionDisplayName(String regionCode) {
     return (regionCode == null || regionCode.equals("ZZ") || regionCode.equals(PhoneNumberUtil.REGION_CODE_FOR_NON_GEO_ENTITY))
           ? "Unknown country" : new Locale("", regionCode).getDisplayCountry(Locale.getDefault());
+  }
+
+  public static String getInternationalFormatFromE164(String e164number) {
+    try {
+      PhoneNumberUtil util     = PhoneNumberUtil.getInstance();
+      PhoneNumber parsedNumber = util.parse(e164number, null);
+      return util.format(parsedNumber, PhoneNumberFormat.INTERNATIONAL);
+    } catch (NumberParseException e) {
+      Log.w("PhoneNumberFormatter", e);
+      return e164number;
+    }
   }
 
 
