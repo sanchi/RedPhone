@@ -18,44 +18,36 @@
 package org.thoughtcrime.redphone.ui;
 
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
-import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
-import android.content.res.Configuration;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.preference.PreferenceManager;
 import android.telephony.TelephonyManager;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import org.thoughtcrime.redphone.ApplicationContext;
+import org.thoughtcrime.redphone.R;
+import org.thoughtcrime.redphone.util.PhoneNumberFormatter;
+import org.thoughtcrime.redphone.util.Util;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
-
-import org.thoughtcrime.redphone.ApplicationContext;
-import org.thoughtcrime.redphone.Constants;
-import org.thoughtcrime.redphone.R;
-import org.thoughtcrime.redphone.RedPhoneService;
-import org.thoughtcrime.redphone.directory.DirectoryUpdateReceiver;
-import org.thoughtcrime.redphone.directory.NumberFilter;
-import org.thoughtcrime.redphone.gcm.GCMRegistrarHelper;
-import org.thoughtcrime.redphone.signaling.AccountCreationException;
-import org.thoughtcrime.redphone.signaling.AccountCreationSocket;
-import org.thoughtcrime.redphone.signaling.DirectoryResponse;
-import org.thoughtcrime.redphone.signaling.SignalingException;
-import org.thoughtcrime.redphone.util.PhoneNumberFormatter;
-import org.thoughtcrime.redphone.util.Util;
+import com.google.i18n.phonenumbers.AsYouTypeFormatter;
+import com.google.i18n.phonenumbers.NumberParseException;
+import com.google.i18n.phonenumbers.PhoneNumberUtil;
+import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber;
 
 /**
  * The create account activity.  Kicks off an account creation event, then waits
@@ -66,282 +58,236 @@ import org.thoughtcrime.redphone.util.Util;
  *
  */
 
-public class CreateAccountActivity extends SherlockActivity implements Runnable {
+public class CreateAccountActivity extends SherlockActivity {
 
-  private static final int SUCCESS         = 1;
-  private static final int FAILURE         = 2;
-  private static final int FETCHING_FILTER = 3;
-  private static final int TIMEOUT_FAILURE = 4;
+  private static final int PICK_COUNTRY = 1;
 
-  public static final String CHALLENGE_EVENT = "org.thoughtcrime.redphone.CHALLENGE_EVENT";
-  public static final String CHALLENGE_EXTRA = "CAAChallenge";
+  private AsYouTypeFormatter   countryFormatter;
+  private ArrayAdapter<String> countrySpinnerAdapter;
+  private Spinner              countrySpinner;
+  private TextView             countryCode;
+  private TextView             number;
+  private Button               createButton;
 
-  private TextView number;
-  private Button createButton;
-
-  private ChallengeReceiver receiver;
-  private ProgressDialog progressDialog;
-  private String challenge;
 
   @Override
   public void onCreate(Bundle icicle) {
     super.onCreate(icicle);
-    setContentView(R.layout.account_creation);
+    setContentView(R.layout.create_account);
 
     ActionBar actionBar = this.getSupportActionBar();
-    actionBar.setTitle(R.string.CreateAccountActivity_register_with_redphone);
+    actionBar.setTitle(R.string.CreateAccountActivity_register_your_redphone);
 
     initializeResources();
+    initializeNumber();
   }
 
   @Override
-  public void onConfigurationChanged(Configuration newConfiguration) {
-    super.onConfigurationChanged(newConfiguration);
+  public boolean onCreateOptionsMenu(Menu menu) {
+    MenuInflater inflater = this.getSupportMenuInflater();
+    inflater.inflate(R.menu.about_menu, menu);
+    return true;
   }
 
   @Override
-  public void onDestroy() {
-    if (receiver != null) {
-      Log.w("CreateAccountActivity", "Unregistering receiver...");
-      unregisterReceiver(receiver);
-      receiver = null;
+  public boolean onOptionsItemSelected(MenuItem item) {
+    switch (item.getItemId()) {
+    case R.id.aboutItem:
+      Intent aboutIntent = new Intent(this, AboutActivity.class);
+      startActivity(aboutIntent);
+      return true;
     }
+    return false;
+  }
 
-    super.onDestroy();
+  @Override
+  protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    if (requestCode == PICK_COUNTRY && resultCode == RESULT_OK && data != null) {
+      this.countryCode.setText(data.getIntExtra("country_code", 1)+"");
+      setCountryDisplay(data.getStringExtra("country_name"));
+      setCountryFormatter(data.getIntExtra("country_code", 1));
+    }
   }
 
   private void initializeResources() {
     ApplicationContext.getInstance().setContext(this);
 
+    this.countrySpinner = (Spinner)findViewById(R.id.country_spinner);
+    this.countryCode    = (TextView)findViewById(R.id.country_code);
+    this.number         = (TextView)findViewById(R.id.number);
+    this.createButton   = (Button)findViewById(R.id.registerButton);
+
+    this.countrySpinnerAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item);
+    this.countrySpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+    setCountryDisplay(getString(R.string.CreateAccountActivity_select_your_country));
+
+    this.countrySpinner.setAdapter(this.countrySpinnerAdapter);
+    this.countrySpinner.setOnTouchListener(new View.OnTouchListener() {
+      @Override
+      public boolean onTouch(View v, MotionEvent event) {
+        if (event.getAction() == MotionEvent.ACTION_UP) {
+          Intent intent = new Intent(CreateAccountActivity.this, CountrySelectionActivity.class);
+          startActivityForResult(intent, PICK_COUNTRY);
+        }
+        return true;
+      }
+    });
+
+    this.countryCode.addTextChangedListener(new CountryCodeChangedListener());
+    this.number.addTextChangedListener(new NumberChangedListener());
+    this.createButton.setOnClickListener(new CreateButtonListener());
+  }
+
+
+  private void initializeNumber() {
     String localNumber = ((TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE))
                          .getLine1Number();
 
-    if (localNumber != null && localNumber.length() > 0 && !localNumber.startsWith("+")) {
+    if (!Util.isEmpty(localNumber) && !localNumber.startsWith("+")) {
       if (localNumber.length() == 10) localNumber = "+1" + localNumber;
       else                            localNumber = "+"  + localNumber;
     }
 
-    this.number       = (TextView)findViewById(R.id.number);
-    this.createButton = (Button)findViewById(R.id.registerButton);
-
-    this.number.setText(localNumber);
-    this.createButton.setOnClickListener(new CreateButtonListener());
-  }
-
-  private void markAsVerified(String number, String password, String key) {
-    SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-    Editor editor                 = preferences.edit();
-
-    editor.putBoolean(Constants.REGISTERED_PREFERENCE, true);
-    editor.putString(Constants.NUMBER_PREFERENCE, number);
-    editor.putString(Constants.PASSWORD_PREFERENCE, password);
-    editor.putString(Constants.KEY_PREFERENCE, key);
-    editor.putLong(Constants.PASSWORD_COUNTER_PREFERENCE, 1L);
-    editor.commit();
-
-    this.stopService(new Intent(this, RedPhoneService.class));
-  }
-
-  private void createAccount(AccountCreationSocket socket)
-      throws AccountCreationException, SignalingException
-  {
-    socket.createAccount();
-  }
-
-  private String verifyAccount(AccountCreationSocket socket, String number, String password)
-      throws SignalingException, AccountVerificationTimeoutException, AccountCreationException
-  {
-    String key       = Util.getSecret(40);
-    String challenge = waitForChallenge();
-    socket.verifyAccount(challenge, key);
-
-    return key;
-  }
-
-  private void retrieveDirectory(AccountCreationSocket socket) {
     try {
-      DirectoryResponse response = socket.getNumberFilter();
+      if (!Util.isEmpty(localNumber)) {
+        PhoneNumberUtil numberUtil    = PhoneNumberUtil.getInstance();
+        PhoneNumber localNumberObject = numberUtil.parse(localNumber, null);
 
-      if (response != null) {
-        NumberFilter numberFilter = new NumberFilter(response.getFilter(), response.getHashCount());
-        numberFilter.serializeToFile(CreateAccountActivity.this);
+        if (localNumberObject != null) {
+          this.countryCode.setText(localNumberObject.getCountryCode()+"");
+          this.number.setText(localNumberObject.getNationalNumber()+"");
+        }
       }
-    } catch (SignalingException se) {
-      Log.w("CreateAccountActivity", se);
-    }
-
-    DirectoryUpdateReceiver.scheduleDirectoryUpdate(this);
-  }
-
-  public void run() {
-    AccountCreationSocket socket = null;
-
-    try {
-      String number   = this.number.getText().toString();
-      String password = Util.getSecret(18);
-
-      initiateChallengeListener();
-
-      socket = new AccountCreationSocket(CreateAccountActivity.this, number, password);
-      createAccount(socket);
-
-      String key = verifyAccount(socket, number, password);
-      markAsVerified(number, password, key);
-
-      GCMRegistrarHelper.registerClient(CreateAccountActivity.this, true);
-      retrieveDirectory(socket);
-
-      Message message = handler.obtainMessage(SUCCESS);
-      handler.sendMessage(message);
-    } catch (AccountCreationException ace) {
-      Log.w("CreateAccountActivity", ace);
-      Message message = handler.obtainMessage(FAILURE);
-      message.obj     = ace.getMessage();
-      handler.sendMessage(message);
-    } catch (SignalingException e) {
-      Log.w("CreateAccountActivity", e);
-      Message message = handler.obtainMessage(FAILURE);
-      message.obj     = getString(R.string.CreateAccountActivity_error_connecting_to_server_got_internet_connectivity);
-      handler.sendMessage(message);
-    } catch (AccountVerificationTimeoutException e) {
-      Log.w("CreateAccountActivity", e);
-      Message message = handler.obtainMessage(TIMEOUT_FAILURE);
-      handler.sendMessage(message);
-    } finally {
-      if (socket != null)
-        socket.close();
+    } catch (NumberParseException npe) {
+      Log.w("CreateAccountActivity", npe);
     }
   }
 
-  private synchronized void initiateChallengeListener() {
-    this.challenge      = null;
-    receiver            = new ChallengeReceiver();
-    IntentFilter filter = new IntentFilter(CHALLENGE_EVENT);
-    registerReceiver(receiver, filter);
+  private void setCountryDisplay(String value) {
+    this.countrySpinnerAdapter.clear();
+    this.countrySpinnerAdapter.add(value);
   }
 
-  private synchronized String waitForChallenge() throws AccountVerificationTimeoutException {
-    if (this.challenge == null)
-      try {
-        wait(60000);
-      } catch (InterruptedException e) {
-        throw new IllegalArgumentException(e);
-      }
+  private void setCountryFormatter(int countryCode) {
+    PhoneNumberUtil util = PhoneNumberUtil.getInstance();
+    String regionCode    = util.getRegionCodeForCountryCode(countryCode);
 
-    if (this.challenge == null)
-      throw new AccountVerificationTimeoutException();
-
-    return this.challenge;
-  }
-
-  private synchronized void setChallenge(String challenge) {
-    this.challenge = challenge;
-    notifyAll();
-  }
-
-  private class ChallengeReceiver extends BroadcastReceiver {
-    @Override
-    public void onReceive(Context context, Intent intent) {
-      Log.w("CreateAccountActivity", "Got a challenge broadcast...");
-      setChallenge(intent.getStringExtra(CHALLENGE_EXTRA));
+    if (regionCode == null) {
+      this.countryFormatter = null;
+    } else {
+      this.countryFormatter = util.getAsYouTypeFormatter(regionCode);
     }
-  };
+  }
 
-  private Handler handler = new Handler() {
-    @Override
-    public void handleMessage(Message msg) {
-      switch (msg.what) {
-      case SUCCESS:
-        progressDialog.dismiss();
-        Toast.makeText(CreateAccountActivity.this,
-                       R.string.CreateAccountActivity_account_created,
-                       Toast.LENGTH_LONG).show();
-
-        ApplicationPreferencesActivity.setSignalingMethod(CreateAccountActivity.this, "auto");
-
-        Intent intent = new Intent("org.thoughtcrime.redphone.ui.DialerActivity");
-        intent.setClass(CreateAccountActivity.this, DialerActivity.class);
-        startActivity(intent);
-        finish();
-        break;
-      case FAILURE:
-        progressDialog.dismiss();
-        showAlertDialog(getString(R.string.CreateAccountActivity_error_creating_account), msg.obj+"");
-        break;
-      case TIMEOUT_FAILURE:
-        progressDialog.dismiss();
-        showAlertDialog(getString(R.string.CreateAccountActivity_timeout_while_waiting_for_verification),
-                        getString(R.string.CreateAccountActivity_redphone_timed_out_while_waiting_for_an_sms_message_explanation));
-      case FETCHING_FILTER:
-        progressDialog.setTitle(getString(R.string.CreateAccountActivity_account_created));
-        progressDialog.setMessage(getString(R.string.CreateAccountActivity_retrieving_updates));
-        break;
-      }
-    }
-  };
+  private String getConfiguredE164Number() {
+    return "+"                                                       +
+           countryCode.getText().toString().replaceAll("[^0-9]", "") +
+           number.getText().toString().replaceAll("[^0-9]", "");
+  }
 
   private class CreateButtonListener implements View.OnClickListener {
+    @Override
     public void onClick(View v) {
-      CreateAccountActivity self = CreateAccountActivity.this;
-      CharSequence number        = self.number.getText();
+      final CreateAccountActivity self = CreateAccountActivity.this;
 
-      if (number == null || number.toString().equals("")) {
-        Toast toast = Toast.makeText(CreateAccountActivity.this,
-                                     R.string.CreateAccountActivity_you_must_specify_your_phone_number,
-                                     Toast.LENGTH_LONG);
-        toast.show();
+      if (Util.isEmpty(countryCode.getText())) {
+        Toast.makeText(self,
+                       R.string.CreateAccountActivity_you_must_specify_your_country_code,
+                       Toast.LENGTH_LONG).show();
         return;
       }
 
-      self.number.setText(number.toString().replaceAll("[^0-9+]", ""));
-
-      if (!PhoneNumberFormatter.isValidNumber(self.number.getText().toString())) {
-        showAlertDialog(getString(R.string.CreateAccountActivity_incorrect_number_format),
-                        getString(R.string.CreateAccountActivity_you_must_specify_your_number_in_international_format_eg_14151231234));
+      if (Util.isEmpty(number.getText())) {
+        Toast.makeText(self,
+                       R.string.CreateAccountActivity_you_must_specify_your_phone_number,
+                       Toast.LENGTH_LONG).show();
         return;
       }
 
-      CreateAccountActivity.this.progressDialog =
-            ProgressDialog.show(CreateAccountActivity.this,
-                                getString(R.string.CreateAccountActivity_creating_account),
-                                getString(R.string.CreateAccountActivity_this_could_take_a_moment),
-                                true, false);
+      final String e164number = getConfiguredE164Number();
 
-      new Thread(CreateAccountActivity.this).start();
+      if (!PhoneNumberFormatter.isValidNumber(e164number)) {
+        Util.showAlertDialog(self,
+                             getString(R.string.CreateAccountActivity_invalid_number),
+                             String.format(getString(R.string.CreateAccountActivity_the_number_you_specified_s_is_invalid), e164number));
+        return;
+      }
+
+      AlertDialog.Builder dialog = new AlertDialog.Builder(self);
+      dialog.setMessage(String.format("We will now verify that the following number is associated with this device:\n\n%s\n\nIs this number correct, or would you like to edit it before continuing?", PhoneNumberFormatter.getInternationalFormatFromE164(e164number)));
+      dialog.setPositiveButton("Continue", new DialogInterface.OnClickListener() {
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+          Intent intent = new Intent(self, RegistrationProgressActivity.class);
+          intent.putExtra("e164number", e164number);
+          startActivity(intent);
+          finish();
+        }
+      });
+      dialog.setNegativeButton("Edit", null);
+      dialog.show();
     }
   }
 
-
-  @Override
-  public boolean onCreateOptionsMenu(Menu menu) {
-      MenuInflater inflater = this.getSupportMenuInflater();
-      inflater.inflate(R.menu.about_menu, menu);
-      return true;
-  }
-
-  @Override
-  public boolean onOptionsItemSelected(MenuItem item) {
-      switch (item.getItemId()) {
-      case R.id.aboutItem:
-          launchAboutActivity();
-          return true;
+  private class CountryCodeChangedListener implements TextWatcher {
+    @Override
+    public void afterTextChanged(Editable s) {
+      if (Util.isEmpty(s)) {
+        setCountryDisplay(getString(R.string.CreateAccountActivity_select_your_country));
+        countryFormatter = null;
+        return;
       }
-      return false;
+
+      int countryCode   = Integer.parseInt(s.toString());
+      String regionCode = PhoneNumberUtil.getInstance().getRegionCodeForCountryCode(countryCode);
+      setCountryFormatter(countryCode);
+      setCountryDisplay(PhoneNumberFormatter.getRegionDisplayName(regionCode));
+
+      if (!Util.isEmpty(regionCode) && !regionCode.equals("ZZ")) {
+        number.requestFocus();
+      }
+    }
+
+    @Override
+    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+    }
+
+    @Override
+    public void onTextChanged(CharSequence s, int start, int before, int count) {
+    }
   }
 
-  private void showAlertDialog(String title, String message) {
-    AlertDialog.Builder dialog = new AlertDialog.Builder(CreateAccountActivity.this);
-    dialog.setTitle(title);
-    dialog.setMessage(message);
-    dialog.setIcon(android.R.drawable.ic_dialog_alert);
-    dialog.setPositiveButton(android.R.string.ok, null);
-    dialog.show();
-  }
+  private class NumberChangedListener implements TextWatcher {
 
-  private void launchAboutActivity() {
-    Intent aboutIntent = new Intent();
-    aboutIntent.setClass(this, AboutActivity.class);
-    this.startActivity(aboutIntent);
-  }
+    @Override
+    public void afterTextChanged(Editable s) {
+      if (countryFormatter == null)
+        return;
 
+      if (Util.isEmpty(s))
+        return;
+
+      countryFormatter.clear();
+
+      String number          = s.toString().replaceAll("[^\\d.]", "");
+      String formattedNumber = null;
+
+      for (int i=0;i<number.length();i++) {
+        formattedNumber = countryFormatter.inputDigit(number.charAt(i));
+      }
+
+      if (!s.toString().equals(formattedNumber)) {
+        s.replace(0, s.length(), formattedNumber);
+      }
+    }
+
+    @Override
+    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+    }
+
+    @Override
+    public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+    }
+  }
 }

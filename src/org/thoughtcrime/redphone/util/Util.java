@@ -17,6 +17,9 @@
 
 package org.thoughtcrime.redphone.util;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.text.Editable;
 import android.util.Log;
 
 import org.thoughtcrime.redphone.ApplicationContext;
@@ -66,6 +69,27 @@ public class Util {
     } catch (NoSuchAlgorithmException nsae) {
       throw new AssertionError(nsae);
     }
+  }
+
+  public static boolean isEmpty(String value) {
+    return (value == null || value.trim().length() == 0);
+  }
+
+  public static boolean isEmpty(CharSequence value) {
+    return value == null || isEmpty(value.toString());
+  }
+
+  public static boolean isEmpty(Editable value) {
+    return value == null || isEmpty(value.toString());
+  }
+
+  public static void showAlertDialog(Context context, String title, String message) {
+    AlertDialog.Builder dialog = new AlertDialog.Builder(context);
+    dialog.setTitle(title);
+    dialog.setMessage(message);
+    dialog.setIcon(android.R.drawable.ic_dialog_alert);
+    dialog.setPositiveButton(android.R.string.ok, null);
+    dialog.show();
   }
 
   // XXX-S The consumers of these are way way down in the audio/microphone code.

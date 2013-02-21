@@ -21,6 +21,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import org.thoughtcrime.redphone.Constants;
 import org.thoughtcrime.redphone.util.Base64;
 
 import java.io.IOException;
@@ -69,7 +70,7 @@ public class EncryptedSignalMessage {
 
   private byte[] getCombinedKey() throws InvalidEncryptedSignalException, IOException {
     SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
-    String key                    = preferences.getString("Key", null);
+    String key                    = preferences.getString(Constants.KEY_PREFERENCE, null);
 
     if (key == null)
       throw new InvalidEncryptedSignalException("No combined key available!");

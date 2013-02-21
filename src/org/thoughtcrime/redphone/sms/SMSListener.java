@@ -27,8 +27,8 @@ import android.util.Log;
 
 import org.thoughtcrime.redphone.Constants;
 import org.thoughtcrime.redphone.RedPhoneService;
+import org.thoughtcrime.redphone.registration.RegistrationService;
 import org.thoughtcrime.redphone.signaling.SessionDescriptor;
-import org.thoughtcrime.redphone.ui.CreateAccountActivity;
 
 /**
  * A broadcast receiver that gets notified for incoming SMS
@@ -71,8 +71,8 @@ public class SMSListener extends BroadcastReceiver {
       abortBroadcast();
     }
 
-    Intent challengeIntent = new Intent(CreateAccountActivity.CHALLENGE_EVENT);
-    challengeIntent.putExtra(CreateAccountActivity.CHALLENGE_EXTRA, challenge);
+    Intent challengeIntent = new Intent(RegistrationService.CHALLENGE_EVENT);
+    challengeIntent.putExtra(RegistrationService.CHALLENGE_EXTRA, challenge);
     context.sendBroadcast(challengeIntent);
   }
 

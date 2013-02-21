@@ -29,6 +29,7 @@ public interface Constants {
   public static final String REMOTE_NUMBER = "remote_number";
   public static final String SESSION       = "session";
 
+  public static final String VERIFYING_PREFERENCE        = "VERIFYING";
   public static final String REGISTERED_PREFERENCE       = "REGISTERED";
   public static final String NUMBER_PREFERENCE           = "Number";
   public static final String PASSWORD_PREFERENCE         = "Password";

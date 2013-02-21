@@ -26,6 +26,11 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 
+import org.thoughtcrime.redphone.Constants;
+import org.thoughtcrime.redphone.R;
+import org.thoughtcrime.redphone.directory.DirectoryUpdateReceiver;
+import org.thoughtcrime.redphone.gcm.GCMRegistrarHelper;
+
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.ActionBar.Tab;
 import com.actionbarsherlock.app.ActionBar.TabListener;
@@ -33,11 +38,6 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
-
-import org.thoughtcrime.redphone.Constants;
-import org.thoughtcrime.redphone.R;
-import org.thoughtcrime.redphone.directory.DirectoryUpdateReceiver;
-import org.thoughtcrime.redphone.gcm.GCMRegistrarHelper;
 
 /**
  * The base dialer activity.  A tab container for the contacts, call log, and favorites tab.
@@ -148,11 +148,15 @@ public class DialerActivity extends SherlockFragmentActivity {
   private void checkForFreshInstall() {
     SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
 
+    if (preferences.getBoolean(Constants.VERIFYING_PREFERENCE, false)) {
+      Log.w("DialerActivity", "Verification underway...");
+      startActivity(new Intent(this, RegistrationProgressActivity.class));
+      finish();
+    }
+
     if (!preferences.getBoolean(Constants.REGISTERED_PREFERENCE, false)) {
-      Log.w("DialerActivity", "not registered...");
-      Intent intent = new Intent("org.thoughtcrime.redphone.ui.CreateAccountActivity");
-      intent.setClass(this, CreateAccountActivity.class);
-      startActivity(intent);
+      Log.w("DialerActivity", "Not registered and not verifying...");
+      startActivity(new Intent(this, CreateAccountActivity.class));
       finish();
     }
 
