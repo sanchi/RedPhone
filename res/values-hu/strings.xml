@@ -35,21 +35,9 @@
   <string name="ApplicationPreferencesActivity_error_unregistering_with_c2dm_server">A regisztráció törlése közben hiba történt a C2DM szerveren...</string>
   <string name="ApplicationPreferencesActivity_error_communicating_with_c2dm_server">Hiba történt a C2DM szerverrel kommunikáció közben...</string>
   <string name="CallScreen_incoming_call">Bejövő hívás...</string>
-  <string name="CreateAccountActivity_register_with_redphone">Regisztrálás a RedPhone-al</string>
-  <string name="CreateAccountActivity_error_connecting_to_server_got_internet_connectivity">Hiba történt a szerverre csatlakozás közben. Van internet kapcsolat?</string>
-  <string name="CreateAccountActivity_account_created">Fiók létrehozva</string>
-  <string name="CreateAccountActivity_error_creating_account">A fiók létrehozása közben hiba történt</string>
-  <string name="CreateAccountActivity_timeout_while_waiting_for_verification">Az ellenőrzésre várakozás közben időtúllépés történt</string>
-  <string name="CreateAccountActivity_redphone_timed_out_while_waiting_for_an_sms_message_explanation">A RedPhone a telefonszám ellenőrzése közben időtúllépést észlelt az ellenőrző SMS-re várva. A lehetséges hibák:\n\n* Néhány külső fejlesztésű szövegkezelő kliens, mint például a Handcent vagy a GoSMS nem megfelelően működik és minden érkező SMS-t elfognak. Ellenőrizd, hogy kaptál-e olyan szöveges üzenetet, ami \'A RedPhone is trying to verify you\' szöveggel kezdődik, ebben az esetben úgy kell beállítanod az SMS kezelő alkalmazást, hogy ez az üzenet átmenjen rajta.\n\n* Rossz telefonszámmal regisztrálás. Kérjük ellenőrizd, hogy a helyes számot adtad-e meg.\n\n* A Google Voice telefonszám használata egy régebbi verziójú Google Voice telepítésben. A RedPhone már kompatibilis a Google Voice telefonszámokkal, de csak ha a legfrissebb verzió van telepítve.</string>
-  <string name="CreateAccountActivity_retrieving_updates">Frissítések letöltése...</string>
-  <string name="CreateAccountActivity_you_must_specify_your_phone_number">Meg kell adnod a telefonszámodat!</string>
-  <string name="CreateAccountActivity_incorrect_number_format">Érvénytelen számformátum</string>
-  <string name="CreateAccountActivity_you_must_specify_your_number_in_international_format_eg_14151231234">A telefonszámot nemzetközi formátumban kell megadnod, pl: +14151231234</string>
-  <string name="CreateAccountActivity_sorry_only_usa_numbers_are_supported_in_the_beta">Sajnos a bétában csak az amerikai egyesült államokbeli számok támogatottak.</string>
-  <string name="CreateAccountActivity_creating_account">Új fiók létrehozása</string>
-  <string name="CreateAccountActivity_this_could_take_a_moment">Ez eltarthat egy darabig...</string>
   <string name="ContactsListActivity_loading">Betöltés...</string>
   <string name="ContactsListActivity_no_contacts_found">Nincs ilyen.</string>
+  <string name="CreateAccountActivity_you_must_specify_your_phone_number">Meg kell adnod a telefonszámodat!</string>
   <string name="NotificationBarManager_redphone_call_in_progress">RedPhone hívás folyamatban</string>
   <string name="NotificationBarManager_missed_redphone_call_from_s">%s hívó féltől nem fogadott RedPhone hívás</string>
   <string name="NotificationBarManager_missed_redphone_call">Nem fogadott RedPhone hívás</string>
@@ -64,10 +52,8 @@
   <string name="RedPhoneChooser_insecure_call">Nem biztonságos hívás</string>
   <string name="about_activity__additional_information">További információk:</string>
   <string name="about_activity__attribution">Tartalom:</string>
-  <string name="about_activity__aboutText">A további információkért látogasd meg a whispersystems.org weboldalát vagy a problémákkal, kérdésekkel, hozzászólásokkal írj a support@whispersystems.org email címre.</string>
+  <string name="about_activity__aboutText">A további információkért látogasd meg a whispersystems.org weboldalát vagy a problémákkal, kérdésekkel és javaslatokkal írj a support@whispersystems.org email címre.</string>
   <string name="about_activity__attributionText">RedPhone links to the SpanDSP library, which is licensed under the LGPL.\n\nRedPhone uses the SPEEX Codec, which is used under the Xiph.Org variant of the BSD license: © 2002-2003, Jean-Marc Valin/Xiph.Org Foundation\n\nRedistribution and use of the SPEEX library in source and binary forms, with or without modification, are permitted provided that the following conditions are met:\n\n\t* Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.\n\t* Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.\n\t* Neither the name of the Xiph.org Foundation nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.\n\nThe SPEEX library is provided by the copyright holders and contributors “as is” and any express or implied warranties, including, but not limited to, the implied warranties of merchantability and fitness for a particular purpose are disclaimed. In no event shall the foundation or contributors be liable for any direct, indirect, incidental, special, exemplary, or consequential damages (including, but not limited to, procurement of substitute goods or services; loss of use, data, or profits; or business interruption) however caused and on any theory of liability, whether in contract, strict liability, or tort (including negligence or otherwise) arising in any way out of the use of this software, even if advised of the possibility of such damage.\n\n\nSome sound samples are licensed under the Creative Commons Sampling Plus License: http://creativecommons.org/licenses/sampling+/1.0/\n\nBy acclivity (http://www.freesound.org/usersViewSingle.php?id=37876):\nShipsBell.wav (http://www.freesound.org/samplesViewSingle.php?id=32304)\n\nBy Splashdust (http://www.freesound.org/usersViewSingle.php?id=754949):\nnegativebeep.wav (http://www.freesound.org/samplesViewSingle.php?id=67454)\n\nBy Peter_Gross (http://www.freesound.org/usersViewSingle.php?id=33429):\nSonar_pings.ogg (http://www.freesound.org/samplesViewSingle.php?id=12677\n\nBy suonho: http://www.freesound.org/samplesViewSingle.php?id=58348: ambienta_soundtrack_moog_sweep\n\nBy Mike Koenig: Busy Signal</string>
-  <string name="account_creation__this_devices_phone_number">Az eszköz telefonszáma:</string>
-  <string name="account_creation__register">Regisztráció</string>
   <string name="contacts_list_content__search">Keresés</string>
   <string name="outbound_chooser__you_ve_initiated_a_call_with_a_contact_who_also_uses_redphone_would_you_like_to_upgrade_this_to_a_redphone_call">Hívást kezdeményeztél egy olyan személlyel aki szintén RedPhone használó. Szeretnéd ezt a hívást a RedPhone-on keresztül lebonyolítani?</string>
   <string name="outbound_chooser__secure_call">Biztonságos hívás</string>
@@ -77,9 +63,14 @@
   <string name="dialer_options_menu__re_register">Ismételt regisztráció</string>
   <string name="dialer_options_menu__about">Rólunk</string>
   <string name="dialer_options_menu__settings">Beállítások</string>
+  <string name="array__google_push_notifications">Google push értesítők</string>
+  <string name="array__sms_push_notifications">SMS push értesítők</string>
+  <string name="array__auto_recommended">Automatikus (ajánlott)</string>
   <string name="preferences__general_settings">Beállítások</string>
   <string name="preferences__prompt_for_call_upgrade">Híváskezelés értesítő</string>
   <string name="preferences__when_making_insecure_calls_prompt_for_upgrade_to_redphone_if_contact_is_redphone_enabled">Ha a hívott fél RedPhone felhasználó, akkor a nem biztonságos hívások indításánál felajánlja a RedPhone használatát.</string>
+  <string name="preferences__advanced_signaling_settings">Haladó: Üzenetküldési beállítások</string>
+  <string name="preferences__advanced_audio_settings">Haladó: Hang beállítások</string>
   <string name="preferences__enable_audio_compatibility_mode_higher_latency">Hang kompatibilitás mód engedélyezése [nagyobb késleltetés]</string>
   <string name="preferences__compatibility_mode">Kompatibilitás mód</string>
   <string name="preferences__use_in_call_audio_mode">Hívás közbeni hang üzemmód használata</string>
@@ -88,5 +79,7 @@
   <string name="preferences__may_improve_performance_on_some_devices">Néhány készüléken javíthatja a teljesítményt</string>
   <string name="preferences__force_minimum_latency">Minimum késleltetés kényszerítése</string>
   <string name="preferences__reduce_latency_at_the_expense_of_audio_quality">A gyengébb hangminőség árán csökkenti a késleltetést</string>
+  <string name="preferences__signaling_method">Üzenetküldési mód</string>
+  <string name="preferences__modify_the_method_used_to_notify_your_device_of_incoming_calls">A bejövő hívások értesítési módjának beállítása.</string>
   <!--EOF-->
 </resources>

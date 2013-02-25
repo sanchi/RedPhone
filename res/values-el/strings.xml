@@ -35,21 +35,9 @@
   <string name="ApplicationPreferencesActivity_error_unregistering_with_c2dm_server">Σφάλμα κατά την ανεγγραφή με εξυπηρετητή C2DM...</string>
   <string name="ApplicationPreferencesActivity_error_communicating_with_c2dm_server">Σφάλμα επικοινωνίας με εξυπηρετητή C2DM...</string>
   <string name="CallScreen_incoming_call">Εισερχόμενη κλήση...</string>
-  <string name="CreateAccountActivity_register_with_redphone">Εγγραφή με το RedPhone</string>
-  <string name="CreateAccountActivity_error_connecting_to_server_got_internet_connectivity">Σφάλμα συνδέοντας στον εξυπηρετητή.  Είστε συνδεδεμένοι με στο διαδίκτυο;</string>
-  <string name="CreateAccountActivity_account_created">Λογαριασμός Δημιουργήθηκε</string>
-  <string name="CreateAccountActivity_error_creating_account">Σφάλμα κατά δημιουργία λογαριασμού</string>
-  <string name="CreateAccountActivity_timeout_while_waiting_for_verification">Λήξη χρονικού ορίου κατά την αναμονή επαλήθευσης</string>
-  <string name="CreateAccountActivity_redphone_timed_out_while_waiting_for_an_sms_message_explanation">Το RedPhone έφτασε το όριο χρόνου όσο περίμενε για μήνυμα SMS για την επαλήθευση του αριθμού σας. Πιθανοί λόγοι για αυτό μπορεί να περιλαμβάνουν:\n\n* Μερικά τρίτα προγράμματα μηνυμάτων SMS όπως το Handcent και το GO SMS συμπεριφέρονται κακώς και υποκλέπτουν όλα τα εισερχόμενα μηνύματα SMS.  Κοιτάξτε αν έχετε λάβει ένα μήνυμα που αρχίζει με «A RedPhone is trying to verify you», στην οποία περίπτωση θα πρέπει να ρυθμίσετε το τρίτο πρόγραμμα μηνυμάτων σας για να αφήνει μηνύματα SMS.\n\n* Εγγραφή με λανθασμένο αριθμό τηλεφώνου. Παρακαλούμε επανελέγξτε τον αριθμό που εισάγατε.\n\n* Η χρήση ενός αριθμού Google Voice για εγγραφή με παλιότερη έκδοση του Google Voice εγκατεστημένη.  Το RedPhone είναι τώρα συμβατό με τους αριθμούς του Google Voice, αλλά μόνο με πρόσφατες εκδόσεις του προγράμματος Google Voice.</string>
-  <string name="CreateAccountActivity_retrieving_updates">Ανάκτηση αναβαθμίσεων...</string>
-  <string name="CreateAccountActivity_you_must_specify_your_phone_number">Πρέπει να ορίσετε τον αριθμό τηλεφώνου σας!</string>
-  <string name="CreateAccountActivity_incorrect_number_format">Λανθασμένη μορφή αριθμού</string>
-  <string name="CreateAccountActivity_you_must_specify_your_number_in_international_format_eg_14151231234">Πρέπει να ορίσετε τον αριθμό σας σε διεθνή μορφή, π.χ. +14151231234</string>
-  <string name="CreateAccountActivity_sorry_only_usa_numbers_are_supported_in_the_beta">Συγγνώμη, μόνο αριθμοί από τις ΗΠΑ υποστηρίζονται στη φάση Βήτα.</string>
-  <string name="CreateAccountActivity_creating_account">Δημιουργία λογαριασμού</string>
-  <string name="CreateAccountActivity_this_could_take_a_moment">Θα πάρει μια στιγμή...</string>
   <string name="ContactsListActivity_loading">Φόρτωση...</string>
   <string name="ContactsListActivity_no_contacts_found">Δε βρέθηκαν επαφές</string>
+  <string name="CreateAccountActivity_you_must_specify_your_phone_number">Πρέπει να ορίσετε τον αριθμό τηλεφώνου σας!</string>
   <string name="NotificationBarManager_redphone_call_in_progress">Κλήση RedPhone σε εξέλιξη</string>
   <string name="NotificationBarManager_missed_redphone_call_from_s">Αναπάντητη κλήση RedPhone από %s</string>
   <string name="NotificationBarManager_missed_redphone_call">Αναπάντητη κλήση RedPhone</string>
@@ -65,8 +53,6 @@
   <string name="about_activity__additional_information">Επιπλέον Πληροφορίες:</string>
   <string name="about_activity__attribution">Απόδοση:</string>
   <string name="about_activity__aboutText">Παρακαλούμε επισκεφτείτε το whispersystems.org για περισσότερες πληροφορίες, ή επικοινωνήστε με support@whispersystems.org για προβλήματα, ερωτήσεις ή σχόλια.</string>
-  <string name="account_creation__this_devices_phone_number">Ο αριθμός τηλεφώνου αυτής της συσκευής:</string>
-  <string name="account_creation__register">Εγγραφή</string>
   <string name="contacts_list_content__search">Αναζήτηση</string>
   <string name="outbound_chooser__you_ve_initiated_a_call_with_a_contact_who_also_uses_redphone_would_you_like_to_upgrade_this_to_a_redphone_call">Καλέσατε επαφή που επίσης χρησιμοποιεί το RedPhone. Θέλετε να αναβαθμίσετε την κλήση σας σε ασφαλές κλήση;</string>
   <string name="outbound_chooser__secure_call">Ασφαλές Κλήση</string>
@@ -76,9 +62,14 @@
   <string name="dialer_options_menu__re_register">Επαναεγγραφή</string>
   <string name="dialer_options_menu__about">Σχετικά</string>
   <string name="dialer_options_menu__settings">Ρυθμίσεις</string>
+  <string name="array__google_push_notifications">Ειδοποιήσεις ώθησης Google</string>
+  <string name="array__sms_push_notifications">Ειδοποιήσεις ώθησης SMS</string>
+  <string name="array__auto_recommended">Αυτόματο (προτεινόμενο)</string>
   <string name="preferences__general_settings">Γενικές Ρυθμίσεις</string>
   <string name="preferences__prompt_for_call_upgrade">Προτροπή για αναβάθμιση κλήσης</string>
   <string name="preferences__when_making_insecure_calls_prompt_for_upgrade_to_redphone_if_contact_is_redphone_enabled">Όταν πραγματοποιείτε μη ασφαλείς κλήσεις, προτροπή για αναβάθμιση σε RedPhone εάν η επαφή είναι συμβατή με Redphone.</string>
+  <string name="preferences__advanced_signaling_settings">Για προχωρημένους: Ρυθμίσεις Σηματοδότησης</string>
+  <string name="preferences__advanced_audio_settings">Για προχωρημένους: Ρυθμίσεις Ήχου</string>
   <string name="preferences__enable_audio_compatibility_mode_higher_latency">Έναρξη Λειτουργίας Συμβατότητας Ήχου [υψηλότερη καθυστέρηση]</string>
   <string name="preferences__compatibility_mode">Λειτουργία Συμβατότητας</string>
   <string name="preferences__use_in_call_audio_mode">Χρήση Λειτουργίας Ήχου Εν Ώρα Κλήσης</string>
@@ -87,5 +78,7 @@
   <string name="preferences__may_improve_performance_on_some_devices">Ίσως η απόδοση βελτιωθεί σε μερικές συσκευές</string>
   <string name="preferences__force_minimum_latency">Εξαναγκασμός ελάχιστης καθυστέρησης</string>
   <string name="preferences__reduce_latency_at_the_expense_of_audio_quality">Μείωση καθυστέρησης αλλά χαμηλότερη ποιότητα ήχου</string>
+  <string name="preferences__signaling_method">Μέθοδος Σηματοδότησης</string>
+  <string name="preferences__modify_the_method_used_to_notify_your_device_of_incoming_calls">Τροποποίηση της μεθόδου, η οποία χρησιμοποιείται για να ειδοποιεί  την συσκευή σας για εισερχόμενες κλήσεις.</string>
   <!--EOF-->
 </resources>
