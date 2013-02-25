@@ -80,6 +80,14 @@ public class CallScreen extends FrameLayout {
     callControls.setIncomingCallActionListener(listener);
   }
 
+  public void setMuteButtonListener(CallControls.MuteButtonListener listener) {
+    callControls.setMuteButtonListener(listener);
+  }
+
+  public void setAudioButtonListener(CallControls.AudioButtonListener listener) {
+    callControls.setAudioButtonListener(listener);
+  }
+
   private void initialize() {
     LayoutInflater inflater = (LayoutInflater)getContext()
                               .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -88,5 +96,4 @@ public class CallScreen extends FrameLayout {
     this.callCard     = (CallCard)findViewById(R.id.callCard);
     this.callControls = (CallControls)findViewById(R.id.callControls);
   }
-
 }

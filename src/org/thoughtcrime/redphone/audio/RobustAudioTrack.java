@@ -21,6 +21,7 @@ import android.content.Context;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
+import android.os.Build;
 import android.os.SystemClock;
 import android.util.Log;
 
@@ -61,29 +62,19 @@ public class RobustAudioTrack  {
     }
 
     Context context = ApplicationContext.getInstance().getContext();
-    //initialize the audioTrack, based on preferred mode
-    AudioManager audioManager = (AudioManager) context
-        .getSystemService(Context.AUDIO_SERVICE);
-    if (ApplicationPreferencesActivity.getAudioModeIncall(context)) {
-      Log.d("ATM", "Initialized using IN CALL mode");
-      audioManager.setMode(AudioManager.MODE_IN_CALL);
+    AudioManager am = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+    if(Build.VERSION.SDK_INT >= 11) {
+      am.setMode(AudioManager.MODE_IN_COMMUNICATION);
     } else {
-      Log.d("ATM", "Initialized using NORMAL MODE");
-      audioManager.setRouting(AudioManager.MODE_NORMAL,
-      AudioManager.ROUTE_EARPIECE, AudioManager.ROUTE_ALL);
-      audioManager.setMode(AudioManager.MODE_NORMAL);
+      Log.d(TAG, "Setting Normal Audio mode");
+      am.setMode(AudioManager.MODE_NORMAL);
     }
-    audioManager.setStreamVolume(AudioManager.STREAM_MUSIC,	(int) (audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)*0.9), 0);
-    audioManager.setStreamVolume(AudioManager.STREAM_VOICE_CALL,(int) (audioManager.getStreamMaxVolume(AudioManager.STREAM_VOICE_CALL) * 0.9),0);
-    audioManager.setMicrophoneMute(false);
-    audioManager.setSpeakerphoneOn(false);
 
     audioPlayer = new AudioTrack(AudioManager.STREAM_VOICE_CALL,
-        AudioCodec.SAMPLE_RATE, AudioFormat.CHANNEL_CONFIGURATION_MONO,
+        AudioCodec.SAMPLE_RATE, AudioFormat.CHANNEL_OUT_MONO,
         AudioFormat.ENCODING_PCM_16BIT, AUDIO_BUFFER_SIZE,
         AudioTrack.MODE_STREAM);
     waitForAudioTrackReady();
-    //writeChunk(audioPlayer.silence, audioPlayer.silence.length);
   }
 
   private void waitForAudioTrackReady() {

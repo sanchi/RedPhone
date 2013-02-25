@@ -24,11 +24,13 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.Animation;
+import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import org.thoughtcrime.redphone.R;
+import org.thoughtcrime.redphone.util.PhoneUtils;
 import org.thoughtcrime.redphone.util.com.android.internal.widget.multiwaveview.MultiWaveView;
 
 /**
@@ -45,6 +47,9 @@ public class CallControls extends RelativeLayout {
 
   private View activeCallWidget;
   private MultiWaveView incomingCallWidget;
+
+  private CompoundButton muteButton;
+  private InCallAudioButton audioButton;
 
   private Handler handler = new Handler() {
     @Override
@@ -103,6 +108,9 @@ public class CallControls extends RelativeLayout {
     incomingCallWidget.setVisibility(View.GONE);
     activeCallWidget.setVisibility(View.GONE);
     sasTextView.setText("");
+    audioButton.setAudioMode(InCallAudioButton.AudioMode.DEFAULT);
+    audioButton.setHeadsetAvailable(PhoneUtils.isBluetoothAvailable());
+    muteButton.setChecked(false);
   }
 
   public void setHangupButtonListener(final HangupButtonListener listener) {
@@ -113,6 +121,20 @@ public class CallControls extends RelativeLayout {
       }
     });
   }
+
+  public void setMuteButtonListener(final MuteButtonListener listener) {
+    muteButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+      @Override
+      public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+        listener.onToggle(b);
+      }
+    });
+  }
+
+  public void setAudioButtonListener(final AudioButtonListener listener) {
+    audioButton.setListener(listener);
+  }
+
 
   public void setIncomingCallActionListener(final IncomingCallActionListener listener) {
     incomingCallWidget.setOnTriggerListener(new MultiWaveView.OnTriggerListener() {
@@ -141,14 +163,24 @@ public class CallControls extends RelativeLayout {
     this.incomingCallWidget = (MultiWaveView)findViewById(R.id.incomingCallWidget);
     this.activeCallWidget   = (View)findViewById(R.id.inCallControls);
     this.sasTextView        = (TextView)findViewById(R.id.sas);
+    this.muteButton         = (CompoundButton)findViewById(R.id.muteButton);
+    this.audioButton        = new InCallAudioButton((CompoundButton)findViewById(R.id.audioButton));
   }
 
   public static interface HangupButtonListener {
     public void onClick();
   }
 
+  public static interface MuteButtonListener {
+    public void onToggle(boolean isMuted);
+  }
+
   public static interface IncomingCallActionListener {
     public void onAcceptClick();
     public void onDenyClick();
+  }
+
+  public static interface AudioButtonListener {
+    public void onAudioChange(InCallAudioButton.AudioMode mode);
   }
 }
