@@ -72,6 +72,7 @@
                   android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize"/>
         
         <activity android:name=".ui.CreateAccountActivity"
+                  android:launchMode="singleTask"                               
                   android:windowSoftInputMode="stateHidden"
                   android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize"/>
 
@@ -86,6 +87,7 @@
                   android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize"/>
                   
         <activity android:name=".ui.RegistrationProgressActivity"
+                  android:launchMode="singleTask"                        
                   android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize"/>
         	
         <service android:enabled="true" android:name=".RedPhoneService"/>
