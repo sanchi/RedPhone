@@ -180,8 +180,8 @@ public class CreateAccountActivity extends SherlockActivity {
   }
 
   private String getConfiguredE164Number() {
-    return "+"                                                       +
-           countryCode.getText().toString().replaceAll("[^0-9]", "") +
+    return "+"                                                                             +
+           countryCode.getText().toString().replaceAll("[^0-9]", "").replaceAll("^0*", "") +
            number.getText().toString().replaceAll("[^0-9]", "");
   }
 
