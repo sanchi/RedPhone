@@ -20,6 +20,7 @@ package org.thoughtcrime.redphone.audio;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
+import android.os.Build;
 import android.os.SystemClock;
 import android.util.Log;
 
@@ -33,10 +34,10 @@ import org.thoughtcrime.redphone.profiling.ProfilingTimer;
 import org.thoughtcrime.redphone.ui.ApplicationPreferencesActivity;
 import org.thoughtcrime.redphone.util.Factory;
 import org.thoughtcrime.redphone.util.Pool;
-import org.thoughtcrime.redphone.util.Util;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -53,12 +54,16 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 public class MicrophoneReader {
   public static final String TAG = "MicrophoneReader";
+  private static final int AUDIO_SOURCE =
+    Build.VERSION.SDK_INT >= 11 ? MediaRecorder.AudioSource.VOICE_COMMUNICATION
+      : MediaRecorder.AudioSource.DEFAULT;
+
   public static final int AUDIO_BUFFER_SIZE = 8000 + AudioRecord
       .getMinBufferSize(AudioCodec.SAMPLE_RATE,
           AudioFormat.CHANNEL_CONFIGURATION_MONO,
           AudioFormat.ENCODING_PCM_16BIT);
   private AudioRecord audioSource = new AudioRecord(
-      MediaRecorder.AudioSource.MIC, AudioCodec.SAMPLE_RATE,
+      AUDIO_SOURCE, AudioCodec.SAMPLE_RATE,
       AudioFormat.CHANNEL_CONFIGURATION_MONO,
       AudioFormat.ENCODING_PCM_16BIT, AUDIO_BUFFER_SIZE * 10);
   private byte encodedData[] = new byte[512];
@@ -77,6 +82,7 @@ public class MicrophoneReader {
   private PacketLogger packetLogger;
 
   private final AtomicReference<AudioException> micThreadException;
+  private final AtomicReference<Boolean> enableMute;
 
   private List<AudioChunk> micAudioList =
     Collections.synchronizedList(new ArrayList<AudioChunk>());
@@ -92,6 +98,7 @@ public class MicrophoneReader {
     this.packetLogger = packetLogger;
     audioQueue = outgoingAudio;
     micThreadException = new AtomicReference<AudioException>();
+    enableMute = new AtomicReference<Boolean>(false);
   }
 
   private void waitForMicReady() throws AudioException {
@@ -239,6 +246,11 @@ public class MicrophoneReader {
       chunk.sequenceNumber = sequenceNumber++;
 
       packetLogger.logPacket( chunk.sequenceNumber, PacketLogger.PACKET_IN_MIC_QUEUE );
+
+      if(enableMute.get()) {
+        muteAudio(chunk);
+      }
+
       micAudioList.add( chunk );
 
       if (samplesRead != AudioCodec.SAMPLES_PER_FRAME) {
@@ -260,5 +272,13 @@ public class MicrophoneReader {
 
   public void flush() {
     micAudioList.clear();
+  }
+
+  public void setMute(boolean updatedMuteSetting) {
+    enableMute.set(updatedMuteSetting);
+  }
+
+  public void muteAudio(AudioChunk chunk) {
+    Arrays.fill(chunk.getChunk(), (short) 0);
   }
 }

@@ -46,7 +46,6 @@ import org.thoughtcrime.redphone.signaling.OtpCounterProvider;
 import org.thoughtcrime.redphone.signaling.SessionDescriptor;
 import org.thoughtcrime.redphone.signaling.SignalingException;
 import org.thoughtcrime.redphone.signaling.SignalingSocket;
-import org.thoughtcrime.redphone.ui.ApplicationPreferencesActivity;
 import org.thoughtcrime.redphone.ui.NotificationBarManager;
 import org.thoughtcrime.redphone.util.Base64;
 import org.thoughtcrime.redphone.util.CallLogger;
@@ -73,6 +72,7 @@ public class RedPhoneService extends Service implements CallStateListener, CallS
   public static final String ACTION_ANSWER_CALL   = "org.thoughtcrime.redphone.RedPhoneService.ANSWER_CALL";
   public static final String ACTION_DENY_CALL     = "org.thoughtcrime.redphone.RedPhoneService.DENYU_CALL";
   public static final String ACTION_HANGUP_CALL   = "org.thoughtcrime.redphone.RedPhoneService.HANGUP";
+  public static final String ACTION_SET_MUTE      = "org.thoughtcrime.redphone.RedPhoneService.SET_MUTE";
 
   private static final String TAG = RedPhoneService.class.getName();
 
@@ -104,7 +104,7 @@ public class RedPhoneService extends Service implements CallStateListener, CallS
 
     initializeResources();
     initializeApplicationContext();
-    initializeAudio();
+    initializeRingers();
     initializePstnCallListener();
     registerUncaughtExceptionHandler();
   }
@@ -140,29 +140,12 @@ public class RedPhoneService extends Service implements CallStateListener, CallS
     else if (intent.getAction().equals(ACTION_ANSWER_CALL))               handleAnswerCall(intent);
     else if (intent.getAction().equals(ACTION_DENY_CALL))                 handleDenyCall(intent);
     else if (intent.getAction().equals(ACTION_HANGUP_CALL))               handleHangupCall(intent);
+    else if (intent.getAction().equals(ACTION_SET_MUTE))                  handleSetMute(intent);
   }
 
   ///// Initializers
 
-  private void initializeAudio() {
-    AudioManager am = (AudioManager) getSystemService(AUDIO_SERVICE);
-
-    if (ApplicationPreferencesActivity.getAudioModeIncall(this)) {
-      try {
-        am.setMode(AudioManager.MODE_IN_CALL);
-      } catch (SecurityException e) {
-        Log.d(TAG, "Can't use in-call audio mode due to missing permissions.  Falling back to mode-normal.", e);
-        am.setMode(AudioManager.MODE_NORMAL);
-      }
-    }
-    else {
-      am.setMode(AudioManager.MODE_NORMAL);
-    }
-
-    am.setSpeakerphoneOn(false);
-    am.setStreamVolume(AudioManager.STREAM_VOICE_CALL,
-                       am.getStreamMaxVolume(AudioManager.STREAM_VOICE_CALL), 0);
-    //TODO(Stuart Anderson): I suspect we can safely remove everything before this line...
+  private void initializeRingers() {
     this.outgoingRinger = new OutgoingRinger(this);
     this.incomingRinger = new IncomingRinger(this);
   }
@@ -271,6 +254,13 @@ public class RedPhoneService extends Service implements CallStateListener, CallS
 
   private void handleHangupCall(Intent intent) {
     this.terminate();
+  }
+
+  private void handleSetMute(Intent intent) {
+    if(currentCallManager != null) {
+      currentCallManager.setMute(intent.getBooleanExtra(Constants.MUTE_VALUE, false));
+
+    }
   }
 
   /// Helper Methods

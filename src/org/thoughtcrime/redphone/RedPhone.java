@@ -45,7 +45,9 @@ import org.thoughtcrime.redphone.directory.DirectoryUpdateReceiver;
 import org.thoughtcrime.redphone.ui.ApplicationPreferencesActivity;
 import org.thoughtcrime.redphone.ui.CallControls;
 import org.thoughtcrime.redphone.ui.CallScreen;
+import org.thoughtcrime.redphone.ui.InCallAudioButton;
 import org.thoughtcrime.redphone.ui.QualityReporting;
+import org.thoughtcrime.redphone.util.AudioUtils;
 
 import java.util.ArrayList;
 
@@ -164,6 +166,8 @@ public class RedPhone extends Activity {
 
     callScreen.setHangupButtonListener(new HangupButtonListener());
     callScreen.setIncomingCallActionListener(new IncomingCallActionListener());
+    callScreen.setMuteButtonListener(new MuteButtonListener());
+    callScreen.setAudioButtonListener(new AudioButtonListener());
 
     DirectoryUpdateReceiver.scheduleDirectoryUpdate(this);
   }
@@ -175,6 +179,13 @@ public class RedPhone extends Activity {
 
     ArrayList<String> messages = SmsManager.getDefault().divideMessage(message);
     SmsManager.getDefault().sendMultipartTextMessage(user, null, messages, null, null);
+  }
+
+  private void handleSetMute(boolean enabled) {
+    Intent intent = new Intent(this, RedPhoneService.class);
+    intent.setAction(RedPhoneService.ACTION_SET_MUTE);
+    intent.putExtra(Constants.MUTE_VALUE, enabled);
+    startService(intent);
   }
 
   private void handleAnswerCall() {
@@ -407,6 +418,29 @@ public class RedPhone extends Activity {
       startService(intent);
 
       RedPhone.this.handleTerminate( LOCAL_TERMINATE );
+    }
+  }
+
+  private class MuteButtonListener implements CallControls.MuteButtonListener {
+    @Override
+    public void onToggle(boolean isMuted) {
+      RedPhone.this.handleSetMute(isMuted);
+    }
+  }
+
+  private class AudioButtonListener implements CallControls.AudioButtonListener {
+    @Override
+    public void onAudioChange(InCallAudioButton.AudioMode mode) {
+      switch(mode) {
+        case DEFAULT:
+          AudioUtils.enableDefaultRouting(RedPhone.this);
+          break;
+        case SPEAKER:
+          AudioUtils.enableSpeakerphoneRouting(RedPhone.this);
+          break;
+        default:
+          throw new IllegalStateException("Audio mode " + mode + " is not supported.");
+      }
     }
   }
 
