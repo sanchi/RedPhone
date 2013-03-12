@@ -19,67 +19,21 @@ package org.thoughtcrime.redphone.crypto;
 
 /**
  * A class for managing RTP sequence numbers, wraparound, etc.
+ * Extends shorts lowly changing 16bit sequence ids into long 64bit sequence ids, to avoid wraparound.
  *
+ * @author Craig Gidney
  * @author Moxie Marlinspike
  *
  */
 
 public class SequenceCounter {
-
-  private static final int LOW_ROLLOVER_THRESHOLD  = 1000;
-  private static final int HIGH_ROLLOVER_THRESHOLD = 64535;
-
-  private long lastLogicalSequenceNumber;
-  private long lastPhysicalSequenceNumber;
-  private long rolloverCount;
-
-  private boolean isRollover(long physicalSequenceNumber) {
-    return
-      (physicalSequenceNumber < lastPhysicalSequenceNumber)  &&
-      (lastPhysicalSequenceNumber > HIGH_ROLLOVER_THRESHOLD) &&
-      (physicalSequenceNumber < LOW_ROLLOVER_THRESHOLD);
+  private long curLongId;
+  public long convertNext(short nextShortId) {
+    short smallestDeltaToCongruentId = (short)(nextShortId - curLongId); 
+    curLongId += smallestDeltaToCongruentId;
+    return curLongId;
   }
-
-  private boolean isHoldover(long physicalSequenceNumber) {
-    return
-      (physicalSequenceNumber > lastPhysicalSequenceNumber) &&
-      (lastPhysicalSequenceNumber < LOW_ROLLOVER_THRESHOLD) &&
-      (physicalSequenceNumber > HIGH_ROLLOVER_THRESHOLD);
-  }
-
-  private long logicalIndexFor(long rollover, long sequence) {
-    return (rollover * (2^16)) + sequence;
-  }
-
-  private long logicalIndexForRollover(long physicalSequenceNumber) {
-    rolloverCount++;
-    return logicalIndexFor(rolloverCount, physicalSequenceNumber);
-  }
-
-  private long logicalIndexForHoldover(long physicalSequenceNumber) {
-    long previousRollover = rolloverCount - 1;
-    previousRollover      = (previousRollover < 0) ? 0 : previousRollover;
-
-    return logicalIndexFor(previousRollover, physicalSequenceNumber);
-  }
-
-  private long logicalIndexForSequence(long physicalSequenceNumber) {
-    if (physicalSequenceNumber > lastPhysicalSequenceNumber)
-      lastPhysicalSequenceNumber = physicalSequenceNumber;
-
-    return logicalIndexFor(rolloverCount, physicalSequenceNumber);
-  }
-
   public void updateSequence(SecureRtpPacket packet) {
-    long physicalSequenceNumber = packet.getSequenceNumber();
-
-    if (isRollover(physicalSequenceNumber)) {
-      packet.setLogicalSequence(logicalIndexForRollover(physicalSequenceNumber));
-    } else if (isHoldover(physicalSequenceNumber)) {
-      packet.setLogicalSequence(logicalIndexForHoldover(physicalSequenceNumber));
-    } else {
-      packet.setLogicalSequence(logicalIndexForSequence(physicalSequenceNumber));
-    }
+    packet.setLogicalSequence(convertNext((short)packet.getSequenceNumber()));
   }
-
 }
