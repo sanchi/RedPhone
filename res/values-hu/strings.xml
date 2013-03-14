@@ -37,7 +37,12 @@
   <string name="CallScreen_incoming_call">Bejövő hívás...</string>
   <string name="ContactsListActivity_loading">Betöltés...</string>
   <string name="ContactsListActivity_no_contacts_found">Nincs ilyen.</string>
+  <string name="CreateAccountActivity_register_your_redphone">Regisztráld a RedPhone-dat</string>
   <string name="CreateAccountActivity_you_must_specify_your_phone_number">Meg kell adnod a telefonszámodat!</string>
+  <string name="CreateAccountActivity_select_your_country">Válassz országot</string>
+  <string name="CreateAccountActivity_you_must_specify_your_country_code">Add meg az országkódot</string>
+  <string name="CreateAccountActivity_the_number_you_specified_s_is_invalid">A (%s) megadott szám érvénytelen.</string>
+  <string name="CreateAccountActivity_invalid_number">Érvénytelen szám</string>
   <string name="NotificationBarManager_redphone_call_in_progress">RedPhone hívás folyamatban</string>
   <string name="NotificationBarManager_missed_redphone_call_from_s">%s hívó féltől nem fogadott RedPhone hívás</string>
   <string name="NotificationBarManager_missed_redphone_call">Nem fogadott RedPhone hívás</string>
@@ -50,11 +55,25 @@
   <string name="RedPhoneChooser_this_contact_also_uses_redphone_would_you_like_to_upgrade_to_a_secure_call">Ez a személy RedPhone-ot is használ. Szeretnéd a hívást biztonságosra állítani?</string>
   <string name="RedPhoneChooser_secure_call">Biztonságos hívás</string>
   <string name="RedPhoneChooser_insecure_call">Nem biztonságos hívás</string>
+  <string name="RegistrationProgressActivity_verifying_number">Szám ellenőrzése</string>
+  <string name="RegistrationProgressActivity_edit_s">%s szerkesztés</string>
+  <string name="RegistrationProgressActivity_registration_complete">A regisztráció sikeres!</string>
+  <string name="RegistrationService_registration_complete">A regisztráció elkészült</string>
+  <string name="RegistrationService_redphone_registration_has_successfully_completed">A RedPhone regisztáció sikeresen elkészült.</string>
+  <string name="RegistrationService_registration_error">Regisztrációs hiba</string>
+  <string name="RegistrationService_redphone_registration_has_encountered_a_problem">A RedPhone regisztráció problémába ütközött.</string>
   <string name="about_activity__additional_information">További információk:</string>
   <string name="about_activity__attribution">Tartalom:</string>
   <string name="about_activity__aboutText">A további információkért látogasd meg a whispersystems.org weboldalát vagy a problémákkal, kérdésekkel és javaslatokkal írj a support@whispersystems.org email címre.</string>
   <string name="about_activity__attributionText">RedPhone links to the SpanDSP library, which is licensed under the LGPL.\n\nRedPhone uses the SPEEX Codec, which is used under the Xiph.Org variant of the BSD license: © 2002-2003, Jean-Marc Valin/Xiph.Org Foundation\n\nRedistribution and use of the SPEEX library in source and binary forms, with or without modification, are permitted provided that the following conditions are met:\n\n\t* Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.\n\t* Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.\n\t* Neither the name of the Xiph.org Foundation nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.\n\nThe SPEEX library is provided by the copyright holders and contributors “as is” and any express or implied warranties, including, but not limited to, the implied warranties of merchantability and fitness for a particular purpose are disclaimed. In no event shall the foundation or contributors be liable for any direct, indirect, incidental, special, exemplary, or consequential damages (including, but not limited to, procurement of substitute goods or services; loss of use, data, or profits; or business interruption) however caused and on any theory of liability, whether in contract, strict liability, or tort (including negligence or otherwise) arising in any way out of the use of this software, even if advised of the possibility of such damage.\n\n\nSome sound samples are licensed under the Creative Commons Sampling Plus License: http://creativecommons.org/licenses/sampling+/1.0/\n\nBy acclivity (http://www.freesound.org/usersViewSingle.php?id=37876):\nShipsBell.wav (http://www.freesound.org/samplesViewSingle.php?id=32304)\n\nBy Splashdust (http://www.freesound.org/usersViewSingle.php?id=754949):\nnegativebeep.wav (http://www.freesound.org/samplesViewSingle.php?id=67454)\n\nBy Peter_Gross (http://www.freesound.org/usersViewSingle.php?id=33429):\nSonar_pings.ogg (http://www.freesound.org/samplesViewSingle.php?id=12677\n\nBy suonho: http://www.freesound.org/samplesViewSingle.php?id=58348: ambienta_soundtrack_moog_sweep\n\nBy Mike Koenig: Busy Signal</string>
+  <string name="create_account__register">Regisztráció</string>
+  <string name="create_acount__please_confirm_your_country_code_and_phone_number">A biztonságos hívások indításának és fogadásának érdekében a RedPhone-nak szüksége van a telefonszámod regisztrálására a rendszerben.\n\nKérjük, hogy add meg az eszköz országkódját és telefonszámát.</string>
+  <string name="create_account__your_country">ORSZÁG</string>
+  <string name="create_account__your_country_code_and_phone_number">ORSZÁGKÓD ÉS TELEFONSZÁM</string>
+  <string name="create_account__phone_number">telefonszán</string>
   <string name="contacts_list_content__search">Keresés</string>
+  <string name="country_selection_fragment__search">Keresés...</string>
+  <string name="country_selection_fragment__loading_countries">Országok betöltése...</string>
   <string name="outbound_chooser__you_ve_initiated_a_call_with_a_contact_who_also_uses_redphone_would_you_like_to_upgrade_this_to_a_redphone_call">Hívást kezdeményeztél egy olyan személlyel aki szintén RedPhone használó. Szeretnéd ezt a hívást a RedPhone-on keresztül lebonyolítani?</string>
   <string name="outbound_chooser__secure_call">Biztonságos hívás</string>
   <string name="outbound_chooser__insecure_call">Nem biztonságos hívás</string>
@@ -81,5 +100,26 @@
   <string name="preferences__reduce_latency_at_the_expense_of_audio_quality">A gyengébb hangminőség árán csökkenti a késleltetést</string>
   <string name="preferences__signaling_method">Üzenetküldési mód</string>
   <string name="preferences__modify_the_method_used_to_notify_your_device_of_incoming_calls">A bejövő hívások értesítési módjának beállítása.</string>
+  <string name="registration_progress__sms_verification_failed">Az SMS ellenőrzés sikertelen.</string>
+  <string name="registration_progress__redphone_timed_out_while_waiting_for_an_sms_message_to_verify_your_phone_number">A RedPhone időtúllépésbe került miközben a telefonszámod ellenőrzésének érdekében a beérkező SMS-re várt.</string>
+  <string name="registration_progress__edit_number">Szám szerkesztés</string>
+  <string name="registration_progress__some_possible_problems_include">Néhány lehetséges probléma:</string>
+  <string name="registration_progress__sms_interceptors">SMS kezelő programok.</string>
+  <string name="registration_progress__some_third_party_text_messaging_clients_explanation">Néhány külsős fejlesztésű üzenetküldő, olyanok mint a Handcent vagy a GoSMS nem megfelelően működnek és minden érkező SMS-t elfognak. Ellenőrizd, hogy ha olyan szöveges üzenetet kaptál, ami úgy kezdődik, hogy \'A RedPhone azonosítani próbál\', akkor úgy állítsd be a szövegkezelő programodat, hogy átengedje ezt az üzenetet.</string>
+  <string name="registration_progress__incorrect_number">Hibás szám.</string>
+  <string name="registration_progress__please_check_to_make_sure_you_entered_your_number_correctly">Kérjük ellenőrizd, hogy a telefonszámot a te régiódnak megfelelően és pontosan adtad-e meg.</string>
+  <string name="registration_progress__old_versions_of_google_voice">A Google Voice régebbi verziója.</string>
+  <string name="registration_progress__if_youre_attempting_to_register_a_google_voice_number_explanation">Ha a Google Voice számot próbálod meg regisztrálni, ellenőrizd, hogy a Google Voice legfrissebb verzióját használod-e.</string>
+  <string name="registration_progress__connectivity_error">Kapcsolódás hiba.</string>
+  <string name="registration_progress__redphone_was_unable_to_connect_to_the_switch">A RedPhone nem tud csatlakozni.</string>
+  <string name="registration_progress__no_network_connectivity">Nincs hálózati kapcsolat.</string>
+  <string name="registration_progress__your_device_needs_network_connectivity_explanation">Az eszközödnek hálózati kapcsolatra van szüksége a RedPhone használatához. Ellenőrizd, hogy kapcsolódtál-e az internetre.</string>
+  <string name="registration_progress__restrictive_firewall">Korlátozott tűzfal.</string>
+  <string name="registration_progress__if_you_are_connected_via_wifi_explanation">Ha wifi kapcsolaton kerersztül vagy csatlakozva, lehetséges hogy tűzfal korlátozza a RedPhone üzenetküldési portokat. Próbálj másik hálózatra vagy mobil adatkapcsolatra csatlakozni.</string>
+  <string name="registration_progress__redphone_will_now_automatically_verify_your_number_with_a_confirmation_sms_message">A RedPhone egy megerősítő SMS üzenettel most automatikusan ellenőrzi a telefonszámod.</string>
+  <string name="registration_progress__registering_with_server">Regisztráció a szerveren...</string>
+  <string name="registration_progress__waiting_for_sms_verification">Várakozás az SMS ellenőrzésre...</string>
+  <string name="registration_progress__this_could_take_a_moment_please_be_patient_well_notify_you_when_verification_is_complete">Ez eltarthat egy ideig. Kérjük, légy türelemmel, azonnal értesítünk, amint az ellenőrzés elkészült.</string>
+  <string name="registration_progress__waiting_for_sms">VÁRAKOZÁS AZ SMS-RE</string>
   <!--EOF-->
 </resources>
