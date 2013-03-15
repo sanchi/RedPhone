@@ -164,8 +164,6 @@ public class HandshakePacket extends RtpPacket {
   public boolean verifyCRC() {
     long myCRC    = calculateCRC();
     long theirCRC = Conversions.byteArray4ToLong(this.data, this.getPacketLength()-4);
-    byte crcb[] = new byte[4];
-    Conversions.longTo4ByteArray(crcb, 0, myCRC);
     return myCRC == theirCRC;
   }
 
