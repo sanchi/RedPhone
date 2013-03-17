@@ -104,6 +104,25 @@ public class PhoneNumberFormatter {
           ? "Unknown country" : new Locale("", regionCode).getDisplayCountry(Locale.getDefault());
   }
 
+  public static String formatE164(String countryCode, String number) {
+    try {
+      PhoneNumberUtil util     = PhoneNumberUtil.getInstance();
+      int parsedCountryCode    = Integer.parseInt(countryCode);
+      PhoneNumber parsedNumber = util.parse(number,
+                                            util.getRegionCodeForCountryCode(parsedCountryCode));
+
+      return util.format(parsedNumber, PhoneNumberUtil.PhoneNumberFormat.E164);
+    } catch (NumberParseException npe) {
+      Log.w("CreateAccountActivity", npe);
+    } catch (NumberFormatException nfe) {
+      Log.w("CreateAccountActivity", nfe);
+    }
+
+    return "+"                                                     +
+        countryCode.replaceAll("[^0-9]", "").replaceAll("^0*", "") +
+        number.replaceAll("[^0-9]", "");
+  }
+
   public static String getInternationalFormatFromE164(String e164number) {
     try {
       PhoneNumberUtil util     = PhoneNumberUtil.getInstance();

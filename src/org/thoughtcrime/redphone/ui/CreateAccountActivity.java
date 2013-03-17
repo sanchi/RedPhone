@@ -180,9 +180,8 @@ public class CreateAccountActivity extends SherlockActivity {
   }
 
   private String getConfiguredE164Number() {
-    return "+"                                                                             +
-           countryCode.getText().toString().replaceAll("[^0-9]", "").replaceAll("^0*", "") +
-           number.getText().toString().replaceAll("[^0-9]", "");
+    return PhoneNumberFormatter.formatE164(countryCode.getText().toString(),
+                                           number.getText().toString());
   }
 
   private class CreateButtonListener implements View.OnClickListener {
@@ -214,8 +213,10 @@ public class CreateAccountActivity extends SherlockActivity {
       }
 
       AlertDialog.Builder dialog = new AlertDialog.Builder(self);
-      dialog.setMessage(String.format("We will now verify that the following number is associated with this device:\n\n%s\n\nIs this number correct, or would you like to edit it before continuing?", PhoneNumberFormatter.getInternationalFormatFromE164(e164number)));
-      dialog.setPositiveButton("Continue", new DialogInterface.OnClickListener() {
+      dialog.setMessage(String.format(getString(R.string.CreateAccountActivity_we_will_now_verify_that_the_following_number_is_associated),
+                                      PhoneNumberFormatter.getInternationalFormatFromE164(e164number)));
+      dialog.setPositiveButton(getString(R.string.CreateAccountActivity_continue),
+                               new DialogInterface.OnClickListener() {
         @Override
         public void onClick(DialogInterface dialog, int which) {
           Intent intent = new Intent(self, RegistrationProgressActivity.class);
@@ -224,7 +225,7 @@ public class CreateAccountActivity extends SherlockActivity {
           finish();
         }
       });
-      dialog.setNegativeButton("Edit", null);
+      dialog.setNegativeButton(getString(R.string.CreateAccountActivity_edit), null);
       dialog.show();
     }
   }

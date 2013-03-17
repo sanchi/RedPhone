@@ -52,7 +52,10 @@
     <string name="CreateAccountActivity_you_must_specify_your_country_code">You must specify your country code</string>
     <string name="CreateAccountActivity_the_number_you_specified_s_is_invalid">The number you specified (%s) is invalid.</string>
     <string name="CreateAccountActivity_invalid_number">Invalid number</string>
-    
+    <string name="CreateAccountActivity_we_will_now_verify_that_the_following_number_is_associated">We will now verify that the following number is associated with this device:\n\n%s\n\nIs this number correct, or would you like to edit it before continuing?</string>
+    <string name="CreateAccountActivity_continue">Continue</string>
+    <string name="CreateAccountActivity_edit">Edit</string>
+
     <string name="NotificationBarManager_redphone_call_in_progress">RedPhone call in progress</string>
     <string name="NotificationBarManager_missed_redphone_call_from_s">Missed RedPhone call from %s</string>
     <string name="NotificationBarManager_missed_redphone_call">Missed RedPhone call</string>
@@ -147,6 +150,6 @@
     <string name="registration_progress__waiting_for_sms_verification">Waiting for SMS verification...</string>
     <string name="registration_progress__this_could_take_a_moment_please_be_patient_well_notify_you_when_verification_is_complete">This could take a moment. Please be patient, we\'ll notify you when verification is complete.</string>
     <string name="registration_progress__waiting_for_sms">WAITING FOR SMS</string>
-        
+
     <!-- EOF -->
 </resources>
