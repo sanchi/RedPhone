@@ -27,9 +27,6 @@ import org.thoughtcrime.redphone.network.RtpPacket;
  */
 
 public class DH3KDHPartOnePacket extends DHPartOnePacket {
-
-  public static final String TYPE = "DHPart1 ";
-
   public DH3KDHPartOnePacket(RtpPacket packet) {
     super(packet, DHPacket.DH3K_AGREEMENT_TYPE);
   }
