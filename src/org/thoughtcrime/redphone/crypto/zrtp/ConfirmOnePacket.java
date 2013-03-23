@@ -30,11 +30,11 @@ public class ConfirmOnePacket extends ConfirmPacket {
 
   public static final String TYPE = "Confirm1";
 
-  public ConfirmOnePacket(RtpPacket packet) {
-    super(packet);
+  public ConfirmOnePacket(RtpPacket packet, boolean legacy) {
+    super(packet, legacy);
   }
 
-  public ConfirmOnePacket(byte[] macKey, byte[] cipherKey, HashChain hashChain) {
-    super(TYPE, macKey, cipherKey, hashChain);
+  public ConfirmOnePacket(byte[] macKey, byte[] cipherKey, HashChain hashChain, boolean legacy) {
+    super(TYPE, macKey, cipherKey, hashChain, legacy);
   }
 }

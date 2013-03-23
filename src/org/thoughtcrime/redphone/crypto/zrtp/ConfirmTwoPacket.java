@@ -29,11 +29,11 @@ import org.thoughtcrime.redphone.network.RtpPacket;
 public class ConfirmTwoPacket extends ConfirmPacket {
   public static final String TYPE = "Confirm2";
 
-  public ConfirmTwoPacket(RtpPacket packet) {
-    super(packet);
+  public ConfirmTwoPacket(RtpPacket packet, boolean legacy) {
+    super(packet, legacy);
   }
 
-  public ConfirmTwoPacket(byte[] macKey, byte[] cipherKey, HashChain hashChain) {
-    super(TYPE, macKey, cipherKey, hashChain);
+  public ConfirmTwoPacket(byte[] macKey, byte[] cipherKey, HashChain hashChain, boolean legacy) {
+    super(TYPE, macKey, cipherKey, hashChain, legacy);
   }
 }

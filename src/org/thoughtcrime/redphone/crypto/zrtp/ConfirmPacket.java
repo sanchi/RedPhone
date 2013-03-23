@@ -56,12 +56,18 @@ public class ConfirmPacket extends HandshakePacket {
   private static final int PREIMAGE_OFFSET = MESSAGE_BASE + 36;
   private static final int CACHE_OFFSET    = MESSAGE_BASE + 72;
 
-  public ConfirmPacket(RtpPacket packet) {
+  private final boolean legacy;
+
+  public ConfirmPacket(RtpPacket packet, boolean legacy) {
     super(packet);
+    this.legacy = legacy;
   }
 
-  public ConfirmPacket(String type, byte[] macKey, byte[] cipherKey, HashChain hashChain) {
+  public ConfirmPacket(String type, byte[] macKey, byte[] cipherKey,
+                       HashChain hashChain, boolean legacy)
+  {
     super(type, CONFIRM_LENGTH);
+    this.legacy = legacy;
     setPreimage(hashChain.getH0());
     setCacheTime();
     setIv();
@@ -123,14 +129,16 @@ public class ConfirmPacket extends HandshakePacket {
 
   private byte[] getIv() {
     byte[] iv = new byte[16];
-    System.arraycopy(iv, 0, this.data, IV_OFFSET, iv.length);
+    System.arraycopy(this.data, IV_OFFSET, iv, 0, iv.length);
     return iv;
   }
 
   private void setIv() {
     try {
       byte[] iv = new byte[16];
-      SecureRandom.getInstance("SHA1PRNG").nextBytes(iv);
+      if (!legacy) { // Temporary implementation bug compatibility issue.  See note in ZRTPSocket.
+        SecureRandom.getInstance("SHA1PRNG").nextBytes(iv);
+      }
       System.arraycopy(iv, 0, this.data, IV_OFFSET, iv.length);
     } catch (NoSuchAlgorithmException e) {
       throw new IllegalArgumentException(e);

@@ -102,12 +102,12 @@ public class ZRTPResponderSocket extends ZRTPSocket {
     setState(EXPECTING_CONFIRM_TWO);
     sendFreshPacket(new ConfirmOnePacket(masterSecret.getResponderMacKey(),
                                          masterSecret.getResponderZrtpKey(),
-                                         this.hashChain));
+                                         this.hashChain, isLegacyConfirmConnection()));
   }
 
   @Override
   protected void handleConfirmTwo(HandshakePacket packet) throws InvalidPacketException {
-    ConfirmTwoPacket confirmPacket = new ConfirmTwoPacket(packet);
+    ConfirmTwoPacket confirmPacket = new ConfirmTwoPacket(packet, isLegacyConfirmConnection());
 
     confirmPacket.verifyMac(masterSecret.getInitiatorMacKey());
     confirmPacket.decrypt(masterSecret.getInitiatorZrtpKey());
@@ -152,6 +152,11 @@ public class ZRTPResponderSocket extends ZRTPSocket {
     } else {
       return KA_TYPE_DH3K;
     }
+  }
+
+  @Override
+  protected HelloPacket getForeignHello() {
+    return foreignHello;
   }
 
 

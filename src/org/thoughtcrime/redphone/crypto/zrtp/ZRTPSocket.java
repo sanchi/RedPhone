@@ -109,6 +109,7 @@ public abstract class ZRTPSocket {
   protected abstract void handleConfirmAck(HandshakePacket packet) throws InvalidPacketException;
 
   protected abstract int getKeyAgreementType();
+  protected abstract HelloPacket getForeignHello();
 
   protected byte[] getPublicKey() {
     switch (getKeyAgreementType()) {
@@ -149,6 +150,18 @@ public abstract class ZRTPSocket {
     Conversions.bigIntegerToByteArray(y, q.getY().toBigInteger());
 
     return Conversions.combine(x, y);
+  }
+
+  // NOTE -- There was a bug in older versions of RedPhone in which the
+  // Confirm message IVs were miscalculated.  It didn't seem to be an
+  // immediately exploitable problem, but was definitely wrong.  Fixing it,
+  // however, results in compatibility issues with devices that do not have
+  // the fix.  We're temporarily introducing a backwards compatibility setting
+  // here, where we intentionally do the wrong thing for older devices.  We'll
+  // faze this out after a couple of months.
+  protected boolean isLegacyConfirmConnection() {
+    RedPhoneClientId clientId = new RedPhoneClientId(getForeignHello().getClientId());
+    return clientId.isLegacyConfirmConnectionVersion();
   }
 
   protected void setState(int state) {

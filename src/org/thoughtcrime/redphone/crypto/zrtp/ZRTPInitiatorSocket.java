@@ -62,7 +62,7 @@ public class ZRTPInitiatorSocket extends ZRTPSocket {
 
   @Override
   protected void handleConfirmOne(HandshakePacket packet) throws InvalidPacketException {
-    ConfirmOnePacket confirmPacket = new ConfirmOnePacket(packet);
+    ConfirmOnePacket confirmPacket = new ConfirmOnePacket(packet, isLegacyConfirmConnection());
 
     confirmPacket.verifyMac(masterSecret.getResponderMacKey());
     confirmPacket.decrypt(masterSecret.getResponderZrtpKey());
@@ -73,7 +73,7 @@ public class ZRTPInitiatorSocket extends ZRTPSocket {
     setState(EXPECTING_CONFIRM_ACK);
     sendFreshPacket(new ConfirmTwoPacket(masterSecret.getInitiatorMacKey(),
                                          masterSecret.getInitiatorZrtpKey(),
-                                         this.hashChain));
+                                         this.hashChain, isLegacyConfirmConnection()));
   }
 
   @Override
@@ -169,7 +169,9 @@ public class ZRTPInitiatorSocket extends ZRTPSocket {
     if (foreignHello == null)
       throw new AssertionError("We can't project agreement type until we've seen a hello!");
 
-    if (foreignHello.getClientId().equals("RedPhone 019    ") ||
+    RedPhoneClientId foreignClientId = new RedPhoneClientId(foreignHello.getClientId());
+
+    if (foreignClientId.isImplicitDh3kVersion() ||
         foreignHello.getKeyAgreementOptions().contains("EC25"))
     {
       return KA_TYPE_EC25;
@@ -178,5 +180,9 @@ public class ZRTPInitiatorSocket extends ZRTPSocket {
     }
   }
 
+  @Override
+  protected HelloPacket getForeignHello() {
+    return foreignHello;
+  }
 
 }

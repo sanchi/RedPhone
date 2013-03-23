@@ -167,7 +167,7 @@ public class HelloPacket extends HandshakePacket {
   }
 
   private void setClientId() {
-    "RedPhone 019    ".getBytes(0, 16, this.data, CLIENT_OFFSET);
+    "RedPhone 024    ".getBytes(0, 16, this.data, CLIENT_OFFSET);
   }
 
   public String getClientId() {
