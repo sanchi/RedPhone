@@ -40,6 +40,7 @@ import org.thoughtcrime.redphone.call.ResponderCallManager;
 import org.thoughtcrime.redphone.codec.CodecSetupException;
 import org.thoughtcrime.redphone.contacts.PersonInfo;
 import org.thoughtcrime.redphone.gcm.GCMRegistrarHelper;
+import org.thoughtcrime.redphone.monitor.CallDataImpl;
 import org.thoughtcrime.redphone.pstn.CallStateView;
 import org.thoughtcrime.redphone.pstn.IncomingPstnCallListener;
 import org.thoughtcrime.redphone.signaling.OtpCounterProvider;
@@ -107,6 +108,8 @@ public class RedPhoneService extends Service implements CallStateListener, CallS
     initializeRingers();
     initializePstnCallListener();
     registerUncaughtExceptionHandler();
+
+    CallDataImpl.clearCache(this);
   }
 
   @Override

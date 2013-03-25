@@ -34,6 +34,8 @@ import org.thoughtcrime.redphone.crypto.zrtp.NegotiationFailedException;
 import org.thoughtcrime.redphone.crypto.zrtp.RecipientUnavailableException;
 import org.thoughtcrime.redphone.crypto.zrtp.SASCalculator;
 import org.thoughtcrime.redphone.crypto.zrtp.ZRTPSocket;
+import org.thoughtcrime.redphone.monitor.CallMonitor;
+import org.thoughtcrime.redphone.monitor.EventStream;
 import org.thoughtcrime.redphone.signaling.SessionDescriptor;
 import org.thoughtcrime.redphone.signaling.SignalingSocket;
 import org.thoughtcrime.redphone.ui.ApplicationPreferencesActivity;
@@ -57,6 +59,7 @@ public abstract class CallManager extends Thread {
   protected final String remoteNumber;
   protected final CallStateListener callStateListener;
   protected final Context context;
+  protected final CallMonitor monitor;
 
   private boolean terminated;
   private boolean loopbackMode;
@@ -70,6 +73,8 @@ public abstract class CallManager extends Thread {
   protected SecureRtpSocket secureSocket;
   protected SignalingSocket signalingSocket;
 
+  private EventStream lifecycleMonitor;
+
   public CallManager(Context context, CallStateListener callStateListener,
                     String remoteNumber, String threadName)
   {
@@ -79,24 +84,32 @@ public abstract class CallManager extends Thread {
     this.terminated        = false;
     this.context           = context;
     this.loopbackMode      = ApplicationPreferencesActivity.getLoopbackEnabled(context);
+    this.monitor           = new CallMonitor(context, "devel-call-id");
 
+    initMonitor();
     printInitDebug();
     AudioUtils.resetConfiguration(context);
+  }
+
+  private void initMonitor() {
+     lifecycleMonitor = monitor.addEventStream("call-setup");
   }
 
   @Override
   public void run() {
     Process.setThreadPriority(Process.THREAD_PRIORITY_URGENT_AUDIO);
-
+    lifecycleMonitor.emitEvent("call-begin");
     try {
       Log.d( "CallManager", "negotiating..." );
       if (!terminated) {
-        callAudioManager = new CallAudioManager(secureSocket, CODEC_NAME, context);
+        callAudioManager = new CallAudioManager(secureSocket, CODEC_NAME, context, monitor);
         callAudioManager.setMute(muteEnabled);
+        lifecycleMonitor.emitEvent("start-negotiate");
         zrtpSocket.negotiateStart();
       }
 
       if (!terminated) {
+        lifecycleMonitor.emitEvent("performing-handshake");
         callStateListener.notifyPerformingHandshake();
         zrtpSocket.negotiateFinish();
       }
@@ -105,6 +118,7 @@ public abstract class CallManager extends Thread {
         setSecureSocketKeys(zrtpSocket.getMasterSecret());
         sas = SASCalculator.calculateSAS(zrtpSocket.getMasterSecret().getSAS());
         callStateListener.notifyCallConnected(sas);
+        lifecycleMonitor.emitEvent("connected");
       }
 
       if (!terminated) {
@@ -129,6 +143,8 @@ public abstract class CallManager extends Thread {
 
   public void terminate() {
     this.terminated = true;
+    lifecycleMonitor.emitEvent("terminate");
+    monitor.startUpload(context);
 
     if (callAudioManager != null)
       callAudioManager.terminate();
@@ -169,25 +185,20 @@ public abstract class CallManager extends Thread {
     ConnectivityManager cm = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
     NetworkInfo networkInfo = cm.getActiveNetworkInfo();
 
-    Date date = new Date();
-    Log.d( "CallManager", "Initializing:"
-            + " audioMode: " + ApplicationPreferencesActivity.getAudioModeIncall(c)
-            + " singleThread: " + ApplicationPreferencesActivity.isSingleThread(c)
-            + " device: " + Build.DEVICE
-            + " manufacturer: " + Build.MANUFACTURER
-            + " os-version: " + Build.VERSION.RELEASE
-            + " product: " + Build.PRODUCT
-            + " redphone-version: " + vName
-            + " network-type: " + (networkInfo == null ? null : networkInfo.getTypeName())
-            + " network-subtype: " + (networkInfo == null ? null : networkInfo.getSubtypeName())
-            + " network-extra: " + (networkInfo == null ? null : networkInfo.getExtraInfo())
-            + " time: " + DateFormat.getDateFormat(context).format(date) + DateFormat.getTimeFormat(context).format(date)
-            );
+    monitor.addNominalValue("audio-mode", ApplicationPreferencesActivity.getAudioModeIncall(c));
+    monitor.addNominalValue("device", Build.DEVICE);
+    monitor.addNominalValue("manufacturer", Build.MANUFACTURER);
+    monitor.addNominalValue("android-version", Build.VERSION.RELEASE);
+    monitor.addNominalValue("product", Build.PRODUCT);
+    monitor.addNominalValue("redphone-version", vName);
+    monitor.addNominalValue("network-type", networkInfo == null ? null : networkInfo.getTypeName());
+    monitor.addNominalValue("network-subtype", networkInfo == null ? null : networkInfo.getSubtypeName());
+    monitor.addNominalValue("network-extra", networkInfo == null ? null : networkInfo.getExtraInfo());
   }
 
   //For loopback operation
   public void doLoopback() throws AudioException, IOException {
-    callAudioManager = new CallAudioManager( null, "SPEEX", context );
+    callAudioManager = new CallAudioManager(null, "SPEEX", context, new CallMonitor(context, "loopback"));
     callAudioManager.run();
   }
 

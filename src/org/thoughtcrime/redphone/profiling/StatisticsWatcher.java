@@ -19,6 +19,10 @@ package org.thoughtcrime.redphone.profiling;
 
 
 import android.util.Log;
+import org.thoughtcrime.redphone.monitor.SampledMetrics;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Utility class that tracks statistics of a sequence of observations
@@ -26,6 +30,8 @@ import android.util.Log;
  * @author Stuart O. Anderson
  */
 public class StatisticsWatcher {
+  private float min = Float.MAX_VALUE;
+  private float max = -Float.MAX_VALUE;
   private float avgSize = 0;
   private float avgVar = 0;
   private float w = .05f;
@@ -43,29 +49,28 @@ public class StatisticsWatcher {
   public void setAvg( float val ) {
     avgSize = val;
   }
-  public void observeValue( int currentSize ) {
-    avgSize = (currentSize-avgSize)*w + avgSize;
-    float d = (currentSize - avgSize);
+  public void observeValue(float val) {
+    avgSize = (val-avgSize)*w + avgSize;
+    float d = (val - avgSize);
     avgVar  = avgVar  * (1-w) + d*d         * w;
 
     nSample++;
-    trueAverage = (nSample-1)/(float)nSample * trueAverage + 1.0f/nSample * currentSize;
+    trueAverage = (nSample-1)/(float)nSample * trueAverage + 1.0f/nSample * val;
+    min = Math.min(min, val);
+    max = Math.max(max, val);
 
-    if( pt.periodically() && doPrintDebug ) {
+    if( doPrintDebug && pt.periodically()) {
       Log.d( "StatsWatcher", "[" + debugName + "] avg: " + avgSize + " stddev: " + Math.sqrt(avgVar) + " trueAvg=" + trueAverage );
     }
-
-
   }
 
   private PeriodicTimer pt = new PeriodicTimer(5000);
 
-  public float getAvgBufferSize() {
-
+  public float getAvg() {
     return avgSize;
   }
 
-  public float getAvgBufferVar() {
+  public float getVar() {
     return avgVar;
   }
 
@@ -76,6 +81,26 @@ public class StatisticsWatcher {
 
   public void setPrintDebug(boolean b) {
     doPrintDebug = b;
+  }
+
+  public SampledMetrics getSampler() {
+    return new SampledMetrics() {
+      private Map<String, Object> metrics = new HashMap<>(2);
+      @Override
+      public Map<String, Object> sample() {
+        metrics.put("avg", getAvg());
+        metrics.put("var", getVar());
+        metrics.put("min", min);
+        metrics.put("max", max);
+
+        Log.d("Statistics", "Sample Min: " + min);
+
+        min = Float.MAX_VALUE;
+        max = -Float.MAX_VALUE;
+
+        return metrics;
+      }
+    };
   }
 }
 

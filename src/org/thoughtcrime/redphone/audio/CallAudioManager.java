@@ -23,6 +23,7 @@ import android.util.Log;
 
 import org.thoughtcrime.redphone.codec.AudioCodec;
 import org.thoughtcrime.redphone.crypto.SecureRtpSocket;
+import org.thoughtcrime.redphone.monitor.CallMonitor;
 import org.thoughtcrime.redphone.network.RtpAudioReader;
 import org.thoughtcrime.redphone.network.RtpAudioSender;
 import org.thoughtcrime.redphone.profiling.PacketLogger;
@@ -64,13 +65,13 @@ public class CallAudioManager {
 
   private PacketLogger packetLogger = new PacketLogger();
 
-  public CallAudioManager( SecureRtpSocket socket, String codecID, Context context ) {
+  public CallAudioManager( SecureRtpSocket socket, String codecID, Context context, CallMonitor monitor) {
     codec = AudioCodec.getInstance( codecID ); //begins init
 
     netSender   = new RtpAudioSender( outgoingAudio, socket, packetLogger );
     netReader   = new RtpAudioReader( incomingAudio, socket, packetLogger );
     //create audioStream before micreader, so they pick up the same audio mode, since audiomode is set in audioStream
-    audioStream = new CallAudioStream( incomingAudio, codec, packetLogger );
+    audioStream = new CallAudioStream(incomingAudio, codec, packetLogger, monitor);
     micReader   = new MicrophoneReader( outgoingAudio, codec, packetLogger );
 
     //setup preferences
