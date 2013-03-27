@@ -144,7 +144,7 @@ public abstract class CallManager extends Thread {
   public void terminate() {
     this.terminated = true;
     lifecycleMonitor.emitEvent("terminate");
-    monitor.startUpload(context);
+    monitor.startUpload(context, String.valueOf(getSessionDescriptor().sessionId));
 
     if (callAudioManager != null)
       callAudioManager.terminate();
