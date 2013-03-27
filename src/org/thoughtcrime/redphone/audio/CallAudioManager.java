@@ -72,7 +72,7 @@ public class CallAudioManager {
     netReader   = new RtpAudioReader( incomingAudio, socket, packetLogger );
     //create audioStream before micreader, so they pick up the same audio mode, since audiomode is set in audioStream
     audioStream = new CallAudioStream(incomingAudio, codec, packetLogger, monitor);
-    micReader   = new MicrophoneReader( outgoingAudio, codec, packetLogger );
+    micReader   = new MicrophoneReader(outgoingAudio, codec, packetLogger, monitor);
 
     //setup preferences
     loopbackMode  = ApplicationPreferencesActivity.getLoopbackEnabled(context);
