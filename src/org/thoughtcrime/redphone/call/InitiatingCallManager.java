@@ -78,11 +78,9 @@ public class InitiatingCallManager extends CallManager {
 
       sessionDescriptor = signalingSocket.initiateConnection(remoteNumber);
 
-      NetworkConnector networkConnector = new NetworkConnector(sessionDescriptor.sessionId,
-                                                               sessionDescriptor.getFullServerName(),
-                                                               sessionDescriptor.relayPort);
-      int localPort = networkConnector.makeConnection();
-      callQualityQuestions = networkConnector.getRelayOpenResponse().getCallQualityQuestions();
+      int localPort = new NetworkConnector(sessionDescriptor.sessionId,
+                                           sessionDescriptor.getFullServerName(),
+                                           sessionDescriptor.relayPort).makeConnection();
 
       InetSocketAddress remoteAddress = new InetSocketAddress(sessionDescriptor.getFullServerName(),
                                                               sessionDescriptor.relayPort);

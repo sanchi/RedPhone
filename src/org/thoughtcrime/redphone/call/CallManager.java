@@ -100,6 +100,7 @@ public abstract class CallManager extends Thread {
   @Override
   public void run() {
     Process.setThreadPriority(Process.THREAD_PRIORITY_URGENT_AUDIO);
+
     lifecycleMonitor.emitEvent("call-begin");
     try {
       Log.d( "CallManager", "negotiating..." );
