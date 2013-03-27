@@ -68,7 +68,7 @@ public class CallMonitor {
 
   public synchronized void sample() {
     Log.d("CallMonitor", "Sampling now");
-    Map<String, Object> datapoint = new HashMap<>();
+    Map<String, Object> datapoint = new HashMap<String, Object>();
     for (Pair<String, SampledMetrics> metric : metrics) {
       for (Map.Entry<String, Object> entry : metric.second.sample().entrySet()) {
         datapoint.put(metric.first + ":" + entry.getKey(), entry.getValue());

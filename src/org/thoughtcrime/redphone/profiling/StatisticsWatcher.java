@@ -85,7 +85,7 @@ public class StatisticsWatcher {
 
   public SampledMetrics getSampler() {
     return new SampledMetrics() {
-      private Map<String, Object> metrics = new HashMap<>(2);
+      private Map<String, Object> metrics = new HashMap<String, Object>(2);
       @Override
       public Map<String, Object> sample() {
         metrics.put("avg", getAvg());
