@@ -81,9 +81,11 @@ public class ResponderCallManager extends CallManager {
         return;
       }
 
-      int localPort = new NetworkConnector(sessionDescriptor.sessionId,
-                                           sessionDescriptor.getFullServerName(),
-                                           sessionDescriptor.relayPort).makeConnection();
+      NetworkConnector networkConnector = new NetworkConnector(sessionDescriptor.sessionId,
+                                                               sessionDescriptor.getFullServerName(),
+                                                               sessionDescriptor.relayPort);
+      int localPort = networkConnector.makeConnection();
+      callQualityQuestions = networkConnector.getRelayOpenResponse().getCallQualityQuestions();
 
       InetSocketAddress remoteAddress = new InetSocketAddress(sessionDescriptor.getFullServerName(),
                                                               sessionDescriptor.relayPort);

@@ -43,6 +43,7 @@ import org.thoughtcrime.redphone.util.AudioUtils;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 
 /**
  * The base class for both Initiating and Responder call
@@ -60,6 +61,7 @@ public abstract class CallManager extends Thread {
   protected final CallStateListener callStateListener;
   protected final Context context;
   protected final CallMonitor monitor;
+  protected List<String> callQualityQuestions;
 
   private boolean terminated;
   private boolean loopbackMode;

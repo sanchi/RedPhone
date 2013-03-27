@@ -19,6 +19,7 @@ package org.thoughtcrime.redphone.signaling;
 
 import android.util.Log;
 
+import com.google.thoughtcrimegson.Gson;
 import org.thoughtcrime.redphone.signaling.signals.OpenPortSignal;
 import org.thoughtcrime.redphone.signaling.signals.Signal;
 import org.thoughtcrime.redphone.util.LineReader;
@@ -47,6 +48,9 @@ public class NetworkConnector {
   private final long sessionId;
   private final String server;
   private final int port;
+  private final Gson gson = new Gson();
+
+  private RelayOpenResponse relayOpenResponse = new RelayOpenResponse();
 
   public NetworkConnector(long sessionId, String server, int port) {
     Log.w("NetworkConnector", "Opening up port: " + server + " , " + port);
@@ -88,6 +92,11 @@ public class NetworkConnector {
         return -1;
       }
 
+      String json = new String(response.getBody(), "UTF8");
+      if(json.length() > 0) {
+        relayOpenResponse = gson.fromJson(json, RelayOpenResponse.class);
+      }
+
       int localPort = socket.getLocalPort();
       socket.close();
       return localPort;
@@ -123,5 +132,9 @@ public class NetworkConnector {
     byte[] body                 = responseReader.readSignalBody(headers);
 
     return new SignalResponse(statusCode, headers, body);
+  }
+
+  public RelayOpenResponse getRelayOpenResponse() {
+    return relayOpenResponse;
   }
 }
