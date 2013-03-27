@@ -112,7 +112,7 @@ public class DialerActivity extends SherlockFragmentActivity {
   }
 
   private void handleVersionChange(int newVersion) {
-    Log.d("DialerActicity", "Processing one-time updates for version code: " + newVersion);
+    Log.d("DialerActivity", "Processing one-time updates for version code: " + newVersion);
     if(newVersion == 24) {
       new AsyncTask<Void, Void, Void>() {
         @Override
