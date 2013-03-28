@@ -16,7 +16,9 @@ public class SystemMetrics implements SampledMetrics {
   @Override
   public Map<String, Object> sample() {
     String stat = LinuxUtils.readSystemStat();
-    result.put( "cpu-load", LinuxUtils.getSystemCpuUsage(lastStat, stat));
+    if(lastStat != null) {
+      result.put( "cpu-load", LinuxUtils.getSystemCpuUsage(lastStat, stat));
+    }
     lastStat = stat;
     return result;
   }
