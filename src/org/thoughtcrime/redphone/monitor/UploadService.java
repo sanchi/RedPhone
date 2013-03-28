@@ -38,7 +38,7 @@ public class UploadService extends Service {
           defaultSharedPreferences.edit().putString(CLIENT_ID_PREF_KEY, clientId).commit();
         }
 
-        Uploader uploader = new Uploader(clientId, callId, datafile, dataSource);
+        Uploader uploader = new Uploader(clientId, callId, dataSource, datafile);
         uploader.upload();
         UploadService.this.stopSelfResult(startId);
       }
