@@ -28,13 +28,15 @@ public class Uploader {
 
   private final String callId;
   private final String clientId;
+  private final String dataSource;
   private final File datafile;
 
   private int attemptId;
 
-  public Uploader(String clientId, String callId, String datafile) {
+  public Uploader(String clientId, String callId, String dataSource, String datafile) {
     this.clientId = clientId;
     this.callId = callId;
+    this.dataSource = dataSource;
     this.datafile = new File(datafile);
   }
 
@@ -49,16 +51,17 @@ public class Uploader {
       }
       attemptId++;
     }
-    //datafile.delete();
+    datafile.delete();
   }
 
   public void attemptUpload() throws IOException {
     AndroidHttpClient client = AndroidHttpClient.newInstance("RedPhone");
     try {
-      String hostName = String.format("http://%s/collector/%s/%s/%d",
+      String hostName = String.format("http://%s/collector/%s/%s/%s/%d",
                                       Release.DATA_COLLECTION_SERVER_HOST,
                                       callId,
                                       clientId,
+                                      dataSource,
                                       attemptId);
       Log.d("Uploader", "Posting to RedPhone DCS: " + hostName + " clientId: " + clientId
         + " callId: " + callId);
