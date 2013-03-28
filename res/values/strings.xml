@@ -151,5 +151,16 @@
     <string name="registration_progress__this_could_take_a_moment_please_be_patient_well_notify_you_when_verification_is_complete">This could take a moment. Please be patient, we\'ll notify you when verification is complete.</string>
     <string name="registration_progress__waiting_for_sms">WAITING FOR SMS</string>
 
-    <!-- EOF -->
+
+    <string name="CallQualityDialog_call_quality">Call Quality</string>
+    <string name="CallQualityDialog_opt_in_text">I would like to help WhisperSystems by sending Performance data</string>
+    <string name="CallQualityDialog_enable_dialog_text">I would like to rate the quality of my call once it is over</string>
+    <string name="preferences__analytics_settings">Analytics Settings</string>
+    <string name="preferences__enable_call_metrics_upload">Send Data</string>
+    <string name="preferences__enable_call_quality_dialog">Provide Feedback</string>
+    <string name="preferences__provide_feeback">Provide Feedback</string>
+    <string name="preferences__prompt_for_feedback_on_call_quality_after_call_has_ended">Prompt for feedback on call quality after call has ended</string>
+    <string name="preferences__securely_upload_metrics_to_improve_audio_quality">Securely upload metrics to improve audio quality</string>
+    <string name="preferences__"/>
+        <!-- EOF -->
 </resources>

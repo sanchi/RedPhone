@@ -50,7 +50,8 @@ public class SessionDescriptor implements Parcelable {
   }
 
   public String getFullServerName() {
-    return serverName + Release.SERVER_ROOT;
+    //return serverName + Release.SERVER_ROOT;
+	  return "192.168.2.23"; //DNC
   }
 
   @Override
