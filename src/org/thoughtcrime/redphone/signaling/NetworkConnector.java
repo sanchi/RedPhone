@@ -19,6 +19,7 @@ package org.thoughtcrime.redphone.signaling;
 
 import android.util.Log;
 
+import com.google.thoughtcrimegson.Gson;
 import org.thoughtcrime.redphone.signaling.signals.OpenPortSignal;
 import org.thoughtcrime.redphone.signaling.signals.Signal;
 import org.thoughtcrime.redphone.util.LineReader;

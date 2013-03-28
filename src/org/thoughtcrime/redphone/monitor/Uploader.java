@@ -53,26 +53,30 @@ public class Uploader {
   }
 
   public void attemptUpload() throws IOException {
-    HttpClient client = AndroidHttpClient.newInstance("RedPhone");
-    String hostName = String.format("http://%s/collector/%s/%s/%d",
-                                    Release.DATA_COLLECTION_SERVER_HOST,
-                                    callId,
-                                    clientId,
-                                    attemptId);
-    Log.d("Uploader", "Posting to RedPhone DCS: " + hostName + " clientId: " + clientId
-      + " callId: " + callId);
-    HttpPost post = new HttpPost(hostName);
-    post.setEntity(new FileEntity(datafile, "application/json"));
-    post.setHeader("Content-Encoding", "gzip");
+    AndroidHttpClient client = AndroidHttpClient.newInstance("RedPhone");
+    try {
+      String hostName = String.format("http://%s/collector/%s/%s/%d",
+                                      Release.DATA_COLLECTION_SERVER_HOST,
+                                      callId,
+                                      clientId,
+                                      attemptId);
+      Log.d("Uploader", "Posting to RedPhone DCS: " + hostName + " clientId: " + clientId
+        + " callId: " + callId);
+      HttpPost post = new HttpPost(hostName);
+      post.setEntity(new FileEntity(datafile, "application/json"));
+      post.setHeader("Content-Encoding", "gzip");
 
-    HttpResponse response = client.execute(post);
-    if (response.getStatusLine().getStatusCode() != 200) {
-      Log.d("Uploader", "Redphone DCS response: " + response.toString());
+      HttpResponse response = client.execute(post);
+      if (response.getStatusLine().getStatusCode() != 200) {
+        Log.d("Uploader", "Redphone DCS response: " + response.toString());
+        response.getEntity().consumeContent();
+        client.getConnectionManager().shutdown();
+        throw new IllegalStateException("Upload failed");
+      }
       response.getEntity().consumeContent();
       client.getConnectionManager().shutdown();
-      throw new IllegalStateException("Upload failed");
+    } finally {
+      client.close();
     }
-    response.getEntity().consumeContent();
-    client.getConnectionManager().shutdown();
   }
 }

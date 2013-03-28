@@ -19,6 +19,7 @@ package org.thoughtcrime.redphone.ui;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.ListPreference;
@@ -31,11 +32,16 @@ import com.actionbarsherlock.app.SherlockPreferenceActivity;
 import com.actionbarsherlock.view.MenuItem;
 import com.google.android.gcm.GCMRegistrar;
 
+import com.google.thoughtcrimegson.Gson;
 import org.thoughtcrime.redphone.R;
 import org.thoughtcrime.redphone.Release;
 import org.thoughtcrime.redphone.audio.DeviceAudioSettings;
+import org.thoughtcrime.redphone.monitor.CallQualityConfig;
 import org.thoughtcrime.redphone.signaling.SignalingException;
 import org.thoughtcrime.redphone.signaling.SignalingSocket;
+
+import java.util.List;
+
 
 /**
  * Preferences menu Activity.
@@ -54,13 +60,18 @@ public class ApplicationPreferencesActivity extends SherlockPreferenceActivity {
   public static final String DEBUG_VIEW_PREF            = "pref_debugview";
   public static final String SIMULATE_PACKET_DROPS      = "pref_simulate_packet_loss";
   public static final String MINIMIZE_LATENCY           = "pref_min_latency";
-  public static final String SINGLE_THREAD		          = "pref_singlethread";
+  public static final String SINGLE_THREAD		        = "pref_singlethread";
   public static final String USE_C2DM_LEGACY            = "pref_use_c2dm";
   public static final String SIGNALING_METHOD           = "pref_signaling_method";
   public static final String AUDIO_TRACK_DES_LEVEL      = "pref_audio_track_des_buffer_level";
   public static final String CALL_STREAM_DES_LEVEL      = "pref_call_stream_des_buffer_level";
   public static final String ASK_DIAGNOSTIC_REPORTING   = "pref_ask_diagnostic_reporting";
+  public static final String ENABLE_CALL_METRICS_UPLOAD	= "pref_enable_call_metrics_upload";
+  public static final String ENABLE_CALL_QUALITY_DIALOG	= "pref_ask_diagnostic_reporting";
   public static final String OPPORTUNISTIC_UPGRADE_PREF = "pref_prompt_upgrade";
+  public static final String CALL_QUALITY_QUESTIONS_PREF = "pref_call_quality_questions";
+
+  private static final Gson gson = new Gson();
 
   private ProgressDialog progressDialog;
 
@@ -79,6 +90,9 @@ public class ApplicationPreferencesActivity extends SherlockPreferenceActivity {
 
     initializeListeners();
     initializeDecorators();
+    
+    Intent serviceIntent = new Intent(this,CallQualityDialog.class);
+    startActivity(serviceIntent);
   }
 
   @Override
@@ -270,5 +284,17 @@ public class ApplicationPreferencesActivity extends SherlockPreferenceActivity {
     return PreferenceManager
            .getDefaultSharedPreferences(context)
            .getBoolean(ASK_DIAGNOSTIC_REPORTING, true);
+  }
+
+  public static void setCallQualityConfig(Context context, CallQualityConfig callQualityConfig) {
+    PreferenceManager.getDefaultSharedPreferences(context).edit()
+      .putString(CALL_QUALITY_QUESTIONS_PREF, gson.toJson(callQualityConfig)).commit();
+  }
+
+  public static CallQualityConfig getCallQualityConfig(Context context) {
+    String configJson = PreferenceManager.getDefaultSharedPreferences(context).
+      getString(CALL_QUALITY_QUESTIONS_PREF, gson.toJson(new CallQualityConfig()));
+
+    return gson.fromJson(configJson, CallQualityConfig.class);
   }
 }

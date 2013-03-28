@@ -14,11 +14,11 @@ public class MonitoredEvent {
   private final Map<String, Object> values;
 
   MonitoredEvent(Map<String, Object> values) {
-    this.values = new HashMap<String,Object>(values);
+    this.values = new HashMap<String, Object>(values);
   }
 
   MonitoredEvent(String name, Object value) {
-    values = new HashMap<String,Object>();
+    values = new HashMap<String, Object>();
     values.put(name, value);
   }
 }

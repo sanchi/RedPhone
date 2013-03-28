@@ -24,12 +24,10 @@ import java.util.concurrent.TimeUnit;
 public class CallMonitor {
   private final List<Pair<String, SampledMetrics>> metrics = new ArrayList<Pair<String, SampledMetrics>>();
   private final CallData data;
-  private final String callId;
   private final ScheduledExecutorService sampler = Executors.newSingleThreadScheduledExecutor();
   private final ScheduledFuture sampleFuture;
 
   public CallMonitor(Context context, String callId) {
-    this.callId = callId;
     CallData data;
     try {
       data = new CallDataImpl(context);
@@ -82,7 +80,7 @@ public class CallMonitor {
    *
    * Calling this function more than once will result in an error.
    */
-  public void startUpload(Context context) {
+  public void startUpload(Context context, String callId) {
     try {
       Log.d("CallMonitor", "Shutting down call monitoring, starting upload process");
       sampleFuture.cancel(false);
