@@ -61,7 +61,6 @@ public abstract class CallManager extends Thread {
   protected final CallStateListener callStateListener;
   protected final Context context;
   protected final CallMonitor monitor;
-  protected List<String> callQualityQuestions;
 
   private boolean terminated;
   private boolean loopbackMode;
