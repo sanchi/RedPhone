@@ -101,10 +101,7 @@ public class CallMonitor {
         return;
       }
 
-      Intent uploadIntent = new Intent(context, UploadService.class);
-      uploadIntent.putExtra(UploadService.CALLID_KEY, callId);
-      uploadIntent.putExtra(UploadService.DATAFILE_KEY, datafile.getAbsolutePath());
-      context.startService(uploadIntent);
+      UploadService.beginUpload(context, callId, "call-metrics", datafile);
     } catch (IOException e) {
       Log.e("CallMonitor", "Failed to upload quality data", e);
     } catch (InterruptedException e) {
