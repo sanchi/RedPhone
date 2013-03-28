@@ -45,6 +45,7 @@ public class CallDataImpl implements CallData {
       Log.d("CallDataImpl", "Not logging event, already finished");
       return;
     }
+    Log.d("CallDataImpl", "Adding Event: " + gson.toJson(event));
     gson.toJson(event, event.getClass(), writer);
   }
 
