@@ -52,8 +52,6 @@ import org.thoughtcrime.redphone.util.AudioUtils;
 import org.thoughtcrime.redphone.util.PeriodicActionUtils;
 
 
-import org.thoughtcrime.redphone.ui.AboutActivity;
-
 import java.util.ArrayList;
 
 /**

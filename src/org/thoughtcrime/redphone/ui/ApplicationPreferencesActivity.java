@@ -42,7 +42,6 @@ import org.thoughtcrime.redphone.signaling.SignalingSocket;
 
 import java.util.List;
 
-
 /**
  * Preferences menu Activity.
  *
