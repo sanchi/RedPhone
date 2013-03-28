@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start"
+        android:layout_weight="0.00"
+        android:text="Whisper Systems"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="match_parent"
+        android:layout_height="62dp"
+        android:layout_weight="0.01"
+        android:text="blah blah blah please send us data so we can make junk better. its like sooper easy and jsut doo it. thx"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+
+    <CheckBox
+        android:id="@+id/optInCheckBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.00"
+        android:text="@string/CallQualityDialog_opt_in_text" />
+
+    <CheckBox
+        android:id="@+id/enableDialogCheckBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.00"
+        android:text="@string/CallQualityDialog_enable_dialog_text" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_weight="0.00"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/doneDialogButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.00"
+            android:text="Done" />
+
+    </LinearLayout>
+
+    <ListView
+         android:id="@android:id/list"
+        android:layout_width="match_parent"
+        android:layout_height="42dp" >
+
+    </ListView>
+
+</LinearLayout>

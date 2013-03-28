@@ -51,6 +51,7 @@ import org.thoughtcrime.redphone.ui.QualityReporting;
 import org.thoughtcrime.redphone.util.AudioUtils;
 import org.thoughtcrime.redphone.util.PeriodicActionUtils;
 
+
 import java.util.ArrayList;
 
 /**
@@ -101,7 +102,7 @@ public class RedPhone extends Activity {
   private boolean deliveringTimingData = false;
   private RedPhoneService redPhoneService;
   private CallScreen callScreen;
-
+  
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -110,9 +111,11 @@ public class RedPhone extends Activity {
     requestWindowFeature(Window.FEATURE_NO_TITLE);
     setContentView(R.layout.main);
 
+    String S = "";
     setVolumeControlStream(AudioManager.STREAM_VOICE_CALL);
 
     initializeResources();
+
   }
 
 

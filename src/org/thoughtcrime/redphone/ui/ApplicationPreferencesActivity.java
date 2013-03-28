@@ -19,6 +19,7 @@ package org.thoughtcrime.redphone.ui;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.ListPreference;
@@ -58,12 +59,14 @@ public class ApplicationPreferencesActivity extends SherlockPreferenceActivity {
   public static final String DEBUG_VIEW_PREF            = "pref_debugview";
   public static final String SIMULATE_PACKET_DROPS      = "pref_simulate_packet_loss";
   public static final String MINIMIZE_LATENCY           = "pref_min_latency";
-  public static final String SINGLE_THREAD		          = "pref_singlethread";
+  public static final String SINGLE_THREAD		        = "pref_singlethread";
   public static final String USE_C2DM_LEGACY            = "pref_use_c2dm";
   public static final String SIGNALING_METHOD           = "pref_signaling_method";
   public static final String AUDIO_TRACK_DES_LEVEL      = "pref_audio_track_des_buffer_level";
   public static final String CALL_STREAM_DES_LEVEL      = "pref_call_stream_des_buffer_level";
   public static final String ASK_DIAGNOSTIC_REPORTING   = "pref_ask_diagnostic_reporting";
+  public static final String ENABLE_CALL_METRICS_UPLOAD	= "pref_enable_call_metrics_upload";
+  public static final String ENABLE_CALL_QUALITY_DIALOG	= "pref_ask_diagnostic_reporting";
   public static final String OPPORTUNISTIC_UPGRADE_PREF = "pref_prompt_upgrade";
   public static final String CALL_QUALITY_QUESTIONS_PREF = "pref_call_quality_questions";
 
@@ -86,6 +89,9 @@ public class ApplicationPreferencesActivity extends SherlockPreferenceActivity {
 
     initializeListeners();
     initializeDecorators();
+    
+    Intent serviceIntent = new Intent(this,CallQualityDialog.class);
+    startActivity(serviceIntent);
   }
 
   @Override
