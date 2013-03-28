@@ -18,6 +18,7 @@
 package org.thoughtcrime.redphone.call;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -39,6 +40,7 @@ import org.thoughtcrime.redphone.monitor.EventStream;
 import org.thoughtcrime.redphone.signaling.SessionDescriptor;
 import org.thoughtcrime.redphone.signaling.SignalingSocket;
 import org.thoughtcrime.redphone.ui.ApplicationPreferencesActivity;
+import org.thoughtcrime.redphone.ui.CallQualityDialog;
 import org.thoughtcrime.redphone.util.AudioUtils;
 
 import java.io.IOException;
@@ -147,8 +149,13 @@ public abstract class CallManager extends Thread {
   public void terminate() {
     this.terminated = true;
     lifecycleMonitor.emitEvent("terminate");
-    monitor.startUpload(context, String.valueOf(getSessionDescriptor().sessionId));
+    
+    monitor.startUpload(context, String.valueOf(getSessionDescriptor().sessionId));  
 
+    Intent callQualityDialogIntent = new Intent(context,CallQualityDialog.class);
+    callQualityDialogIntent.putExtra("callId",getSessionDescriptor().sessionId);
+    context.getApplicationContext().startActivity(callQualityDialogIntent);
+    
     if (callAudioManager != null)
       callAudioManager.terminate();
 
