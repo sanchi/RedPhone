@@ -27,7 +27,7 @@ public class CallMonitor {
   private final ScheduledExecutorService sampler = Executors.newSingleThreadScheduledExecutor();
   private final ScheduledFuture sampleFuture;
 
-  public CallMonitor(Context context, String callId) {
+  public CallMonitor(Context context) {
     CallData data;
     try {
       data = new CallDataImpl(context);
@@ -44,6 +44,8 @@ public class CallMonitor {
         sample();
       }
     }, 0, 10, TimeUnit.SECONDS);
+
+    addSampledMetrics("system", new SystemMetrics());
   }
 
   public void addNominalValue(String name, Object value) {
@@ -68,8 +70,12 @@ public class CallMonitor {
     Log.d("CallMonitor", "Sampling now");
     Map<String, Object> datapoint = new HashMap<String, Object>();
     for (Pair<String, SampledMetrics> metric : metrics) {
-      for (Map.Entry<String, Object> entry : metric.second.sample().entrySet()) {
-        datapoint.put(metric.first + ":" + entry.getKey(), entry.getValue());
+      try {
+        for (Map.Entry<String, Object> entry : metric.second.sample().entrySet()) {
+          datapoint.put(metric.first + ":" + entry.getKey(), entry.getValue());
+        }
+      } catch (Exception e) {
+        Log.e("CallMonitor", "A SampledMetric threw an uncaught exception", e);
       }
     }
     data.addEvent(new MonitoredEvent(datapoint));

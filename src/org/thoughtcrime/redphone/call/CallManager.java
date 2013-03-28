@@ -85,7 +85,7 @@ public abstract class CallManager extends Thread {
     this.terminated        = false;
     this.context           = context;
     this.loopbackMode      = ApplicationPreferencesActivity.getLoopbackEnabled(context);
-    this.monitor           = new CallMonitor(context, "devel-call-id");
+    this.monitor           = new CallMonitor(context);
 
     initMonitor();
     printInitDebug();
@@ -200,7 +200,7 @@ public abstract class CallManager extends Thread {
 
   //For loopback operation
   public void doLoopback() throws AudioException, IOException {
-    callAudioManager = new CallAudioManager(null, "SPEEX", context, new CallMonitor(context, "loopback"));
+    callAudioManager = new CallAudioManager(null, "SPEEX", context, new CallMonitor(context));
     callAudioManager.run();
   }
 
