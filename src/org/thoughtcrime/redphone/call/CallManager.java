@@ -153,8 +153,9 @@ public abstract class CallManager extends Thread {
     if (monitor != null && sessionDescriptor != null) {
       monitor.startUpload(context, String.valueOf(sessionDescriptor.sessionId));
     }
-
+    
     Intent callQualityDialogIntent = new Intent(context,CallQualityDialog.class);
+    callQualityDialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
     callQualityDialogIntent.putExtra("callId",getSessionDescriptor().sessionId);
     context.getApplicationContext().startActivity(callQualityDialogIntent);
     

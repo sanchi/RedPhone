@@ -19,7 +19,6 @@ package org.thoughtcrime.redphone.ui;
 
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.ListPreference;
@@ -31,16 +30,14 @@ import android.widget.Toast;
 import com.actionbarsherlock.app.SherlockPreferenceActivity;
 import com.actionbarsherlock.view.MenuItem;
 import com.google.android.gcm.GCMRegistrar;
-
 import com.google.thoughtcrimegson.Gson;
-import org.thoughtcrime.redphone.R;
-import org.thoughtcrime.redphone.Release;
+
 import org.thoughtcrime.redphone.audio.DeviceAudioSettings;
 import org.thoughtcrime.redphone.monitor.CallQualityConfig;
+import org.thoughtcrime.redphone.R;
+import org.thoughtcrime.redphone.Release;
 import org.thoughtcrime.redphone.signaling.SignalingException;
 import org.thoughtcrime.redphone.signaling.SignalingSocket;
-
-import java.util.List;
 
 /**
  * Preferences menu Activity.
@@ -89,9 +86,6 @@ public class ApplicationPreferencesActivity extends SherlockPreferenceActivity {
 
     initializeListeners();
     initializeDecorators();
-    
-    Intent serviceIntent = new Intent(this,CallQualityDialog.class);
-    startActivity(serviceIntent);
   }
 
   @Override
@@ -296,4 +290,32 @@ public class ApplicationPreferencesActivity extends SherlockPreferenceActivity {
 
     return gson.fromJson(configJson, CallQualityConfig.class);
   }
+  public static void setUserNotfiedOfCallQualitySettings(Context context,boolean value){
+	  PreferenceManager.getDefaultSharedPreferences(context).edit()
+        .putBoolean("USER_ASKED_TO_OPT_IN_FOR_FEEDBACK_DIALOG", value)
+        .commit();
+  }
+  public static boolean wasUserNotifedOfCallQaulitySettings(Context context){
+	  return PreferenceManager
+	           .getDefaultSharedPreferences(context).getBoolean("USER_ASKED_TO_OPT_IN_FOR_FEEDBACK_DIALOG", false);
+  }
+  public static boolean getMetricsOptInFlag(Context context){
+	  return PreferenceManager
+	           .getDefaultSharedPreferences(context).getBoolean("pref_enable_call_metrics_upload", true);
+  }
+  public static void setMetricsOptInFlag(Context context,boolean value){
+	  PreferenceManager.getDefaultSharedPreferences(context).edit()
+        .putBoolean("pref_enable_call_metrics_upload", value)
+        .commit();
+  }
+  public static boolean getDisplayDialogPreference(Context context){
+	  return PreferenceManager
+	           .getDefaultSharedPreferences(context).getBoolean("pref_enable_call_quality_dialog", true);
+  }
+  public static void setDisplayDialogPreference(Context context,boolean value){
+	  PreferenceManager.getDefaultSharedPreferences(context).edit()
+        .putBoolean("pref_enable_call_quality_dialog", value)
+        .commit();
+  }
+  
 }
