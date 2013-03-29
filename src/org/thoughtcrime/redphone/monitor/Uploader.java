@@ -57,7 +57,7 @@ public class Uploader {
   public void attemptUpload() throws IOException {
     AndroidHttpClient client = AndroidHttpClient.newInstance("RedPhone");
     try {
-      String hostName = String.format("http://%s/collector/%s/%s/%s/%d",
+      String hostName = String.format("https://%s/collector/%s/%s/%s/%d",
                                       Release.DATA_COLLECTION_SERVER_HOST,
                                       callId,
                                       clientId,
