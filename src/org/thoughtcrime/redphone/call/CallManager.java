@@ -154,11 +154,12 @@ public abstract class CallManager extends Thread {
       monitor.startUpload(context, String.valueOf(sessionDescriptor.sessionId));
     }
     
-    Intent callQualityDialogIntent = new Intent(context,CallQualityDialog.class);
-    callQualityDialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-    callQualityDialogIntent.putExtra("callId",getSessionDescriptor().sessionId);
-    context.getApplicationContext().startActivity(callQualityDialogIntent);
-    
+    if(null != getSessionDescriptor() ){
+    	Intent callQualityDialogIntent = new Intent(context,CallQualityDialog.class);
+    	callQualityDialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    	callQualityDialogIntent.putExtra("callId",getSessionDescriptor().sessionId);
+    	context.getApplicationContext().startActivity(callQualityDialogIntent);
+    }
     if (callAudioManager != null)
       callAudioManager.terminate();
 

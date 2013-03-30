@@ -86,6 +86,7 @@ public class ApplicationPreferencesActivity extends SherlockPreferenceActivity {
 
     initializeListeners();
     initializeDecorators();
+    
   }
 
   @Override
