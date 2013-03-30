@@ -1,4 +1,4 @@
-package org.thoughtcrime.redphone.crypto.stream;
+package org.thoughtcrime.redphone.monitor.stream;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -15,11 +15,12 @@ import java.io.OutputStream;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.security.PublicKey;
 import java.security.SecureRandom;
 
 /**
- * Writes an encrypted stream.
+ * Encryptes an OutputStream using an RSA PublicKey.  See {@link EncryptedInputStream} for details.
  *
  * @author Stuart O. Anderson
  */
@@ -36,7 +37,7 @@ public class EncryptedOutputStream extends FilterOutputStream {
       SecureRandom.getInstance("SHA1PRNG").nextBytes(iv);
 
       Mac mac = EncryptedStreamUtils.makeMac(hmacKey);
-      this.out = new CipherOutputStream(new HmacAccululatorStream(out, mac), makeSymmetricCipher(cipherKey, iv));
+      this.out = new CipherOutputStream(new HmacAccumulatorStream(out, mac), makeSymmetricCipher(cipherKey, iv));
 
       out.write((HEADER_PREFIX + "0001").getBytes("UTF8"));
       out.write(encryptSymmetricKey(cipherKey, publicKey));
@@ -56,26 +57,30 @@ public class EncryptedOutputStream extends FilterOutputStream {
       throw new AssertionError(e);
     } catch (InvalidAlgorithmParameterException e) {
       throw new AssertionError(e);
+    } catch (NoSuchProviderException e) {
+      throw new AssertionError(e);
     }
   }
 
   private byte[] encryptSymmetricKey(SecretKey key, PublicKey publicKey)
     throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException,
-    BadPaddingException {
-    Cipher rsaCipher = Cipher.getInstance("RSA");
+    BadPaddingException, NoSuchProviderException {
+    Cipher rsaCipher = Cipher.getInstance("RSA/NONE/OAEPWithSHA1AndMGF1Padding", "SC");
     rsaCipher.init(Cipher.ENCRYPT_MODE, publicKey);
     return rsaCipher.doFinal(key.getEncoded());
   }
 
-  private SecretKey makeSecretKey(String algorithm, int bits) throws NoSuchAlgorithmException {
-    KeyGenerator keyGenerator = KeyGenerator.getInstance(algorithm);
+  private SecretKey makeSecretKey(String algorithm, int bits)
+    throws NoSuchAlgorithmException, NoSuchProviderException {
+    KeyGenerator keyGenerator = KeyGenerator.getInstance(algorithm, "SC");
     keyGenerator.init(bits);
     return keyGenerator.generateKey();
   }
 
   private Cipher makeSymmetricCipher(SecretKey secretKey, byte iv[])
-    throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException {
-    Cipher aesCipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+    throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException,
+    NoSuchProviderException {
+    Cipher aesCipher = Cipher.getInstance("AES/CBC/PKCS5Padding", "SC");
     IvParameterSpec ivSpec = new IvParameterSpec(iv);
 
     aesCipher.init(Cipher.ENCRYPT_MODE, secretKey, ivSpec);
@@ -85,9 +90,9 @@ public class EncryptedOutputStream extends FilterOutputStream {
   /**
    * Computes HMAC of encrypted bytes, writes it to the end of the stream.
    */
-  private static class HmacAccululatorStream extends FilterOutputStream {
+  private static class HmacAccumulatorStream extends FilterOutputStream {
     private final Mac mac;
-    public HmacAccululatorStream(OutputStream out, Mac mac) {
+    public HmacAccumulatorStream(OutputStream out, Mac mac) {
       super(out);
       this.mac = mac;
 

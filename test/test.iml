@@ -39,6 +39,7 @@
     <orderEntry type="jdk" jdkName="Android 2.1 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="RedPhone" scope="PROVIDED" />
+    <orderEntry type="library" name="libs" level="project" />
   </component>
 </module>
 

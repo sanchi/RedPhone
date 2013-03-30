@@ -1,4 +1,4 @@
-package org.thoughtcrime.redphone.crypto.stream;
+package org.thoughtcrime.redphone.monitor.stream;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -18,12 +18,18 @@ import java.nio.ByteBuffer;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 
 /**
  * Reads an encrypted stream.
  *
+ * The entire stream is read into memory and the MAC is verified when the EncryptedInputStream is constructed.
+ *
+ * The format of the stream is:
  * [HEADER][AES-KEY (RSA-2048-ENC)][HMAC-KEY (RSA-2048-ENC)][AES-IV][ENC-STREAM-DATA][HMAC of (AES-IV, ENC-STREAM-DATA)]
+ *
+ * @author Stuart O. Anderson
  */
 public class EncryptedInputStream extends FilterInputStream {
 
@@ -87,7 +93,7 @@ public class EncryptedInputStream extends FilterInputStream {
       byte[] encryptedKeyBytes = new byte[256];
       inputStream.readFully(encryptedKeyBytes);
 
-      Cipher rsaCipher = Cipher.getInstance("RSA");
+      Cipher rsaCipher = Cipher.getInstance("RSA/NONE/OAEPWithSHA1AndMGF1Padding", "SC");
       rsaCipher.init(Cipher.DECRYPT_MODE, privateKey);
       byte[] decryptedKeyBytes = rsaCipher.doFinal(encryptedKeyBytes);
 
@@ -102,12 +108,14 @@ public class EncryptedInputStream extends FilterInputStream {
       throw new AssertionError(e);
     } catch (BadPaddingException e) {
       throw new AssertionError(e);
+    } catch (NoSuchProviderException e) {
+      throw new AssertionError(e);
     }
   }
 
   public Cipher makeAesCipher(SecretKey secretKey, byte[] iv) {
     try {
-      Cipher aesCipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+      Cipher aesCipher = Cipher.getInstance("AES/CBC/PKCS5Padding", "SC");
       IvParameterSpec ivSpec = new IvParameterSpec(iv);
 
       aesCipher.init(Cipher.DECRYPT_MODE, secretKey, ivSpec);
@@ -119,6 +127,8 @@ public class EncryptedInputStream extends FilterInputStream {
     } catch (InvalidKeyException e) {
       throw new AssertionError(e);
     } catch (InvalidAlgorithmParameterException e) {
+      throw new AssertionError(e);
+    } catch (NoSuchProviderException e) {
       throw new AssertionError(e);
     }
   }

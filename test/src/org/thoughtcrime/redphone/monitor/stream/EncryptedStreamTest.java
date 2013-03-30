@@ -1,4 +1,4 @@
-package org.thoughtcrime.redphone.crypto.stream;
+package org.thoughtcrime.redphone.monitor.stream;
 
 import android.content.res.Resources;
 import android.test.AndroidTestCase;
@@ -10,8 +10,14 @@ import java.io.DataInputStream;
 import java.io.InputStream;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.security.Security;
 
 public class EncryptedStreamTest extends AndroidTestCase {
+
+  static {
+    Security.addProvider(new org.spongycastle.jce.provider.BouncyCastleProvider());
+  }
+
   public void testSetup() throws Exception {
     ByteArrayOutputStream baos = new ByteArrayOutputStream(1000);
 

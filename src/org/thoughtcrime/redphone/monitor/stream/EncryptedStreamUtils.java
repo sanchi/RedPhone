@@ -1,4 +1,4 @@
-package org.thoughtcrime.redphone.crypto.stream;
+package org.thoughtcrime.redphone.monitor.stream;
 
 import android.content.res.Resources;
 
@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.security.InvalidKeyException;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
@@ -31,20 +32,24 @@ public class EncryptedStreamUtils {
       X509EncodedKeySpec keySpec = new X509EncodedKeySpec(readAllBytes(keyStream));
       keyStream.close();
 
-      KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+      KeyFactory keyFactory = KeyFactory.getInstance("RSA", "SC");
 
       return keyFactory.generatePublic(keySpec);
     } catch (NoSuchAlgorithmException e) {
+      throw new AssertionError(e);
+    } catch (NoSuchProviderException e) {
       throw new AssertionError(e);
     }
   }
 
   public static Mac makeMac(SecretKey macKey) throws InvalidKeyException {
     try {
-      Mac mac = Mac.getInstance("HmacSHA1");
+      Mac mac = Mac.getInstance("HmacSHA1", "SC");
       mac.init(macKey);
       return mac;
     } catch (NoSuchAlgorithmException e) {
+      throw new AssertionError(e);
+    } catch (NoSuchProviderException e) {
       throw new AssertionError(e);
     }
   }
@@ -55,9 +60,11 @@ public class EncryptedStreamUtils {
       InputStream keyStream = resources.openRawResource(res);
       PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(readAllBytes(keyStream));
       keyStream.close();
-      KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+      KeyFactory keyFactory = KeyFactory.getInstance("RSA", "SC");
       return keyFactory.generatePrivate(keySpec);
     } catch (NoSuchAlgorithmException e) {
+      throw new AssertionError(e);
+    } catch (NoSuchProviderException e) {
       throw new AssertionError(e);
     }
   }
