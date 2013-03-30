@@ -19,6 +19,7 @@ package org.thoughtcrime.redphone.ui;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.ListPreference;
@@ -86,6 +87,11 @@ public class ApplicationPreferencesActivity extends SherlockPreferenceActivity {
 
     initializeListeners();
     initializeDecorators();
+    
+    Intent callQualityDialogIntent = new Intent(this,CallQualityDialog.class);
+    callQualityDialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    callQualityDialogIntent.putExtra("callId",222);
+    this.startActivity(callQualityDialogIntent);
   }
 
   @Override

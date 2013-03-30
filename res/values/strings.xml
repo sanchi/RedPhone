@@ -152,9 +152,12 @@
     <string name="registration_progress__waiting_for_sms">WAITING FOR SMS</string>
 
 
+    <string name="CallQualityDialog_call_feedback">Call Feedback</string>
     <string name="CallQualityDialog_call_quality">Call Quality</string>
-    <string name="CallQualityDialog_opt_in_text">I would like to help WhisperSystems by sending Performance data</string>
+    <string name="CallQualityDialog_call_quality_rating">Call Quality Rating</string>
     <string name="CallQualityDialog_enable_dialog_text">I would like to rate the quality of my call once it is over</string>
+ 	<string name="CallQualityDialog_opt_in_text">I would like to help WhisperSystems by sending Performance data</string>
+    
     <string name="preferences__analytics_settings">Analytics Settings</string>
     <string name="preferences__enable_call_metrics_upload">Send Data</string>
     <string name="preferences__enable_call_quality_dialog">Provide Feedback</string>

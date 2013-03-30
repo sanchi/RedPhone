@@ -14,14 +14,22 @@ import org.thoughtcrime.redphone.monitor.UploadService;
 import org.thoughtcrime.redphone.monitor.UserFeedback;
 import org.thoughtcrime.redphone.R;
 
+import android.R.id;
+import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.SparseBooleanArray;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.RatingBar;
+import android.widget.TextView;
+
 import com.actionbarsherlock.app.SherlockActivity;
 import com.google.thoughtcrimegson.Gson;
 
@@ -31,30 +39,33 @@ import com.google.thoughtcrimegson.Gson;
 
 public class CallQualityDialog extends SherlockActivity  {
 
+	  private long callId;
+	  
 	  private Button sendButton;
 	  private Button doneDialogButton;
 
-	  private long callId;
 	  private List<String> feedbackQuestions;
-	  
 	  private ArrayAdapter<String> adapter;
 	  
 	  private String typeOfData = "user-feedback";
-	  //private ArrayAdapter adapter;
-	 
+	  private int numQuestionsToDisplay = 3;
+	
 	  public void onCreate(Bundle icicle) {
 		    super.onCreate(icicle);
 		    this.callId = getIntent().getLongExtra("callId", -1);
-
 		    feedbackQuestions = getFeedbackQuestions();
-		   
+		    Log.d("CALLMETRICS","NumQuestions"+feedbackQuestions.size());
 		    setupInterface();   
 	  }
 	  
 	  private List<String> getFeedbackQuestions()
 	  {
 		  CallQualityConfig config = ApplicationPreferencesActivity.getCallQualityConfig(this);
-		  return config.getCallQualityQuestions();
+		  List<String> questions = config.getCallQualityQuestions();
+		  if(questions.size() > numQuestionsToDisplay){
+			  questions = questions.subList(0, numQuestionsToDisplay);
+		  }
+		  return questions;
 	  }
 	  
 	  
@@ -78,10 +89,17 @@ public class CallQualityDialog extends SherlockActivity  {
 	  private void setViewToStandardDialog()
 	  {
 		  setContentView(R.layout.call_quality_dialog);
+		  setTitle(R.string.CallQualityDialog_call_feedback);
+		  TextView listLabel = (TextView)findViewById(R.id.listLabel);
 		  ListView list = (ListView)findViewById(android.R.id.list);
-		  adapter = new ArrayAdapter<String>(this,android.R.layout.select_dialog_multichoice, feedbackQuestions);
+
+		  adapter = new QuestionListAdapter(this,android.R.layout.select_dialog_multichoice, feedbackQuestions);
+
 		  list.setAdapter(adapter);
 		  list.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+		  if(0 >= feedbackQuestions.size() ){
+			  listLabel.setVisibility(View.GONE);
+		  }
 	  }
 	  
 	  private void initializeInitialDialogResources()
@@ -92,12 +110,16 @@ public class CallQualityDialog extends SherlockActivity  {
 	  
 	  private void initializeStandardDialogResources()
 	  {
+		  RatingBar ratingBar = (RatingBar)findViewById(R.id.callRatingBar);
+		  ratingBar.setRating((float) 1.5);
 		  this.sendButton        	= (Button)findViewById(R.id.sendButton);
 		  this.sendButton.setOnClickListener(new sendButtonListener());
 	  }
 	  
 	  private void setupInterface()
 	  {
+//		  TextView title = (TextView) findViewById(R.layout.call_quality_dialog.title);
+//		  title.setText("Call Feedback");
 		  if(!ApplicationPreferencesActivity.wasUserNotifedOfCallQaulitySettings(this)){
 			  setViewToInitialDialog();
 			  initializeInitialDialogResources();
@@ -168,7 +190,45 @@ public class CallQualityDialog extends SherlockActivity  {
 			 sendData();
 		  }
 	  }	  
+	  
+	  
 }
+	  
+class QuestionListAdapter extends ArrayAdapter<String> {
+
+	private Context context;
+	private int id;
+	private List <String>items ;
+
+	public QuestionListAdapter(Context context, int textViewResourceId , List<String> list ) 
+	{
+		super(context, textViewResourceId, list);           
+		this.context = context;
+		id = textViewResourceId;
+		items = list ;
+	}
+
+	@Override
+	public View getView(int position, View v, ViewGroup parent)
+	{
+		View mView = v ;
+		if(mView == null){
+			LayoutInflater vi = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			mView = vi.inflate(id, null);
+		}
+		
+		TextView text = (TextView) mView.findViewById(android.R.id.text1);
+
+		if(items.get(position) != null )
+		{
+			text.setTextColor(Color.WHITE);
+			text.setText(items.get(position));
+		}
+		return mView;
+	}
+
+}
+
 
 
 
