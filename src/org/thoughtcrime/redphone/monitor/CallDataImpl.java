@@ -5,6 +5,9 @@ import android.util.Log;
 import com.google.thoughtcrimegson.Gson;
 import com.google.thoughtcrimegson.GsonBuilder;
 import com.google.thoughtcrimegson.stream.JsonWriter;
+import org.thoughtcrime.redphone.R;
+import org.thoughtcrime.redphone.crypto.stream.EncryptedOutputStream;
+import org.thoughtcrime.redphone.crypto.stream.EncryptedStreamUtils;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -12,7 +15,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.security.PublicKey;
+import java.security.spec.InvalidKeySpecException;
 import java.util.zip.GZIPOutputStream;
+
+import static org.thoughtcrime.redphone.crypto.stream.EncryptedStreamUtils.getPublicKeyFromResource;
 
 /**
  * Data collected over the course of a call.  Streamed to the temp cache directory
@@ -25,13 +32,22 @@ public class CallDataImpl implements CallData {
   private boolean finished = false;
 
   public CallDataImpl(Context context) throws IOException {
-    File cacheSubdir = new File(context.getCacheDir(), "/calldata");
-    cacheSubdir.mkdir();
-    jsonFile = File.createTempFile("calldata", ".json.gz", cacheSubdir);
-    Log.d("CallDataImpl", "Writing output to " + jsonFile.getAbsolutePath());
-    OutputStream outputStream = new GZIPOutputStream(new BufferedOutputStream(new FileOutputStream(jsonFile)));
-    writer = new JsonWriter(new OutputStreamWriter(outputStream));
-    writer.beginArray();
+    try {
+      PublicKey publicKey = getPublicKeyFromResource(context.getResources(), R.raw.call_metrics_public);
+
+      File cacheSubdir = new File(context.getCacheDir(), "/calldata");
+      cacheSubdir.mkdir();
+      jsonFile = File.createTempFile("calldata", ".json.gz", cacheSubdir);
+      Log.d("CallDataImpl", "Writing output to " + jsonFile.getAbsolutePath());
+
+      BufferedOutputStream bufferedStream = new BufferedOutputStream(new FileOutputStream(jsonFile));
+      OutputStream outputStream = new EncryptedOutputStream(bufferedStream, publicKey);
+      GZIPOutputStream gzipStream = new GZIPOutputStream(outputStream);
+      writer = new JsonWriter(new OutputStreamWriter(gzipStream));
+      writer.beginArray();
+    } catch (InvalidKeySpecException e) {
+      throw new IOException(e);
+    }
   }
 
   @Override
