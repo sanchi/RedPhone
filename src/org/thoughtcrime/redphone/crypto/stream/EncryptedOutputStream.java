@@ -29,7 +29,7 @@ public class EncryptedOutputStream extends FilterOutputStream {
   public EncryptedOutputStream(OutputStream out, PublicKey publicKey) throws IOException {
     super(null);
     try {
-      SecretKey cipherKey = makeSecretKey("AES", 256);
+      SecretKey cipherKey = makeSecretKey("AES", 128);
       SecretKey hmacKey = makeSecretKey("HmacSHA1", 160);
 
       byte[] iv = new byte[16];
