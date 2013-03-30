@@ -1,24 +1,9 @@
 package org.thoughtcrime.redphone.ui;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
-import org.thoughtcrime.redphone.monitor.CallQualityConfig;
-import org.thoughtcrime.redphone.monitor.UploadService;
-import org.thoughtcrime.redphone.monitor.UserFeedback;
-import org.thoughtcrime.redphone.R;
-
-import android.R.id;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,11 +15,22 @@ import android.widget.ListView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
+import org.thoughtcrime.redphone.monitor.CallQualityConfig;
+import org.thoughtcrime.redphone.monitor.UploadService;
+import org.thoughtcrime.redphone.monitor.UserFeedback;
+import org.thoughtcrime.redphone.R;
+
 import com.actionbarsherlock.app.SherlockActivity;
 import com.google.thoughtcrimegson.Gson;
 
-
-
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 public class CallQualityDialog extends SherlockActivity  {
@@ -49,12 +45,12 @@ public class CallQualityDialog extends SherlockActivity  {
 	  
 	  private String typeOfData = "user-feedback";
 	  private int numQuestionsToDisplay = 3;
+	  private float defaultRating = 1.5f; 
 	
 	  public void onCreate(Bundle icicle) {
 		    super.onCreate(icicle);
 		    this.callId = getIntent().getLongExtra("callId", -1);
 		    feedbackQuestions = getFeedbackQuestions();
-		    Log.d("CALLMETRICS","NumQuestions"+feedbackQuestions.size());
 		    setupInterface();   
 	  }
 	  
@@ -84,6 +80,7 @@ public class CallQualityDialog extends SherlockActivity  {
 
 	  private void setViewToInitialDialog(){
 		  setContentView(R.layout.call_quality_initial_dialog);
+		  setTitle("We're Making Changes");
 	  }
 	  
 	  private void setViewToStandardDialog()
@@ -111,15 +108,13 @@ public class CallQualityDialog extends SherlockActivity  {
 	  private void initializeStandardDialogResources()
 	  {
 		  RatingBar ratingBar = (RatingBar)findViewById(R.id.callRatingBar);
-		  ratingBar.setRating((float) 1.5);
+		  ratingBar.setRating(defaultRating);
 		  this.sendButton        	= (Button)findViewById(R.id.sendButton);
 		  this.sendButton.setOnClickListener(new sendButtonListener());
 	  }
 	  
 	  private void setupInterface()
 	  {
-//		  TextView title = (TextView) findViewById(R.layout.call_quality_dialog.title);
-//		  title.setText("Call Feedback");
 		  if(!ApplicationPreferencesActivity.wasUserNotifedOfCallQaulitySettings(this)){
 			  setViewToInitialDialog();
 			  initializeInitialDialogResources();
