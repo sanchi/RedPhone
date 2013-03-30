@@ -93,9 +93,7 @@
         <activity
         		  android:name=".ui.CallQualityDialog" 
                   android:theme="@style/Theme.Sherlock.Dialog"/>
-        <activity
-        		  android:name=".ui.CallQualityInitialDialog" 
-                  android:theme="@style/Theme.Sherlock.Dialog"/>
+
         
         <service android:enabled="true" android:name=".RedPhoneService"/>
         <service android:enabled="true" android:name=".gcm.GCMRegistrationService"/>

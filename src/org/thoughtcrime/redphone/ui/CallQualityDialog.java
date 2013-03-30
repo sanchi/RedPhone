@@ -1,179 +1,179 @@
 package org.thoughtcrime.redphone.ui;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.thoughtcrime.redphone.monitor.CallQualityConfig;
+import org.thoughtcrime.redphone.monitor.UploadService;
+import org.thoughtcrime.redphone.monitor.UserFeedback;
 import org.thoughtcrime.redphone.R;
 
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
-import android.util.AttributeSet;
-import android.util.Log;
-import android.view.LayoutInflater;
+import android.util.SparseBooleanArray;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RatingBar;
-import android.widget.ArrayAdapter;
-import android.widget.SimpleAdapter;
-import android.widget.TextView;
-
-import com.actionbarsherlock.app.SherlockListActivity;
+import com.actionbarsherlock.app.SherlockActivity;
+import com.google.thoughtcrimegson.Gson;
 
 
 
 
 
-public class CallQualityDialog extends SherlockListActivity  {
-	
-	  private RatingBar callRatingBar;
+public class CallQualityDialog extends SherlockActivity  {
+
 	  private Button sendButton;
 	  private Button doneDialogButton;
-	  private CheckBox optInCheckBox;
-	  private CheckBox enableDialogCheckBox;
 
+	  private long callId;
+	  private List<String> feedbackQuestions;
+	  
+	  private ArrayAdapter<String> adapter;
+	  
+	  private String typeOfData = "user-feedback";
+	  //private ArrayAdapter adapter;
 	 
 	  public void onCreate(Bundle icicle) {
 		    super.onCreate(icicle);
-		    
-		    setView();
-		    initializeResources();
+		    this.callId = getIntent().getLongExtra("callId", -1);
+
+		    feedbackQuestions = getFeedbackQuestions();
 		   
-		   
+		    setupInterface();   
 	  }
+	  
+	  private List<String> getFeedbackQuestions()
+	  {
+		  CallQualityConfig config = ApplicationPreferencesActivity.getCallQualityConfig(this);
+		  return config.getCallQualityQuestions();
+	  }
+	  
 	  
 	  protected List<Map<String, Object>> getData() {
-		  
-		  if(!hasUserBeenAskedToOptIn() ){return null;}
-		  
-		  
-	        List<Map<String, Object>> myData = new ArrayList<Map<String, Object>>();
-	        
-	        Map<String,Object> m = new HashMap<String,Object>();
-		   	 
-	        Map<String,Object> m2 = new HashMap<String,Object>();
-	        m2.put("title", "Echo");
-	        myData.add(m2);
-	        
-	        m.put("title", "Dropped Call");
-	        myData.add(m);
+		  if(!ApplicationPreferencesActivity.wasUserNotifedOfCallQaulitySettings(this) ){return null;}
 
-	        Map<String,Object> m1 = new HashMap<String,Object>();
-	        m1.put("title", "Jitter");
-	        myData.add(m1);
-	      
-	        return myData;
-	    }
+		  List<Map<String, Object>> data = new ArrayList<Map<String, Object>>();
+		  for(String s: feedbackQuestions)
+		  {
+			  Map<String,Object> m = new HashMap<String,Object>();
+			  m.put("title", s);
+			  data.add(m);
+		  }
+		  return data;
+	  }
 
-	  private void setView(){
-		  if(!hasUserBeenAskedToOptIn())
-		    {
-		    	 setContentView(R.layout.call_quality_initial_dialog);
-		    }else if(getDialogSetting()){
-		    	 setContentView(R.layout.call_quality_dialog);
-
-			     setListAdapter(new SimpleAdapter(this, getData(),
-			                android.R.layout.simple_list_item_1 , new String[] { "title" },
-			                new int[] { android.R.id.text1 }));
-			     getListView().setTextFilterEnabled(true);
-		    }else{
-//		    	finish();
-		    }
+	  private void setViewToInitialDialog(){
+		  setContentView(R.layout.call_quality_initial_dialog);
 	  }
 	  
-	  private void initializeInitialResources()
+	  private void setViewToStandardDialog()
+	  {
+		  setContentView(R.layout.call_quality_dialog);
+		  ListView list = (ListView)findViewById(android.R.id.list);
+		  adapter = new ArrayAdapter<String>(this,android.R.layout.select_dialog_multichoice, feedbackQuestions);
+		  list.setAdapter(adapter);
+		  list.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+	  }
+	  
+	  private void initializeInitialDialogResources()
 	  {
 		  this.doneDialogButton        		= (Button)findViewById(R.id.doneDialogButton);
-		  this.optInCheckBox				= (CheckBox)findViewById(R.id.optInCheckBox);
-		  this.enableDialogCheckBox			= (CheckBox)findViewById(R.id.enableDialogCheckBox);
-		  
 		  this.doneDialogButton.setOnClickListener(new doneDialogListener());
 	  }
 	  
-	  private void initializeStandardResources()
+	  private void initializeStandardDialogResources()
 	  {
-		  this.sendButton        		= (Button)findViewById(R.id.sendButton);
-		  this.callRatingBar		= (RatingBar)findViewById(R.id.callRatingBar);
-
+		  this.sendButton        	= (Button)findViewById(R.id.sendButton);
 		  this.sendButton.setOnClickListener(new sendButtonListener());
-//		  this.disableDialogButton.setOnClickListener(new disableDialogListener());
-//		  this.sometimesEnableDialogButton.setOnClickListener(new sometimesEnableDialogListener());
 	  }
 	  
-	  private void initializeResources()
+	  private void setupInterface()
 	  {
-		  if(!hasUserBeenAskedToOptIn()){
-			  initializeInitialResources();
-		  }
-		  initializeStandardResources();
-	  }
-	  private class sendButtonListener implements View.OnClickListener {
-		  @Override
-		  public void onClick(View v) {
-			  float rating = ((RatingBar)findViewById(R.id.callRatingBar)).getRating();
-			  // SEND DATA
+		  if(!ApplicationPreferencesActivity.wasUserNotifedOfCallQaulitySettings(this)){
+			  setViewToInitialDialog();
+			  initializeInitialDialogResources();
+		  }else if(ApplicationPreferencesActivity.getDisplayDialogPreference(this)){
+			  setViewToStandardDialog();
+			  initializeStandardDialogResources();
+		  }else{
 			  finish();
 		  }
 	  }
+	  
+	  private  UserFeedback buildUserFeedbackObject()
+	  {  
+		  UserFeedback userFeedback = new UserFeedback();
+		  userFeedback.setRating(((RatingBar)findViewById(R.id.callRatingBar)).getRating());
+		 
+		  ListView list = (ListView)findViewById(android.R.id.list);
+		 
+		  SparseBooleanArray checkedItems = list.getCheckedItemPositions(); 
+		  for (int i = 0; i < feedbackQuestions.size(); i++){
+			  userFeedback.addQuestionResponse(feedbackQuestions.get(i), checkedItems.indexOfKey(i) >= 0);
+		  }
+		  return userFeedback;
+	  }
+	  
+	  private void sendData(){
+		  FileWriter fileWriter = null;
+		  BufferedWriter writer = null;
+		  try{
+			  File cacheSubdir = new File(this.getCacheDir(), "/calldata");
+			  cacheSubdir.mkdir();
+			  File jsonFile = File.createTempFile("userfeedback", ".json", cacheSubdir);
+			  fileWriter = new FileWriter(jsonFile);
+			  writer = new BufferedWriter(fileWriter);
+			 
+			  UserFeedback feedbackObject = buildUserFeedbackObject();
+			  writer.write(new Gson().toJson(feedbackObject));
 
+			  UploadService.beginUpload(this,String.valueOf(callId), typeOfData, jsonFile );
+		  }catch(IOException e){
+//			 e.printStackTrace();
+		  }finally{
+			  if(null != writer){
+				  try{ writer.close(); } catch (Exception e){}
+			  }
+			  if(null != fileWriter){
+				  try{ fileWriter.close(); } catch(Exception e){}
+			  }
+		  }
+		  finish();
+	  }
 
 	  private class doneDialogListener implements View.OnClickListener {
 		  @Override
 		  public void onClick(View v) {
-			  Log.d("BUTTON", "Enable");
 			  boolean optIn = ((CheckBox)findViewById(R.id.optInCheckBox)).isChecked();
 			  boolean enableDialog = ((CheckBox)findViewById(R.id.enableDialogCheckBox)).isChecked();
 
-			  setOptInFlag(optIn);
-			  setDialogSetting(enableDialog);
-			  setHasUserBeenAskedToOptIn(true);
-			  setView();
+			  ApplicationPreferencesActivity.setMetricsOptInFlag(getApplicationContext(), optIn);
+			  ApplicationPreferencesActivity.setDisplayDialogPreference(getApplicationContext(), enableDialog);
+			  ApplicationPreferencesActivity.setUserNotfiedOfCallQualitySettings(getApplicationContext(),true);
+			  setupInterface();
 		  }
-	  }
-
-	  
-	  private boolean hasUserBeenAskedToOptIn(){
-		  return PreferenceManager
-		           .getDefaultSharedPreferences(this).getBoolean("USER_ASKED_TO_OPT_IN", false);
-	  }
-	  
-	  private void setHasUserBeenAskedToOptIn(boolean value){
-		  PreferenceManager.getDefaultSharedPreferences(this).edit()
-	        .putBoolean("USER_ASKED_TO_OPT_IN", value)
-	        .commit();
-	  }
-	  
-	  private boolean getDialogSetting(){
-		  return PreferenceManager
-		           .getDefaultSharedPreferences(this).getBoolean("ENABLE_CALL_QUALITY_DIALOG", true);
-	  }
-	  
-	  private void setDialogSetting(boolean value){
-		  PreferenceManager.getDefaultSharedPreferences(this).edit()
-	        .putBoolean("ENABLE_CALL_QUALITY_DIALOG", value)
-	        .commit();
-		 // callQualityPrefSetting = value;
-	  }
-	  
-	  private boolean getOptInFlag(){
-		  return PreferenceManager
-		           .getDefaultSharedPreferences(this).getBoolean("ENABLE_CALL_METRIC_UPLOAD", true);
-	  }
-	  
-	  private void setOptInFlag(boolean value){
-		  PreferenceManager.getDefaultSharedPreferences(this).edit()
-	        .putBoolean("ENABLE_CALL_METRIC_UPLOAD", value)
-	        .commit();
-	  }
-
-
+	  }	
+	  private class sendButtonListener implements View.OnClickListener {
+		  @Override
+		  public void onClick(View v) {
+			 sendData();
+		  }
+	  }	  
 }
+
+
+
+
+
 
 
 

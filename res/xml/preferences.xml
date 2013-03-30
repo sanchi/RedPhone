@@ -9,11 +9,11 @@
   </PreferenceCategory>
   <PreferenceCategory android:title="@string/preferences__analytics_settings">
     <CheckBoxPreference android:defaultValue="false"
-                        android:key="pref_pref_enable_call_metrics_upload"
+                        android:key="pref_enable_call_metrics_upload"
                         android:title="@string/preferences__enable_call_metrics_upload"
                         android:summary="@string/preferences__securely_upload_metrics_to_improve_audio_quality"/>
     <CheckBoxPreference android:defaultValue="false"
-                        android:key="pref_pref_enable_call_quality_dialog"
+                        android:key="pref_enable_call_quality_dialog"
                         android:title="@string/preferences__provide_feeback"
                         android:summary="@string/preferences__prompt_for_feedback_on_call_quality_after_call_has_ended"/>
   </PreferenceCategory>
