@@ -26,30 +26,41 @@ import java.security.SecureRandom;
 public class EncryptedOutputStream extends FilterOutputStream {
   public static final String HEADER_PREFIX = "org.whispersys.redphone.crypto.stream.EncryptedOutputStream-";
 
-  public EncryptedOutputStream(OutputStream out, PublicKey publicKey)
-    throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException,
-    IllegalBlockSizeException, IOException, BadPaddingException {
+  public EncryptedOutputStream(OutputStream out, PublicKey publicKey) throws IOException {
     super(null);
+    try {
+      SecretKey cipherKey = makeSecretKey("AES", 256);
+      SecretKey hmacKey = makeSecretKey("HmacSHA1", 160);
 
-    SecretKey cipherKey = makeSecretKey("AES", 256);
-    SecretKey hmacKey = makeSecretKey("HmacSHA1", 160);
+      byte[] iv = new byte[16];
+      SecureRandom.getInstance("SHA1PRNG").nextBytes(iv);
 
-    byte[] iv = new byte[16];
-    SecureRandom.getInstance("SHA1PRNG").nextBytes(iv);
+      Mac mac = EncryptedStreamUtils.makeMac(hmacKey);
+      this.out = new CipherOutputStream(new HmacAccululatorStream(out, mac), makeSymmetricCipher(cipherKey, iv));
 
-    Mac mac = EncryptedStreamUtils.makeMac(hmacKey);
-    this.out = new CipherOutputStream(new HmacAccululatorStream(out, mac), makeSymmetricCipher(cipherKey, iv));
+      out.write((HEADER_PREFIX + "0001").getBytes("UTF8"));
+      out.write(encryptSymmetricKey(cipherKey, publicKey));
+      out.write(encryptSymmetricKey(hmacKey, publicKey));
+      out.write(iv);
 
-    out.write((HEADER_PREFIX + "0001").getBytes("UTF8"));
-    out.write(encryptSymmetricKey(cipherKey, publicKey));
-    out.write(encryptSymmetricKey(hmacKey, publicKey));
-    out.write(iv);
-
-    mac.update(iv);
+      mac.update(iv);
+    } catch (NoSuchAlgorithmException e) {
+      throw new AssertionError(e);
+    } catch (InvalidKeyException e) {
+      throw new IOException(e);
+    } catch (NoSuchPaddingException e) {
+      throw new AssertionError(e);
+    } catch (IllegalBlockSizeException e) {
+      throw new AssertionError(e);
+    } catch (BadPaddingException e) {
+      throw new AssertionError(e);
+    } catch (InvalidAlgorithmParameterException e) {
+      throw new AssertionError(e);
+    }
   }
 
   private byte[] encryptSymmetricKey(SecretKey key, PublicKey publicKey)
-  throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException,
+    throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException,
     BadPaddingException {
     Cipher rsaCipher = Cipher.getInstance("RSA");
     rsaCipher.init(Cipher.ENCRYPT_MODE, publicKey);
