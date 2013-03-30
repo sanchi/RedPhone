@@ -54,7 +54,7 @@ public class MonitorConfigUpdateReceiver extends BroadcastReceiver {
   public static void maybeUpdateConfig(Context context) {
     AndroidHttpClient client = AndroidHttpClient.newInstance("RedPhone");
     try {
-      String uri = String.format("http://%s/collector/call_quality_questions", Release.DATA_COLLECTION_SERVER_HOST);
+      String uri = String.format("https://%s/collector/call_quality_questions", Release.DATA_COLLECTION_SERVER_HOST);
       HttpGet getRequest = new HttpGet(uri);
 
       HttpResponse response = client.execute(getRequest);
