@@ -158,8 +158,8 @@
     <string name="CallQualityDialog__i_would_like_to_help_by_sending_performance_statistics"> I would like to help by sending performance statistics</string>
     <string name="CallQualityDialog__i_would_like_to_rate_the_quality_of_my_call_once_it_is_over">I would like to rate the quality    of my call once it is over</string>
     <string name="CallQualityDialog__you_can_update_these_settings_at_any_time_through_the_general_settings_menu">You can update these settings at any time through the general settings menu</string>
- 	<string name="CallQualityDialog__whispersystems_needs_your_help_as_we_work_to_improve_the_quality_of_our_calls_we_need_feedback_and_performance_statistics_to_improve_the_system_opt_in_below_to_make_redphone_better">WhisperSystems needs your help. As we work to improve the quality of our calls, we need feedback and performance statistics to improve the system. Opt in below to make RedPhone better.</string>
-    
+    <string name="CallQualityDialog__whispersystems_needs_your_help_as_we_work_to_improve_the_quality_of_our_calls_we_need_feedback_and_performance_statistics_to_improve_the_system_opt_in_below_to_make_redphone_better">WhisperSystems needs your help. As we work to improve the quality of our calls, we need feedback and performance statistics to improve the system. Opt in below to make RedPhone better.</string>
+
     <string name="preferences__analytics_settings">Analytics Settings</string>
     <string name="preferences__enable_call_metrics_upload">Send Data</string>
     <string name="preferences__enable_call_quality_dialog">Provide Feedback</string>

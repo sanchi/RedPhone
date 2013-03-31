@@ -72,13 +72,13 @@
         android:paddingBottom="8dp"
         android:text="Submit"
         android:textAppearance="?android:attr/textAppearanceMedium" />
- />
-    
+    />
+
     <View
-  		android:layout_width="1dp"
-  		android:layout_below="@+id/sendButton"
- 		android:layout_height="0dp"
-		android:layout_weight="1">
-</View>
+        android:layout_width="1dp"
+        android:layout_below="@+id/sendButton"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+    </View>
 
 </RelativeLayout>

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="org.thoughtcrime.redphone"
-          android:versionCode="24"
-          android:versionName="0.9.2"
+          android:versionCode="23"
+          android:versionName="0.9.1"
           android:installLocation="auto">
 
     <uses-sdk android:targetSdkVersion="14" android:minSdkVersion="8"/>
@@ -90,11 +90,10 @@
                   android:launchMode="singleTask"                        
                   android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize"/>
         	
-        <activity android:name=".ui.CallQualityDialog" 
+        <activity android:name=".ui.CallQualityDialog"
                   android:theme="@style/Theme.Sherlock.Dialog"
                   android:screenOrientation="portrait"/>
 
-        
         <service android:enabled="true" android:name=".RedPhoneService"/>
         <service android:enabled="true" android:name=".gcm.GCMRegistrationService"/>
         <service android:enabled="true" android:name=".gcm.GCMIntentService"/>
