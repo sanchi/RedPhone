@@ -47,8 +47,7 @@ public class CallQualityDialog extends SherlockActivity  {
 	  private int numQuestionsToDisplay = 3;
 	  private float defaultRating = 1.5f; 
 	  
-	  public static final String LIST_ITEM_TITLE = "title"
-;	
+	  public static final String LIST_ITEM_TITLE = "title";	
 	  public void onCreate(Bundle icicle) {
 		    super.onCreate(icicle);
 		    this.callId = getIntent().getLongExtra("callId", -1);
