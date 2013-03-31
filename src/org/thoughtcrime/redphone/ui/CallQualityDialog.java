@@ -46,7 +46,9 @@ public class CallQualityDialog extends SherlockActivity  {
 	  private String typeOfData = "user-feedback";
 	  private int numQuestionsToDisplay = 3;
 	  private float defaultRating = 1.5f; 
-	
+	  
+	  public static final String LIST_ITEM_TITLE = "title"
+;	
 	  public void onCreate(Bundle icicle) {
 		    super.onCreate(icicle);
 		    this.callId = getIntent().getLongExtra("callId", -1);
@@ -67,12 +69,12 @@ public class CallQualityDialog extends SherlockActivity  {
 	  
 	  protected List<Map<String, Object>> getData() {
 		  if(!ApplicationPreferencesActivity.wasUserNotifedOfCallQaulitySettings(this) ){return null;}
-
+		  feedbackQuestions = getFeedbackQuestions();
 		  List<Map<String, Object>> data = new ArrayList<Map<String, Object>>();
 		  for(String s: feedbackQuestions)
 		  {
 			  Map<String,Object> m = new HashMap<String,Object>();
-			  m.put("title", s);
+			  m.put(LIST_ITEM_TITLE, s);
 			  data.add(m);
 		  }
 		  return data;
@@ -80,7 +82,7 @@ public class CallQualityDialog extends SherlockActivity  {
 
 	  private void setViewToInitialDialog(){
 		  setContentView(R.layout.call_quality_initial_dialog);
-		  setTitle("We're Making Changes");
+		  setTitle(R.string.CallQualityDialog__we_re_making_changes);
 	  }
 	  
 	  private void setViewToStandardDialog()
@@ -155,7 +157,7 @@ public class CallQualityDialog extends SherlockActivity  {
 
 			  UploadService.beginUpload(this,String.valueOf(callId), typeOfData, jsonFile );
 		  }catch(IOException e){
-//			 e.printStackTrace();
+			 e.printStackTrace();
 		  }finally{
 			  if(null != writer){
 				  try{ writer.close(); } catch (Exception e){}
