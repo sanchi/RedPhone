@@ -152,9 +152,8 @@ public class CallQualityDialog extends SherlockActivity  {
 	  }
 	  
 	  private void sendData(){
-		  FileWriter fileWriter = null;
 		  Writer writer = null;
-		  try{
+		  try {
 			  File cacheSubdir = new File(this.getCacheDir(), "/calldata");
 			  cacheSubdir.mkdir();
         PublicKey publicKey = getPublicKeyFromResource(getResources(), R.raw.call_metrics_public);
@@ -180,9 +179,6 @@ public class CallQualityDialog extends SherlockActivity  {
       } finally {
 			  if(null != writer){
 				  try{ writer.close(); } catch (Exception e){}
-			  }
-			  if(null != fileWriter){
-				  try{ fileWriter.close(); } catch(Exception e){}
 			  }
 		  }
 		  finish();
