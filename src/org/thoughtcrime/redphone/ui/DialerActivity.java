@@ -69,7 +69,6 @@ public class DialerActivity extends SherlockFragmentActivity {
     actionBar.setDisplayUseLogoEnabled(false);
 
     checkForFreshInstall();
-    checkVersionUpdates();
     setContentView(R.layout.dialer_activity);
 
     setupContactsTab();
@@ -94,36 +93,6 @@ public class DialerActivity extends SherlockFragmentActivity {
       getSupportActionBar().setSelectedNavigationItem(CALL_LOG_TAB_INDEX);
     }
   }
-
-  private void checkVersionUpdates() {
-    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-    int lastVersion = prefs.getInt(LAST_VERSION_KEY, 0);
-    int currVersion = 0;
-    try {
-      currVersion = getPackageManager().getPackageInfo("org.thoughtcrime.redphone", 0).versionCode;
-    } catch (PackageManager.NameNotFoundException e) {
-      Log.e("DialerActivity", "Couldn't get RedPhone version code", e);
-    }
-
-    if (lastVersion != currVersion) {
-      handleVersionChange(currVersion);
-      prefs.edit().putInt(LAST_VERSION_KEY, currVersion).commit();
-    }
-  }
-
-  private void handleVersionChange(int newVersion) {
-    Log.d("DialerActivity", "Processing one-time updates for version code: " + newVersion);
-    if(newVersion == 24) {
-      new AsyncTask<Void, Void, Void>() {
-        @Override
-        protected Void doInBackground(Void... voids) {
-          MonitorConfigUpdateReceiver.maybeUpdateConfig(DialerActivity.this);
-          return null;
-        }
-      }.execute();
-    }
-  }
-
 
   private ActionBar.Tab constructTab(final Fragment fragment) {
     ActionBar actionBar = this.getSupportActionBar();
@@ -197,6 +166,7 @@ public class DialerActivity extends SherlockFragmentActivity {
     }
 
     PeriodicActionUtils.scheduleUpdate(this, DirectoryUpdateReceiver.class);
+    PeriodicActionUtils.scheduleUpdate(this, MonitorConfigUpdateReceiver.class);
   }
 
   @Override

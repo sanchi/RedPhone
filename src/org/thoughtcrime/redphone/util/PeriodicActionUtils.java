@@ -29,10 +29,14 @@ public class PeriodicActionUtils {
     Random random                 = new Random(System.currentTimeMillis());
     long offset                   = random.nextLong() % (12 * 60 * 60 * 1000);
     long interval                 = (24 * 60 * 60 * 1000) + offset;
-    String prefKey                = "pref_scheduled_monitor_config_update";
+    String prefKey                = "pref_scheduled_monitor_config_update_" + clazz.getCanonicalName();
     long scheduledTime            = preferences.getLong(prefKey, -1);
 
-    if (scheduledTime == -1 || scheduledTime <= System.currentTimeMillis()) {
+    if (scheduledTime == -1 ) {
+      context.sendBroadcast(intent);
+    }
+
+    if (scheduledTime <= System.currentTimeMillis()) {
       scheduledTime = System.currentTimeMillis() + interval;
       preferences.edit().putLong(prefKey, scheduledTime).commit();
       Log.w("PeriodicActionUtils", "Scheduling for all new time: " + scheduledTime

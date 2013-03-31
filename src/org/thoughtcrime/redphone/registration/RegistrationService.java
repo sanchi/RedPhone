@@ -156,7 +156,6 @@ public class RegistrationService extends Service {
 
       GCMRegistrarHelper.registerClient(this, true);
       retrieveDirectory(socket);
-      MonitorConfigUpdateReceiver.maybeUpdateConfig(this);
       setState(new RegistrationState(RegistrationState.STATE_COMPLETE, number));
       broadcastComplete(true);
       stopService(new Intent(this, RedPhoneService.class));
