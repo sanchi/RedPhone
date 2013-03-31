@@ -17,7 +17,11 @@
 
 package org.thoughtcrime.redphone;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -27,6 +31,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.preference.PreferenceManager;
+import android.support.v4.app.NotificationCompat;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
@@ -351,12 +356,25 @@ public class RedPhoneService extends Service implements CallStateListener, CallS
     lockManager.updatePhoneState(LockManager.PhoneState.PROCESSING);
     NotificationBarManager.setCallEnded(this);
 
-    SessionDescriptor sessionDescriptor = currentCallManager.getSessionDescriptor();
-    if(null != sessionDescriptor ){
-    	Intent callQualityDialogIntent = new Intent(getApplicationContext(),CallQualityDialog.class);
+
+    if(currentCallManager != null && currentCallManager.getSessionDescriptor() != null){
+      SessionDescriptor sessionDescriptor = currentCallManager.getSessionDescriptor();
+      Intent callQualityDialogIntent = new Intent(getApplicationContext(),CallQualityDialog.class);
     	callQualityDialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
     	callQualityDialogIntent.putExtra("callId",sessionDescriptor.sessionId);
     	getApplicationContext().getApplicationContext().startActivity(callQualityDialogIntent);
+
+      Notification notification = new NotificationCompat.Builder(this)
+        .setAutoCancel(false)
+        .setContentTitle(getResources().getText(R.string.CallQualityDialog__provide_call_quality_feedback))
+        .setContentIntent(PendingIntent.getActivity(this, 0, callQualityDialogIntent, PendingIntent.FLAG_UPDATE_CURRENT))
+        .setSmallIcon(R.drawable.registration_notification)
+        .setDefaults(Notification.DEFAULT_VIBRATE)
+        .setTicker(getResources().getText(R.string.CallQualityDialog__provide_call_quality_feedback))
+        .build();
+
+      NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+      nm.notify(CallQualityDialog.CALL_QUALITY_NOTIFICATION_ID, notification);
     }
     
     incomingRinger.stop();

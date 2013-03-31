@@ -45,11 +45,12 @@ public class MonitorConfigUpdateReceiver extends BroadcastReceiver {
   @Override
   public void onReceive(Context context, Intent intent) {
     Log.w("MonitorConfigUpdateReceiver", "Initiating scheduled monitor config update...");
-
-    maybeUpdateConfig(context);
+    Intent serviceIntent = new Intent(context, MonitorConfigUpdateService.class);
+    context.startService(serviceIntent);
   }
 
   public static void maybeUpdateConfig(Context context) {
+    Log.d("MonitorConfigUpdateReceiver", "Updating config now");
     AndroidHttpClient client = AndroidHttpClient.newInstance("RedPhone");
     try {
       String uri = String.format("https://%s/collector/call_quality_questions", Release.DATA_COLLECTION_SERVER_HOST);

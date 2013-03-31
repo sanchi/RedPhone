@@ -160,7 +160,8 @@
     <string name="CallQualityDialog__you_can_update_these_settings_at_any_time_through_the_general_settings_menu">You can update these settings at any time through the general settings menu</string>
     <string name="CallQualityDialog__we_re_making_changes">We\'re Making Changes</string>
     <string name="CallQualityDialog__whispersystems_needs_your_help_as_we_work_to_improve_the_quality_of_our_calls_we_need_feedback_and_performance_statistics_to_improve_the_system_opt_in_below_to_make_redphone_better">WhisperSystems needs your help. As we work to improve the quality of our calls, we need feedback and performance statistics to improve the system. Opt in below to make RedPhone better.</string>
-    
+    <string name="CallQualityDialog__provide_call_quality_feedback">Provide Call Quality Feedback</string>
+
     <string name="preferences__analytics_settings">Analytics Settings</string>
     <string name="preferences__enable_call_metrics_upload">Send Data</string>
     <string name="preferences__enable_call_quality_dialog">Provide Feedback</string>

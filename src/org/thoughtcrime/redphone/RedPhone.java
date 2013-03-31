@@ -52,6 +52,7 @@ import org.thoughtcrime.redphone.util.AudioUtils;
 import org.thoughtcrime.redphone.util.PeriodicActionUtils;
 
 
+import java.security.Security;
 import java.util.ArrayList;
 
 /**
@@ -64,6 +65,10 @@ import java.util.ArrayList;
  *
  */
 public class RedPhone extends Activity {
+  static {
+    Security.addProvider(new org.spongycastle.jce.provider.BouncyCastleProvider());
+  }
+
 
   private static final int REMOTE_TERMINATE = 0;
   private static final int LOCAL_TERMINATE  = 1;

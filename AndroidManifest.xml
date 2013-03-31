@@ -99,6 +99,7 @@
         <service android:enabled="true" android:name=".gcm.GCMIntentService"/>
         <service android:enabled="true" android:name=".registration.RegistrationService"/>
         <service android:enabled="true" android:name=".monitor.UploadService"/>
+        <service android:enabled="true" android:name=".monitor.MonitorConfigUpdateService"/>
 
         <receiver android:name=".call.CallListener"
                   android:enabled="true"

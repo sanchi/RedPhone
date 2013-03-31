@@ -1,6 +1,7 @@
 package org.thoughtcrime.redphone.monitor.stream;
 
 import android.content.res.Resources;
+import android.util.Log;
 
 import javax.crypto.Mac;
 import javax.crypto.SecretKey;
@@ -13,6 +14,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.security.Security;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
@@ -23,6 +25,11 @@ import java.security.spec.X509EncodedKeySpec;
  * @author Stuart O. Anderson
  */
 public class EncryptedStreamUtils {
+  static {
+    Security.addProvider(new org.spongycastle.jce.provider.BouncyCastleProvider());
+    Log.d("FOO", "FOO");
+  }
+
   public static final int HMAC_SIZE = 20;
 
   static public PublicKey getPublicKeyFromResource(Resources resources, int res)
