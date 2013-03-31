@@ -82,7 +82,7 @@ public final class LinuxUtils {
       reader = new RandomAccessFile("/proc/stat", "r");
       load = reader.readLine();
     } catch (IOException ex) {
-      ex.printStackTrace();
+      Log.e("LinuxUtils", "Failed to read /proc/stat", ex);
     } finally {
       try {
         reader.close();
@@ -167,7 +167,7 @@ public final class LinuxUtils {
         try {
           l += Long.parseLong(stat[i]);
         } catch (NumberFormatException ex) {
-          ex.printStackTrace();
+          Log.e("LinuxUtils", "Failed to parse stats", ex);
           return -1L;
         }
       }
@@ -186,7 +186,7 @@ public final class LinuxUtils {
     try {
       return Long.parseLong(stat[5]);
     } catch (NumberFormatException ex) {
-      ex.printStackTrace();
+      Log.e("LinuxUtils", "Failed to parse stats", ex);
     }
 
     return -1L;
@@ -202,7 +202,7 @@ public final class LinuxUtils {
       reader = new RandomAccessFile("/proc/" + pid + "/stat", "r");
       line = reader.readLine();
     } catch (IOException ex) {
-      ex.printStackTrace();
+      Log.e("LinuxUtils", "Failed to read process stats", ex);
     } finally {
       try {
         reader.close();
@@ -326,9 +326,8 @@ public final class LinuxUtils {
 
     try {
       Thread.sleep(elapse);
-    } catch (Exception e) {
-      e.printStackTrace();
-      return -1.f;
+    } catch (InterruptedException e) {
+      throw new AssertionError("Wait interrupted in LinuxUtils");
     }
 
     String pidStat2 = readProcessStat(pid);

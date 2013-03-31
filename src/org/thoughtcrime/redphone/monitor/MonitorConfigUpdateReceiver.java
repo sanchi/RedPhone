@@ -38,8 +38,6 @@ import java.io.InputStreamReader;
  * for periodic monitor config update events.
  *
  * @author Stuart O. Anderson
- * @author Moxie Marlinspike
- *
  */
 
 public class MonitorConfigUpdateReceiver extends BroadcastReceiver {
