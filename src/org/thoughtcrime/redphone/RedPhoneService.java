@@ -47,6 +47,7 @@ import org.thoughtcrime.redphone.signaling.OtpCounterProvider;
 import org.thoughtcrime.redphone.signaling.SessionDescriptor;
 import org.thoughtcrime.redphone.signaling.SignalingException;
 import org.thoughtcrime.redphone.signaling.SignalingSocket;
+import org.thoughtcrime.redphone.ui.CallQualityDialog;
 import org.thoughtcrime.redphone.ui.NotificationBarManager;
 import org.thoughtcrime.redphone.util.Base64;
 import org.thoughtcrime.redphone.util.CallLogger;
@@ -350,6 +351,14 @@ public class RedPhoneService extends Service implements CallStateListener, CallS
     lockManager.updatePhoneState(LockManager.PhoneState.PROCESSING);
     NotificationBarManager.setCallEnded(this);
 
+    SessionDescriptor sessionDescriptor = currentCallManager.getSessionDescriptor();
+    if(null != sessionDescriptor ){
+    	Intent callQualityDialogIntent = new Intent(getApplicationContext(),CallQualityDialog.class);
+    	callQualityDialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    	callQualityDialogIntent.putExtra("callId",sessionDescriptor.sessionId);
+    	getApplicationContext().getApplicationContext().startActivity(callQualityDialogIntent);
+    }
+    
     incomingRinger.stop();
     outgoingRinger.stop();
 
@@ -370,6 +379,9 @@ public class RedPhoneService extends Service implements CallStateListener, CallS
     // XXX moxie@thoughtcrime.org -- Do we still need to stop the Service?
 //    Log.d("RedPhoneService", "STOP SELF" );
 //    this.stopSelf();
+    
+
+    
   }
 
   public void setCallStateHandler(Handler handler) {
