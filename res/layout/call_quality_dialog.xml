@@ -3,7 +3,7 @@
     android:id="@+id/topLevelLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginLeft="11dp"
+    android:layout_marginLeft="6dp"
     android:layout_marginRight="0dp"
     android:orientation="vertical" >
 
@@ -13,14 +13,15 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/questionBlockLayout"
         android:orientation="vertical"
-        android:paddingLeft="8dp"
+        android:paddingLeft="2dp"
         android:paddingRight="0dp" >
 
         <TextView
             android:id="@+id/ratingLabel"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
+            android:layout_marginLeft="1dp"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
             android:text="Please rate the audio quality of the call below"
@@ -41,11 +42,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical" 
-        android:paddingLeft="8dp">
+        android:paddingLeft="2dp">
 
         <TextView
             android:id="@+id/listLabel"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingTop="4dp"
             android:paddingLeft="1dp"
