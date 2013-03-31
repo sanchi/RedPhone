@@ -6,8 +6,7 @@ import com.google.thoughtcrimegson.Gson;
 import com.google.thoughtcrimegson.GsonBuilder;
 import com.google.thoughtcrimegson.stream.JsonWriter;
 import org.thoughtcrime.redphone.R;
-import org.thoughtcrime.redphone.crypto.stream.EncryptedOutputStream;
-import org.thoughtcrime.redphone.crypto.stream.EncryptedStreamUtils;
+import org.thoughtcrime.redphone.monitor.stream.EncryptedOutputStream;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -19,7 +18,7 @@ import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.util.zip.GZIPOutputStream;
 
-import static org.thoughtcrime.redphone.crypto.stream.EncryptedStreamUtils.getPublicKeyFromResource;
+import static org.thoughtcrime.redphone.monitor.stream.EncryptedStreamUtils.getPublicKeyFromResource;
 
 /**
  * Data collected over the course of a call.  Streamed to the temp cache directory

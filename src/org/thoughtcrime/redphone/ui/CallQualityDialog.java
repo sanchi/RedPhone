@@ -4,6 +4,7 @@ package org.thoughtcrime.redphone.ui;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,23 +15,31 @@ import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.RatingBar;
 import android.widget.TextView;
-
+import com.actionbarsherlock.app.SherlockActivity;
+import com.google.thoughtcrimegson.Gson;
+import org.thoughtcrime.redphone.R;
 import org.thoughtcrime.redphone.monitor.CallQualityConfig;
 import org.thoughtcrime.redphone.monitor.UploadService;
 import org.thoughtcrime.redphone.monitor.UserFeedback;
-import org.thoughtcrime.redphone.R;
+import org.thoughtcrime.redphone.monitor.stream.EncryptedOutputStream;
 
-import com.actionbarsherlock.app.SherlockActivity;
-import com.google.thoughtcrimegson.Gson;
-
-import java.io.BufferedWriter;
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.security.PublicKey;
+import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.GZIPOutputStream;
+
+import static org.thoughtcrime.redphone.monitor.stream.EncryptedStreamUtils.getPublicKeyFromResource;
 
 
 public class CallQualityDialog extends SherlockActivity  {
@@ -144,21 +153,31 @@ public class CallQualityDialog extends SherlockActivity  {
 	  
 	  private void sendData(){
 		  FileWriter fileWriter = null;
-		  BufferedWriter writer = null;
+		  Writer writer = null;
 		  try{
 			  File cacheSubdir = new File(this.getCacheDir(), "/calldata");
 			  cacheSubdir.mkdir();
-			  File jsonFile = File.createTempFile("userfeedback", ".json", cacheSubdir);
-			  fileWriter = new FileWriter(jsonFile);
-			  writer = new BufferedWriter(fileWriter);
-			 
+        PublicKey publicKey = getPublicKeyFromResource(getResources(), R.raw.call_metrics_public);
+
+        File jsonFile = File.createTempFile("userfeedback", ".json", cacheSubdir);
+
+        Log.d("CallDataImpl", "Writing output to " + jsonFile.getAbsolutePath());
+
+        BufferedOutputStream bufferedStream = new BufferedOutputStream(new FileOutputStream(jsonFile));
+        OutputStream outputStream = new EncryptedOutputStream(bufferedStream, publicKey);
+        GZIPOutputStream gzipStream = new GZIPOutputStream(outputStream);
+        writer = new OutputStreamWriter(gzipStream);
+
 			  UserFeedback feedbackObject = buildUserFeedbackObject();
 			  writer.write(new Gson().toJson(feedbackObject));
+        writer.close();
 
 			  UploadService.beginUpload(this,String.valueOf(callId), typeOfData, jsonFile );
-		  }catch(IOException e){
-			 e.printStackTrace();
-		  }finally{
+		  } catch (IOException e){
+			  Log.e("CallQualityDialog", "failed to write quality data to cache", e);
+		  } catch (InvalidKeySpecException e) {
+        Log.e("CallQualityDialog", "failed setup stream encryption", e);
+      } finally {
 			  if(null != writer){
 				  try{ writer.close(); } catch (Exception e){}
 			  }
