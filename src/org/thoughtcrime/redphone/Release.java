@@ -24,14 +24,12 @@ package org.thoughtcrime.redphone;
  *
  */
 public interface Release {
-  public static final boolean SSL                     = false;
+  public static final boolean SSL                     = true;
   public static final boolean DEBUG                   = false;
   public static final boolean DELIVER_DIAGNOSTIC_DATA = false;
   public static final String  SERVER_ROOT             = ".whispersystems.org";
-  //public static final String MASTER_SERVER_HOST       = "master.whispersystems.org";
-  public static final String MASTER_SERVER_HOST       = "192.168.2.23";
-  //public static final String RELAY_SERVER_HOST        = "relay.whispersystems.org";
-  public static final String RELAY_SERVER_HOST        = "192.168.2.23";
+  public static final String MASTER_SERVER_HOST       = "master.whispersystems.org";
+  public static final String RELAY_SERVER_HOST        = "relay.whispersystems.org";
   public static final String DATA_COLLECTION_SERVER_HOST = "redphone-call-metrics.herokuapp.com";
   public static final int     SERVER_PORT             = 31337;
 }
