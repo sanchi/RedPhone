@@ -356,27 +356,6 @@ public class RedPhoneService extends Service implements CallStateListener, CallS
     lockManager.updatePhoneState(LockManager.PhoneState.PROCESSING);
     NotificationBarManager.setCallEnded(this);
 
-
-    if(currentCallManager != null && currentCallManager.getSessionDescriptor() != null){
-      SessionDescriptor sessionDescriptor = currentCallManager.getSessionDescriptor();
-      Intent callQualityDialogIntent = new Intent(getApplicationContext(),CallQualityDialog.class);
-    	callQualityDialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-    	callQualityDialogIntent.putExtra("callId",sessionDescriptor.sessionId);
-    	getApplicationContext().getApplicationContext().startActivity(callQualityDialogIntent);
-
-      Notification notification = new NotificationCompat.Builder(this)
-        .setAutoCancel(false)
-        .setContentTitle(getResources().getText(R.string.CallQualityDialog__provide_call_quality_feedback))
-        .setContentIntent(PendingIntent.getActivity(this, 0, callQualityDialogIntent, PendingIntent.FLAG_UPDATE_CURRENT))
-        .setSmallIcon(R.drawable.registration_notification)
-        .setDefaults(Notification.DEFAULT_VIBRATE)
-        .setTicker(getResources().getText(R.string.CallQualityDialog__provide_call_quality_feedback))
-        .build();
-
-      NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-      nm.notify(CallQualityDialog.CALL_QUALITY_NOTIFICATION_ID, notification);
-    }
-    
     incomingRinger.stop();
     outgoingRinger.stop();
 
@@ -386,6 +365,7 @@ public class RedPhoneService extends Service implements CallStateListener, CallS
     }
 
     if (currentCallManager != null) {
+      maybeStartQualityMetricsActivity();
       currentCallManager.terminate();
       currentCallManager = null;
     }
@@ -397,9 +377,29 @@ public class RedPhoneService extends Service implements CallStateListener, CallS
     // XXX moxie@thoughtcrime.org -- Do we still need to stop the Service?
 //    Log.d("RedPhoneService", "STOP SELF" );
 //    this.stopSelf();
-    
+  }
 
-    
+  public void maybeStartQualityMetricsActivity() {
+    if(currentCallManager.getSessionDescriptor() == null) {
+      return;
+    }
+    SessionDescriptor sessionDescriptor = currentCallManager.getSessionDescriptor();
+    Intent callQualityDialogIntent = new Intent(getApplicationContext(),CallQualityDialog.class);
+    callQualityDialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    callQualityDialogIntent.putExtra("callId",sessionDescriptor.sessionId);
+    getApplicationContext().getApplicationContext().startActivity(callQualityDialogIntent);
+
+    Notification notification = new NotificationCompat.Builder(this)
+      .setAutoCancel(false)
+      .setContentTitle(getResources().getText(R.string.CallQualityDialog__provide_call_quality_feedback))
+      .setContentIntent(PendingIntent.getActivity(this, 0, callQualityDialogIntent, PendingIntent.FLAG_UPDATE_CURRENT))
+      .setSmallIcon(R.drawable.registration_notification)
+      .setDefaults(Notification.DEFAULT_VIBRATE)
+      .setTicker(getResources().getText(R.string.CallQualityDialog__provide_call_quality_feedback))
+      .build();
+
+    NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+    nm.notify(CallQualityDialog.CALL_QUALITY_NOTIFICATION_ID, notification);
   }
 
   public void setCallStateHandler(Handler handler) {
