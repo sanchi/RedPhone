@@ -64,7 +64,7 @@ public class CallQualityDialog extends SherlockActivity  {
     feedbackQuestions = getFeedbackQuestions();
     setupInterface();
   }
-	  
+
   private List<String> getFeedbackQuestions()
   {
     CallQualityConfig config = ApplicationPreferencesActivity.getCallQualityConfig(this);
