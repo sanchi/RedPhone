@@ -87,7 +87,6 @@ public class ApplicationPreferencesActivity extends SherlockPreferenceActivity {
 
     initializeListeners();
     initializeDecorators();
-    
   }
 
   @Override
@@ -319,5 +318,4 @@ public class ApplicationPreferencesActivity extends SherlockPreferenceActivity {
         .putBoolean(ENABLE_CALL_QUALITY_DIALOG, value)
         .commit();
   }
-  
 }

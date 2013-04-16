@@ -168,4 +168,6 @@
     <string name="preferences__provide_feeback">Provide Feedback</string>
     <string name="preferences__prompt_for_feedback_on_call_quality_after_call_has_ended">Prompt for feedback on call quality after call has ended</string>
     <string name="preferences__securely_upload_metrics_to_improve_audio_quality">Securely upload metrics to improve audio quality</string>
+
+    <!-- EOF -->
 </resources>

@@ -46,17 +46,17 @@ import static org.thoughtcrime.redphone.monitor.stream.EncryptedStreamUtils.getP
 public class CallQualityDialog extends SherlockActivity  {
   public static final int CALL_QUALITY_NOTIFICATION_ID = 1982;
   private long callId;
-	  
+
   private Button sendButton;
   private Button doneDialogButton;
 
   private List<String> feedbackQuestions;
   private ArrayAdapter<String> adapter;
-	  
+
   private String typeOfData = "user-feedback";
   private int numQuestionsToDisplay = 3;
   private float defaultRating = 1.5f;
-	  
+
   public static final String LIST_ITEM_TITLE = "title";
   public void onCreate(Bundle icicle) {
     super.onCreate(icicle);
@@ -74,8 +74,7 @@ public class CallQualityDialog extends SherlockActivity  {
     }
     return questions;
   }
-	  
-	  
+
   protected List<Map<String, Object>> getData() {
     if(!ApplicationPreferencesActivity.wasUserNotifedOfCallQaulitySettings(this) ){return null;}
     feedbackQuestions = getFeedbackQuestions();
@@ -93,7 +92,7 @@ public class CallQualityDialog extends SherlockActivity  {
     setContentView(R.layout.call_quality_initial_dialog);
     setTitle(R.string.CallQualityDialog__we_re_making_changes);
   }
-	  
+
   private void setViewToStandardDialog()
   {
     setContentView(R.layout.call_quality_dialog);
@@ -109,13 +108,13 @@ public class CallQualityDialog extends SherlockActivity  {
       listLabel.setVisibility(View.GONE);
     }
   }
-	  
+
   private void initializeInitialDialogResources()
   {
     this.doneDialogButton        		= (Button)findViewById(R.id.doneDialogButton);
     this.doneDialogButton.setOnClickListener(new DoneDialogListener());
   }
-	  
+
   private void initializeStandardDialogResources()
   {
     RatingBar ratingBar = (RatingBar)findViewById(R.id.callRatingBar);
@@ -123,7 +122,7 @@ public class CallQualityDialog extends SherlockActivity  {
     this.sendButton        	= (Button)findViewById(R.id.sendButton);
     this.sendButton.setOnClickListener(new SendButtonListener());
   }
-	  
+
   private void setupInterface()
   {
     if(!ApplicationPreferencesActivity.wasUserNotifedOfCallQaulitySettings(this)){
@@ -136,21 +135,21 @@ public class CallQualityDialog extends SherlockActivity  {
       finish();
     }
   }
-	  
+
   private  UserFeedback buildUserFeedbackObject()
   {
     UserFeedback userFeedback = new UserFeedback();
     userFeedback.setRating(((RatingBar)findViewById(R.id.callRatingBar)).getRating());
-		 
+
     ListView list = (ListView)findViewById(android.R.id.list);
-		 
+
     SparseBooleanArray checkedItems = list.getCheckedItemPositions();
     for (int i = 0; i < feedbackQuestions.size(); i++){
       userFeedback.addQuestionResponse(feedbackQuestions.get(i), checkedItems.indexOfKey(i) >= 0);
     }
     return userFeedback;
   }
-	  
+
   private void sendData(){
     Writer writer = null;
     try {
@@ -243,7 +242,7 @@ public class CallQualityDialog extends SherlockActivity  {
         LayoutInflater vi = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mView = vi.inflate(id, null);
       }
-		
+
       TextView text = (TextView) mView.findViewById(android.R.id.text1);
 
       if(items.get(position) != null )

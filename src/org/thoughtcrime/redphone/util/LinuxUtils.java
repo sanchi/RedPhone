@@ -344,5 +344,4 @@ public final class LinuxUtils {
 
     return getProcessCpuUsage(pidStat1, pidStat2, cpu2 - cpu1);
   }
-
 }

@@ -62,8 +62,7 @@
         <item name="android:shadowRadius">0.0</item>
         <item name="android:lineSpacingMultiplier">1.25</item>        
     </style>
-    
-    
+
     <style name="TransparentActivity" parent="android:Theme.Black.NoTitleBar.Fullscreen">
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:colorBackgroundCacheHint">@null</item>
