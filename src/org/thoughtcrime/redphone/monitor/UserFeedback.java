@@ -9,7 +9,6 @@ public class UserFeedback {
   private Map<String,Object> questionResponses = new HashMap<String,Object>();
 
   public UserFeedback(){
-		
   }
 
   public void addQuestionResponse(String question, Object response){
