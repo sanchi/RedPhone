@@ -19,8 +19,6 @@ package org.thoughtcrime.redphone.ui;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -56,7 +54,6 @@ public class DialerActivity extends SherlockFragmentActivity {
   public static final String CALL_LOG_ACTION = "org.thoughtcrime.redphone.ui.DialerActivity";
 
   private static final int CALL_LOG_TAB_INDEX = 1;
-  private static final String LAST_VERSION_KEY = "pref_last_version";
 
   @Override
   protected void onCreate(Bundle icicle) {

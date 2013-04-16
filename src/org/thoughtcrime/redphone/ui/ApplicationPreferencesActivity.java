@@ -49,23 +49,23 @@ import org.thoughtcrime.redphone.signaling.SignalingSocket;
 //TODO(Stuart Anderson): Consider splitting this into an Activity and a utility class
 public class ApplicationPreferencesActivity extends SherlockPreferenceActivity {
 
-  public static final String UI_DEBUG_PREF              	= "pref_debug_ui";
-  public static final String AUDIO_COMPAT_PREF          	= "pref_audio_compat";
-  public static final String AUDIO_SPEAKER_INCALL       	= "pref_speaker_incall";
-  public static final String LOOPBACK_MODE_PREF         	= "pref_loopback";
-  public static final String DEBUG_VIEW_PREF            	= "pref_debugview";
-  public static final String SIMULATE_PACKET_DROPS      	= "pref_simulate_packet_loss";
-  public static final String MINIMIZE_LATENCY           	= "pref_min_latency";
-  public static final String SINGLE_THREAD		        	= "pref_singlethread";
-  public static final String USE_C2DM_LEGACY            	= "pref_use_c2dm";
-  public static final String SIGNALING_METHOD           	= "pref_signaling_method";
-  public static final String AUDIO_TRACK_DES_LEVEL      	= "pref_audio_track_des_buffer_level";
-  public static final String CALL_STREAM_DES_LEVEL      	= "pref_call_stream_des_buffer_level";
-  public static final String ASK_DIAGNOSTIC_REPORTING  	 	= "pref_ask_diagnostic_reporting";
-  public static final String ENABLE_CALL_METRICS_UPLOAD		= "pref_enable_call_metrics_upload";
-  public static final String ENABLE_CALL_QUALITY_DIALOG		= "pref_enable_call_quality_dialog";
-  public static final String OPPORTUNISTIC_UPGRADE_PREF 	= "pref_prompt_upgrade";
-  public static final String CALL_QUALITY_QUESTIONS_PREF 	= "pref_call_quality_questions";
+  public static final String UI_DEBUG_PREF              	  = "pref_debug_ui";
+  public static final String AUDIO_COMPAT_PREF          	  = "pref_audio_compat";
+  public static final String AUDIO_SPEAKER_INCALL       	  = "pref_speaker_incall";
+  public static final String LOOPBACK_MODE_PREF         	  = "pref_loopback";
+  public static final String DEBUG_VIEW_PREF            	  = "pref_debugview";
+  public static final String SIMULATE_PACKET_DROPS      	  = "pref_simulate_packet_loss";
+  public static final String MINIMIZE_LATENCY           	  = "pref_min_latency";
+  public static final String SINGLE_THREAD		        	    = "pref_singlethread";
+  public static final String USE_C2DM_LEGACY            	  = "pref_use_c2dm";
+  public static final String SIGNALING_METHOD           	  = "pref_signaling_method";
+  public static final String AUDIO_TRACK_DES_LEVEL      	  = "pref_audio_track_des_buffer_level";
+  public static final String CALL_STREAM_DES_LEVEL      	  = "pref_call_stream_des_buffer_level";
+  public static final String ASK_DIAGNOSTIC_REPORTING  	 	  = "pref_ask_diagnostic_reporting";
+  public static final String ENABLE_CALL_METRICS_UPLOAD		  = "pref_enable_call_metrics_upload";
+  public static final String ENABLE_CALL_QUALITY_DIALOG		  = "pref_enable_call_quality_dialog";
+  public static final String OPPORTUNISTIC_UPGRADE_PREF 	  = "pref_prompt_upgrade";
+  public static final String CALL_QUALITY_QUESTIONS_PREF 	  = "pref_call_quality_questions";
   public static final String USER_ASKED_FOR_FEEDBACK_OPT_IN	= "pref_user_asked_to_opt_int_for_feedback";
 
   private static final Gson gson = new Gson();

@@ -384,10 +384,10 @@ public class RedPhoneService extends Service implements CallStateListener, CallS
       return;
     }
     SessionDescriptor sessionDescriptor = currentCallManager.getSessionDescriptor();
-    Intent callQualityDialogIntent = new Intent(getApplicationContext(),CallQualityDialog.class);
+    Intent callQualityDialogIntent = new Intent(this,CallQualityDialog.class);
     callQualityDialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
     callQualityDialogIntent.putExtra("callId",sessionDescriptor.sessionId);
-    getApplicationContext().getApplicationContext().startActivity(callQualityDialogIntent);
+    startActivity(callQualityDialogIntent);
 
     Notification notification = new NotificationCompat.Builder(this)
       .setAutoCancel(false)

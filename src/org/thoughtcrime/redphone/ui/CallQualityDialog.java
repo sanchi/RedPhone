@@ -4,6 +4,7 @@ package org.thoughtcrime.redphone.ui;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.SparseBooleanArray;
@@ -19,7 +20,6 @@ import android.widget.TextView;
 import com.actionbarsherlock.app.SherlockActivity;
 import com.google.thoughtcrimegson.Gson;
 import org.thoughtcrime.redphone.R;
-import org.thoughtcrime.redphone.RedPhoneService;
 import org.thoughtcrime.redphone.monitor.CallQualityConfig;
 import org.thoughtcrime.redphone.monitor.UploadService;
 import org.thoughtcrime.redphone.monitor.UserFeedback;
@@ -28,7 +28,6 @@ import org.thoughtcrime.redphone.monitor.stream.EncryptedOutputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -114,7 +113,7 @@ public class CallQualityDialog extends SherlockActivity  {
   private void initializeInitialDialogResources()
   {
     this.doneDialogButton        		= (Button)findViewById(R.id.doneDialogButton);
-    this.doneDialogButton.setOnClickListener(new doneDialogListener());
+    this.doneDialogButton.setOnClickListener(new DoneDialogListener());
   }
 	  
   private void initializeStandardDialogResources()
@@ -122,7 +121,7 @@ public class CallQualityDialog extends SherlockActivity  {
     RatingBar ratingBar = (RatingBar)findViewById(R.id.callRatingBar);
     ratingBar.setRating(defaultRating);
     this.sendButton        	= (Button)findViewById(R.id.sendButton);
-    this.sendButton.setOnClickListener(new sendButtonListener());
+    this.sendButton.setOnClickListener(new SendButtonListener());
   }
 	  
   private void setupInterface()
@@ -172,7 +171,7 @@ public class CallQualityDialog extends SherlockActivity  {
       writer.write(new Gson().toJson(feedbackObject));
       writer.close();
 
-      UploadService.beginUpload(this,String.valueOf(callId), typeOfData, jsonFile );
+      UploadService.beginUpload(this,String.valueOf(callId),  typeOfData, jsonFile );
     } catch (IOException e){
       Log.e("CallQualityDialog", "failed to write quality data to cache", e);
     } catch (InvalidKeySpecException e) {
@@ -185,7 +184,7 @@ public class CallQualityDialog extends SherlockActivity  {
     finish();
   }
 
-  private class doneDialogListener implements View.OnClickListener {
+  private class DoneDialogListener implements View.OnClickListener {
     @Override
     public void onClick(View v) {
       boolean optIn = ((CheckBox)findViewById(R.id.optInCheckBox)).isChecked();
@@ -197,10 +196,16 @@ public class CallQualityDialog extends SherlockActivity  {
       setupInterface();
     }
   }
-  private class sendButtonListener implements View.OnClickListener {
+  private class SendButtonListener implements View.OnClickListener {
     @Override
     public void onClick(View v) {
-      sendData();
+      new AsyncTask<Void, Void, Void>() {
+        @Override
+        protected Void doInBackground(Void... voids) {
+          sendData();
+          return null;
+        }
+      }.execute();
       cancelNotification();
     }
   }
@@ -215,39 +220,38 @@ public class CallQualityDialog extends SherlockActivity  {
     NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
     nm.cancel(CALL_QUALITY_NOTIFICATION_ID);
   }
-}
 
-class QuestionListAdapter extends ArrayAdapter<String> {
+  private static class QuestionListAdapter extends ArrayAdapter<String> {
 
-  private Context context;
-  private int id;
-  private List <String>items ;
+    private Context context;
+    private int id;
+    private List <String>items ;
 
-  public QuestionListAdapter(Context context, int textViewResourceId , List<String> list )
-  {
-    super(context, textViewResourceId, list);
-    this.context = context;
-    id = textViewResourceId;
-    items = list ;
-  }
-
-  @Override
-  public View getView(int position, View v, ViewGroup parent)
-  {
-    View mView = v ;
-    if(mView == null){
-      LayoutInflater vi = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-      mView = vi.inflate(id, null);
-    }
-		
-    TextView text = (TextView) mView.findViewById(android.R.id.text1);
-
-    if(items.get(position) != null )
+    public QuestionListAdapter(Context context, int textViewResourceId , List<String> list )
     {
-      text.setTextColor(Color.WHITE);
-      text.setText(items.get(position));
+      super(context, textViewResourceId, list);
+      this.context = context;
+      id = textViewResourceId;
+      items = list ;
     }
-    return mView;
-  }
 
+    @Override
+    public View getView(int position, View v, ViewGroup parent)
+    {
+      View mView = v ;
+      if(mView == null){
+        LayoutInflater vi = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        mView = vi.inflate(id, null);
+      }
+		
+      TextView text = (TextView) mView.findViewById(android.R.id.text1);
+
+      if(items.get(position) != null )
+      {
+        text.setTextColor(Color.WHITE);
+        text.setText(items.get(position));
+      }
+      return mView;
+    }
+  }
 }

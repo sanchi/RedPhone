@@ -26,6 +26,6 @@ public class MonitorConfigUpdateService extends Service {
         stopSelf(startId);
       }
     });
-    return START_STICKY;
+    return START_NOT_STICKY;
   }
 }

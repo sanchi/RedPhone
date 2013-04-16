@@ -58,4 +58,9 @@ public class UploadService extends Service {
     uploadIntent.putExtra(DATAFILE_KEY, dataFile.getAbsolutePath());
     context.startService(uploadIntent);
   }
+
+  @Override
+  public void onDestroy() {
+    executor.shutdown();
+  }
 }
