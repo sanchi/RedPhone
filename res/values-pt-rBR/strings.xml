@@ -43,6 +43,9 @@
   <string name="CreateAccountActivity_you_must_specify_your_country_code">Você deve especificar o código do seu país</string>
   <string name="CreateAccountActivity_the_number_you_specified_s_is_invalid">O número especificado (%s) é inválido.</string>
   <string name="CreateAccountActivity_invalid_number">Número inválido</string>
+  <string name="CreateAccountActivity_we_will_now_verify_that_the_following_number_is_associated">Agora vamos verificar se o seguinte número está associado a este aparelho:\n\n%s\n\nO número está correto, ou gostaria de editá-lo antes de continuar?</string>
+  <string name="CreateAccountActivity_continue">Continuar</string>
+  <string name="CreateAccountActivity_edit">Editar</string>
   <string name="NotificationBarManager_redphone_call_in_progress">Chamada RedPhone em andamento</string>
   <string name="NotificationBarManager_missed_redphone_call_from_s">Chamada RedPhone perdida de %s</string>
   <string name="NotificationBarManager_missed_redphone_call">Chamada RedPhone perdida</string>

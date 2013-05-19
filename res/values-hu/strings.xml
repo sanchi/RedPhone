@@ -43,6 +43,9 @@
   <string name="CreateAccountActivity_you_must_specify_your_country_code">Add meg az országkódot</string>
   <string name="CreateAccountActivity_the_number_you_specified_s_is_invalid">A (%s) megadott szám érvénytelen.</string>
   <string name="CreateAccountActivity_invalid_number">Érvénytelen szám</string>
+  <string name="CreateAccountActivity_we_will_now_verify_that_the_following_number_is_associated">Most ellenőrizzük, hogy ez a telefonszám össze van-e kapcsolva ezzel az eszközzel:\n\n%s\n\nJó a telefonszám vagy a folytatás előtt még szeretnél változtatni rajta?</string>
+  <string name="CreateAccountActivity_continue">Tovább</string>
+  <string name="CreateAccountActivity_edit">Szerkesztés</string>
   <string name="NotificationBarManager_redphone_call_in_progress">RedPhone hívás folyamatban</string>
   <string name="NotificationBarManager_missed_redphone_call_from_s">%s hívó féltől nem fogadott RedPhone hívás</string>
   <string name="NotificationBarManager_missed_redphone_call">Nem fogadott RedPhone hívás</string>

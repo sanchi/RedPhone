@@ -43,6 +43,9 @@
   <string name="CreateAccountActivity_you_must_specify_your_country_code">U moet uw landcode specificeren</string>
   <string name="CreateAccountActivity_the_number_you_specified_s_is_invalid">Het nummer dat u opgaf (%s) is ongeldig.</string>
   <string name="CreateAccountActivity_invalid_number">Ongeldig nummer</string>
+  <string name="CreateAccountActivity_we_will_now_verify_that_the_following_number_is_associated">We gaan nu verifiëren dat het volgende nummer bij dit toestel hoort:\n\n%s\n\nIs dit nummer correct, of wilt u deze bewerken alvorens verder te gaan?</string>
+  <string name="CreateAccountActivity_continue">Doorgaan</string>
+  <string name="CreateAccountActivity_edit">Bewerk</string>
   <string name="NotificationBarManager_redphone_call_in_progress">RedPhone oproep in uitvoering</string>
   <string name="NotificationBarManager_missed_redphone_call_from_s">Gemiste RedPhone oproep van %s</string>
   <string name="NotificationBarManager_missed_redphone_call">Gemiste RedPhone oproep</string>
@@ -67,6 +70,7 @@
   <string name="about_activity__aboutText">Kijkt u alstublieft op whispersystems.org voor meer informatie, of neem contact op via support@whispersystems.org met problemen, vragen, of commentaar.</string>
   <string name="about_activity__attributionText">RedPhone linkt naar de de SpanDSP bibliotheek, welke onder de LGPL licentie valt.\n\nRedPhone gebruikt de SPEEX Codec, welke valt onder de Xiph.Org variant van de BSD licentie: © 2002-2003, Jean-Marc Valin/Xiph.Org Foundation:\n\nRedistribution and use of the SPEEX library in source and binary forms, with or without modification, are permitted provided that the following conditions are met:\n\n\t* Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.\n\t* Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.\n\t* Neither the name of the Xiph.org Foundation nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.\n\nThe SPEEX library is provided by the copyright holders and contributors “as is” and any express or implied warranties, including, but not limited to, the implied warranties of merchantability and fitness for a particular purpose are disclaimed. In no event shall the foundation or contributors be liable for any direct, indirect, incidental, special, exemplary, or consequential damages (including, but not limited to, procurement of substitute goods or services; loss of use, data, or profits; or business interruption) however caused and on any theory of liability, whether in contract, strict liability, or tort (including negligence or otherwise) arising in any way out of the use of this software, even if advised of the possibility of such damage.\n\n\nSommige geluiden vallen onder de Creative Commons Sampling Plus Licentie: http://creativecommons.org/licenses/sampling+/1.0/\n\nDoor acclivity (http://www.freesound.org/usersViewSingle.php?id=37876):\nShipsBell.wav (http://www.freesound.org/samplesViewSingle.php?id=32304)\n\nDoor Splashdust (http://www.freesound.org/usersViewSingle.php?id=754949):\nnegativebeep.wav (http://www.freesound.org/samplesViewSingle.php?id=67454)\n\nDoor Peter_Gross (http://www.freesound.org/usersViewSingle.php?id=33429):\nSonar_pings.ogg (http://www.freesound.org/samplesViewSingle.php?id=12677\n\nDoor suonho: http://www.freesound.org/samplesViewSingle.php?id=58348: ambienta_soundtrack_moog_sweep\n\nDoor Mike Koenig: Bezettoon</string>
   <string name="create_account__register">Registreer</string>
+  <string name="create_acount__please_confirm_your_country_code_and_phone_number">Om beveiligde gesprekken te beginnen en ontvangen, moet RedPhone uw telefoonnummer verifiëren en registreren in het systeem.\n\nBevestigt u alstublieft uw landcode en telefoonnummer voor dit toestel.</string>
   <string name="create_account__your_country">UW LAND</string>
   <string name="create_account__your_country_code_and_phone_number">UW LANDCODE EN TELEFOONNUMMER</string>
   <string name="create_account__phone_number">telefoonnummer</string>
@@ -89,14 +93,26 @@
   <string name="preferences__when_making_insecure_calls_prompt_for_upgrade_to_redphone_if_contact_is_redphone_enabled">Bij onveilige gesprekken vragen om te upgraden naar RedPhone wanneer de ander ook RedPhone heeft.</string>
   <string name="preferences__advanced_signaling_settings">Geavanceerd: Signaleringsinstellingen</string>
   <string name="preferences__advanced_audio_settings">Geavanceerd: Audio Instellingen</string>
+  <string name="preferences__enable_audio_compatibility_mode_higher_latency">Audio Compatibiliteitsmodus aanzetten [hogere latentie]</string>
   <string name="preferences__compatibility_mode">Compatibiliteitsmodus</string>
+  <string name="preferences__use_in_call_audio_mode">Gebruik Tijdens-Gesprek Audio Modus</string>
+  <string name="preferences__enable_if_audio_comes_from_rear_speaker">Inschakelen als audio uit de achterste luidspreker komt</string>
+  <string name="preferences__single_thread_mode">Single-Thread Modus</string>
+  <string name="preferences__may_improve_performance_on_some_devices">Kan de prestaties op sommige apparaten te verbeteren</string>
+  <string name="preferences__force_minimum_latency">Forceer minimum latentie</string>
+  <string name="preferences__reduce_latency_at_the_expense_of_audio_quality">Verminder latentie ten koste van de audiokwaliteit</string>
   <string name="preferences__signaling_method">Signaleringsmethode </string>
   <string name="preferences__modify_the_method_used_to_notify_your_device_of_incoming_calls">Wijzig de methode die gebruikt wordt om uw toestel te verwittigen van inkomende oproepen.</string>
   <string name="registration_progress__sms_verification_failed">SMS verificatie mislukt.</string>
+  <string name="registration_progress__redphone_timed_out_while_waiting_for_an_sms_message_to_verify_your_phone_number">RedPhone ondervond een time-out tijdens het wachten op een SMS-bericht om uw telefoonnummer te verifiëren.</string>
   <string name="registration_progress__edit_number">Bewerk Nummer</string>
   <string name="registration_progress__some_possible_problems_include">Mogelijke problemen kunnen zijn:</string>
+  <string name="registration_progress__sms_interceptors">SMS Interceptors.</string>
+  <string name="registration_progress__some_third_party_text_messaging_clients_explanation">Sommige tekstbericht apps van derden, zoals Handcent of GoSMS, gedragen zich slecht en onderscheppen alle inkomende SMS berichten.  Controleer om te zien of u een tekstbericht heeft ontvangen welke start met: \'A RedPhone is trying to verify you\'. In dit geval moet u deze app configureren om tekstberichten door te laten.</string>
   <string name="registration_progress__incorrect_number">Incorrect Nummer.</string>
+  <string name="registration_progress__please_check_to_make_sure_you_entered_your_number_correctly">Controleert u alstublieft of het ingetypte nummer correct is en dat het correct vormgegeven is voor uw regio.</string>
   <string name="registration_progress__old_versions_of_google_voice">Oude versies van Google Voice.</string>
+  <string name="registration_progress__if_youre_attempting_to_register_a_google_voice_number_explanation">Wanneer u een Google Voice nummer probeert te registreren, zorgt u dan dat u de meest recente versie van de Google Voice app heeft.</string>
   <string name="registration_progress__connectivity_error">Verbindingsfout.</string>
   <string name="registration_progress__redphone_was_unable_to_connect_to_the_switch">RedPhone was niet in staat om verbinding te maken met de switch.</string>
   <string name="registration_progress__no_network_connectivity">Geen netwerktoegang.</string>

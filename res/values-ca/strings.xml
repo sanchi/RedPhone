@@ -43,6 +43,9 @@
   <string name="CreateAccountActivity_you_must_specify_your_country_code">Has d\'especificar el codi del teu país</string>
   <string name="CreateAccountActivity_the_number_you_specified_s_is_invalid">El número que has especificat (%s) és invalid.</string>
   <string name="CreateAccountActivity_invalid_number">Número invalid</string>
+  <string name="CreateAccountActivity_we_will_now_verify_that_the_following_number_is_associated">Ara verificarem que el següent número està associat amb aquest dispositiu:\n\n%s\n\nÉs aquest el número correcte o el vols editar abans de continuar?</string>
+  <string name="CreateAccountActivity_continue">Continuar</string>
+  <string name="CreateAccountActivity_edit">Editar</string>
   <string name="NotificationBarManager_redphone_call_in_progress">Trucada RedPhone en marxa</string>
   <string name="NotificationBarManager_missed_redphone_call_from_s">Trucada perduda RedPhone de %s</string>
   <string name="NotificationBarManager_missed_redphone_call">Trucada Perduda RedPhone</string>
@@ -67,6 +70,7 @@
   <string name="about_activity__aboutText">Si us plau mira whispersystems.org per informació adicional, o contacta amb support@whispersystems.org amb problemes, preguntes o comentaris.</string>
   <string name="about_activity__attributionText">RedPhone enllaça amb la llibreria SpanDSP, que està llicenciada sota la LGPL.\n\nRedPhone utilitza el Codec SPEEX, que s\'utilitza sota la variant Xiph.Org de la llicencia BSD: © 2002-2003, Jean-Marc Valin/Xiph.Org Foundation\n\n. La redistribució i ús de la llibreria SPEEX en forma de codi o de binari, amb o sense modificació, estan permeses si es donen les següents condicions:\n\n\t* Les redistribucions del codi font han de mantenir el text de copyright anterior, aquesta llista de condicions i el següent avís legal.\n\t* Les redistribucions en forma de binari han de mantenir el text de copyright anterior, aquesta llista de condicions i el següent avís legal a la documentació i/o altres materials proveïts amb aquesta dsitribució.\n\t* Ni el nom de Xiph.org Foundation ni els noms dels seus contribuidors es podran utilitzar per avalar o promoure productes derivats d\'aquest software sense un permís anterior específic.\n\nLa llibreria SPEEX es proveïda pels titulars del copyright i els contribuidors \"tal i com és\" i qualsevol garantia explícita o implícita, però no limitada a les garanties implícites de comercialització i ús apropiat per un fi particular, estan incloses en la declinació. En cap cas la fundació o els contribuidors seran responsables per cap dany directe, indirecte, accidental, especial, exemplar o conseqüent (incloent, però no limitat a, procurar bens o serveis substituts; pèrdua d\'ús, dades o beneficis; or interrupció de negoci) causat sota qualsevol teoria de responsabilitat, ja sigui en contracte, responsabilitat estricta o danys (incloent negligència i altres) que es generin de la forma en que s\'utilitza aquest software, encara quan s\'adverteixi de la possibilitat d\'aquest dany.\n\n\nAlgunes mostres de so estan llicenciades sota la llicencia Creative Commons Sampling Plus: http://creativecommons.org/licenses/sampling+/1.0/\n\nPer acclivity (http://www.freesound.org/usersViewSingle.php?id=37876):\nShipsBell.wav (http://www.freesound.org/samplesViewSingle.php?id=32304)\n\nPer Splashdust (http://www.freesound.org/usersViewSingle.php?id=754949):\nnegativebeep.wav (http://www.freesound.org/samplesViewSingle.php?id=67454)\n\nPer Peter_Gross (http://www.freesound.org/usersViewSingle.php?id=33429):\nSonar_pings.ogg (http://www.freesound.org/samplesViewSingle.php?id=12677\n\nPer suonho: http://www.freesound.org/samplesViewSingle.php?id=58348: ambienta_soundtrack_moog_sweep\n\nPer Mike Koenig: Busy Signal</string>
   <string name="create_account__register">Registrar</string>
+  <string name="create_acount__please_confirm_your_country_code_and_phone_number">Per tal de fer i rebre trucades segures, RedPhone necessita verificar el teu número de telèfon i registrar-lo en el sistema.\n\nSi us plau, confirma el teu codi de país i el número per aquest dispositiu.</string>
   <string name="create_account__your_country">EL TEU PAÍS</string>
   <string name="create_account__your_country_code_and_phone_number">EL TEU CODI DE PAÍS I EL NÚMERO DE TELÈFON</string>
   <string name="create_account__phone_number">número de telèfon</string>
@@ -99,5 +103,26 @@
   <string name="preferences__reduce_latency_at_the_expense_of_audio_quality">Reduïr latència a expenses de la qualitat de l\'audio</string>
   <string name="preferences__signaling_method">Mètode de Senyalització</string>
   <string name="preferences__modify_the_method_used_to_notify_your_device_of_incoming_calls">Modificar el mètode utilitzat per notificar les trucades entrants del terminal.</string>
+  <string name="registration_progress__sms_verification_failed">Verificació SMS fallida.</string>
+  <string name="registration_progress__redphone_timed_out_while_waiting_for_an_sms_message_to_verify_your_phone_number">Temps d\'espera de RedPhone esgotat mentre s\'esperava el missatge SMS per verificar el teu número de telèfon.</string>
+  <string name="registration_progress__edit_number">Editar Número</string>
+  <string name="registration_progress__some_possible_problems_include">Algún dels problemes possibles son:</string>
+  <string name="registration_progress__sms_interceptors">Interceptadors SMS.</string>
+  <string name="registration_progress__some_third_party_text_messaging_clients_explanation">Algún client de missatgeria extern, com ara Handcent o GoSMS, es comporten malament i intercepten tots els missatges SMS entrants. Comprova si has rebut un missatge de text que comença amb \'Un RedPhone està intentant verificar-te\', si és així necessitaràs configurar la teva aplicació de missatgeria externa per que deixi passar els missatges de text.</string>
+  <string name="registration_progress__incorrect_number">Número incorrecte.</string>
+  <string name="registration_progress__please_check_to_make_sure_you_entered_your_number_correctly">Si us plau, comprova que has introduït el teu número correctament i que el format és el correcte per la teva regió.</string>
+  <string name="registration_progress__old_versions_of_google_voice">Versions antigues de Google Voice.</string>
+  <string name="registration_progress__if_youre_attempting_to_register_a_google_voice_number_explanation">Si estàs intentant registrar un número de Google Voice, assegura\'t de que estàs utilitzant la versió més recent de l\'aplicació Google Voice.</string>
+  <string name="registration_progress__connectivity_error">Error de connectivitat.</string>
+  <string name="registration_progress__redphone_was_unable_to_connect_to_the_switch">RedPhone ha sigut incapaç de connectar-se al switch.</string>
+  <string name="registration_progress__no_network_connectivity">No hi ha connectivitat de xarxa.</string>
+  <string name="registration_progress__your_device_needs_network_connectivity_explanation">El teu dispositiu necessita connectivitat de xarxa per tal de poder utilitzar RedPhone. Comprova que està connectat a internet.</string>
+  <string name="registration_progress__restrictive_firewall">Firewall restrictiu.</string>
+  <string name="registration_progress__if_you_are_connected_via_wifi_explanation">Si estàs connectat via wifi, és possible que hi hagi un firewall bloquejant l\'accès al ports de senyalització de RedPhone. Utilitza una altra xarxa o utilitza dades mòvils.</string>
+  <string name="registration_progress__redphone_will_now_automatically_verify_your_number_with_a_confirmation_sms_message">RedPhone confirmarà automàticament el teu número amb un missatge SMS.</string>
+  <string name="registration_progress__registering_with_server">Registrant-se amb el servidor...</string>
+  <string name="registration_progress__waiting_for_sms_verification">Esperant la verificació SMS...</string>
+  <string name="registration_progress__this_could_take_a_moment_please_be_patient_well_notify_you_when_verification_is_complete">Això pot tardar un moment. Si us plau, sigues pacient, et notificarem quan la verificació s\'hagi completat.</string>
+  <string name="registration_progress__waiting_for_sms">ESPERANT SMS</string>
   <!--EOF-->
 </resources>
