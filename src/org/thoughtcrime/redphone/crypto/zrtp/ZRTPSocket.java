@@ -17,12 +17,17 @@
 
 package org.thoughtcrime.redphone.crypto.zrtp;
 
+import android.content.Context;
 import android.util.Log;
+import android.util.Pair;
 
 import org.spongycastle.jce.interfaces.ECPublicKey;
 import org.spongycastle.math.ec.ECPoint;
 import org.thoughtcrime.redphone.Release;
 import org.thoughtcrime.redphone.crypto.SecureRtpSocket;
+import org.thoughtcrime.redphone.crypto.zrtp.retained.RetainedSecrets;
+import org.thoughtcrime.redphone.database.RetainedSecretsDatabase;
+import org.thoughtcrime.redphone.database.DatabaseFactory;
 import org.thoughtcrime.redphone.util.Conversions;
 
 import java.io.IOException;
@@ -81,16 +86,24 @@ public abstract class ZRTPSocket {
   private int  sequence           = 0;
   private int  state;
 
-  private SecureRtpSocket socket;
-  private HandshakePacket lastPacket;
+  private   final Context context;
+  private   final SecureRtpSocket socket;
+  protected final byte[] localZid;
+  protected final String remoteNumber;
 
+  private HandshakePacket lastPacket;
   private KeyPair dh3kKeyPair;
   private KeyPair ec25KeyPair;
 
   protected HashChain hashChain;
   protected MasterSecret masterSecret;
 
-  public ZRTPSocket(SecureRtpSocket socket, int initialState) {
+  public ZRTPSocket(Context context, SecureRtpSocket socket,
+                    byte[] localZid, String remoteNumber, int initialState)
+  {
+    this.context           = context.getApplicationContext();
+    this.localZid          = localZid;
+    this.remoteNumber      = remoteNumber;
     this.socket            = socket;
     this.state             = initialState;
     this.dh3kKeyPair       = initializeDH3kKeys();
@@ -151,6 +164,19 @@ public abstract class ZRTPSocket {
 
     return Conversions.combine(x, y);
   }
+
+  protected RetainedSecrets getRetainedSecrets(String number, byte[] zid) {
+    RetainedSecretsDatabase database = DatabaseFactory.getRetainedSecretsDatabase(context);
+    return database.getRetainedSecrets(number, zid);
+  }
+
+  protected void cacheRetainedSecret(String number, byte[] zid, byte[] rs1,
+                                     long expiration, boolean continuity)
+  {
+    RetainedSecretsDatabase database = DatabaseFactory.getRetainedSecretsDatabase(context);
+    database.setRetainedSecret(number, zid, rs1, expiration, continuity);
+  }
+
 
   // NOTE -- There was a bug in older versions of RedPhone in which the
   // Confirm message IVs were miscalculated.  It didn't seem to be an
@@ -248,6 +274,18 @@ public abstract class ZRTPSocket {
 
   public MasterSecret getMasterSecret() {
     return this.masterSecret;
+  }
+
+  public SASInfo getSasInfo() {
+    RetainedSecretsDatabase database    = DatabaseFactory.getRetainedSecretsDatabase(context);
+    String                  sasText     = SASCalculator.calculateSAS(masterSecret.getSAS());
+    boolean                 sasVerified = database.isVerified(remoteNumber, getForeignHello().getZID());
+
+    return new SASInfo(sasText, sasVerified);
+  }
+
+  public void setSasVerified() {
+    DatabaseFactory.getRetainedSecretsDatabase(context).setVerified(remoteNumber, getForeignHello().getZID());
   }
 
   public void close() {

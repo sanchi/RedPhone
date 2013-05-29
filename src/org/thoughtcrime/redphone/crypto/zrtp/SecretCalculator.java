@@ -34,10 +34,12 @@ import java.security.NoSuchAlgorithmException;
  */
 public abstract class SecretCalculator {
 
-  public byte[] calculateSharedSecret(byte[] dhResult, byte[] totalHash, byte[] zidi, byte[] zidr) {
+  public byte[] calculateSharedSecret(byte[] dhResult, byte[] totalHash, byte[] s1,
+                                      byte[] zidi, byte[] zidr)
+  {
     try {
       byte[] counter  = Conversions.intToByteArray(1);
-      byte[] s1Length = Conversions.intToByteArray(0);
+      byte[] s1Length = Conversions.intToByteArray(s1 == null ? 0 : s1.length);
       byte[] s2Length = Conversions.intToByteArray(0);
       byte[] s3Length = Conversions.intToByteArray(0);
 
@@ -49,6 +51,9 @@ public abstract class SecretCalculator {
       md.update(zidr);
       md.update(totalHash);
       md.update(s1Length);
+      if (s1 != null) {
+        md.update(s1);
+      }
       md.update(s2Length);
       md.update(s3Length);
 

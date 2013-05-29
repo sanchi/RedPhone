@@ -61,7 +61,7 @@
             android:paddingRight="24dp"
             android:paddingTop="16dp"
             android:paddingBottom="16dp"
-            android:background="#A0000000"
+            android:background="#A0444444"
             >
 
             <!-- Name (or the phone number, if we don't have a name to display). -->
@@ -123,8 +123,8 @@
                       android:textColor="#FFFFFF"
                       android:maxLines="1"
                       android:ellipsize="end"
-                      android:visibility="gone"
-                      android:text="RedPhone Call"
+                      android:visibility="visible"
+                      android:text="@string/call_card__redphone_call"
                       />
 
             <!-- Social status (currently unused) -->
@@ -176,6 +176,5 @@
             android:textAllCaps="true"
             android:background="#8033b5e5"
             />
-
     </RelativeLayout>
 </LinearLayout>

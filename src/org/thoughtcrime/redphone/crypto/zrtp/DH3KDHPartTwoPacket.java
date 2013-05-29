@@ -17,6 +17,7 @@
 
 package org.thoughtcrime.redphone.crypto.zrtp;
 
+import org.thoughtcrime.redphone.crypto.zrtp.retained.RetainedSecretsDerivatives;
 import org.thoughtcrime.redphone.network.RtpPacket;
 
 /**
@@ -37,8 +38,8 @@ public class DH3KDHPartTwoPacket extends DHPartTwoPacket {
     super(packet, DHPacket.DH3K_AGREEMENT_TYPE, deepCopy);
   }
 
-  public DH3KDHPartTwoPacket(HashChain hashChain, byte[] pvr) {
-    super(DHPacket.DH3K_AGREEMENT_TYPE, hashChain, pvr);
+  public DH3KDHPartTwoPacket(HashChain hashChain, byte[] pvr, RetainedSecretsDerivatives retainedSecrets) {
+    super(DHPacket.DH3K_AGREEMENT_TYPE, hashChain, pvr, retainedSecrets);
   }
 
   @Override
