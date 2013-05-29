@@ -170,12 +170,18 @@ public class ConfirmPacket extends HandshakePacket {
   }
 
   private void setCacheTime() {
-    Conversions.longTo4ByteArray(this.data, CACHE_OFFSET, 0xffffffff);
+    Conversions.longTo4ByteArray(this.data, CACHE_OFFSET, 0xffffffffL);
   }
 
   private void setPreimage(byte[] preimage) {
     if (Release.DEBUG)
       Log.w("ConfirmPacket", "Setting confirm preimage: " + Hex.toString(preimage));
     System.arraycopy(preimage, 0, this.data, PREIMAGE_OFFSET, preimage.length);
+  }
+
+  public long getCacheTime() {
+    byte[] cacheTime = new byte[4];
+    System.arraycopy(this.data, CACHE_OFFSET, cacheTime, 0, cacheTime.length);
+    return Conversions.byteArray4ToLong(cacheTime, 0);
   }
 }

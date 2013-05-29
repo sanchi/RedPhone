@@ -32,7 +32,7 @@ import org.thoughtcrime.redphone.crypto.SecureRtpSocket;
 import org.thoughtcrime.redphone.crypto.zrtp.MasterSecret;
 import org.thoughtcrime.redphone.crypto.zrtp.NegotiationFailedException;
 import org.thoughtcrime.redphone.crypto.zrtp.RecipientUnavailableException;
-import org.thoughtcrime.redphone.crypto.zrtp.SASCalculator;
+import org.thoughtcrime.redphone.crypto.zrtp.SASInfo;
 import org.thoughtcrime.redphone.crypto.zrtp.ZRTPSocket;
 import org.thoughtcrime.redphone.signaling.SessionDescriptor;
 import org.thoughtcrime.redphone.signaling.SignalingSocket;
@@ -62,7 +62,7 @@ public abstract class CallManager extends Thread {
   private boolean loopbackMode;
   private CallAudioManager callAudioManager;
   private SignalManager signalManager;
-  private String sas;
+  private SASInfo sasInfo;
   private boolean muteEnabled;
 
   protected SessionDescriptor sessionDescriptor;
@@ -103,8 +103,8 @@ public abstract class CallManager extends Thread {
 
       if (!terminated) {
         setSecureSocketKeys(zrtpSocket.getMasterSecret());
-        sas = SASCalculator.calculateSAS(zrtpSocket.getMasterSecret().getSAS());
-        callStateListener.notifyCallConnected(sas);
+        sasInfo = zrtpSocket.getSasInfo();
+        callStateListener.notifyCallConnected(sasInfo);
       }
 
       if (!terminated) {
@@ -144,8 +144,13 @@ public abstract class CallManager extends Thread {
     return this.sessionDescriptor;
   }
 
-  public String getSAS() {
-    return this.sas;
+  public SASInfo getSasInfo() {
+    return this.sasInfo;
+  }
+
+  public void setSasVerified() {
+    if (zrtpSocket != null)
+      zrtpSocket.setSasVerified();
   }
 
   protected void processSignals() {

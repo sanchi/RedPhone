@@ -18,6 +18,7 @@
 package org.thoughtcrime.redphone.call;
 
 import org.thoughtcrime.redphone.codec.CodecSetupException;
+import org.thoughtcrime.redphone.crypto.zrtp.SASInfo;
 
 /**
  * An interface for those interested in receiving information
@@ -37,7 +38,7 @@ public interface CallStateListener {
   public void notifyServerMessage(String serverMessage);
   public void notifyCallDisconnected();
   public void notifyCallRinging();
-  public void notifyCallConnected(String sas);
+  public void notifyCallConnected(SASInfo sas);
   public void notifyPerformingHandshake();
   public void notifyHandshakeFailed();
   public void notifyRecipientUnavailable();

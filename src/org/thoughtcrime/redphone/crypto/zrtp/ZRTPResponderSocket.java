@@ -17,7 +17,13 @@
 
 package org.thoughtcrime.redphone.crypto.zrtp;
 
+import android.content.Context;
+
 import org.thoughtcrime.redphone.crypto.SecureRtpSocket;
+import org.thoughtcrime.redphone.crypto.zrtp.retained.ResponderRetainedSecretsCalculator;
+import org.thoughtcrime.redphone.crypto.zrtp.retained.RetainedSecrets;
+import org.thoughtcrime.redphone.crypto.zrtp.retained.RetainedSecretsCalculator;
+import org.thoughtcrime.redphone.crypto.zrtp.retained.RetainedSecretsDerivatives;
 
 /**
  * The "responder" side of a ZRTP handshake.  We've received a signal from the
@@ -36,12 +42,13 @@ public class ZRTPResponderSocket extends ZRTPSocket {
   private DHPartOnePacket localDH;
   private DHPartTwoPacket foreignDH;
 
-  private final byte[] zid;
+  private RetainedSecretsCalculator retainedSecretsCalculator;
 
-  public ZRTPResponderSocket(SecureRtpSocket socket, byte[] zid) {
-    super(socket, EXPECTING_HELLO);
-    this.zid        = zid;
-    this.localHello = new HelloPacket(hashChain, zid);
+  public ZRTPResponderSocket(Context context, SecureRtpSocket socket,
+                             byte[] localZid, String foreignNumber)
+  {
+    super(context, socket, localZid, foreignNumber, EXPECTING_HELLO);
+    this.localHello = new HelloPacket(hashChain, localZid);
   }
 
   @Override
@@ -56,9 +63,13 @@ public class ZRTPResponderSocket extends ZRTPSocket {
   protected void handleCommit(HandshakePacket packet) throws InvalidPacketException {
     foreignCommit = new CommitPacket(packet, true);
 
+    RetainedSecrets retainedSecrets        = getRetainedSecrets(remoteNumber, foreignHello.getZID());
+    retainedSecretsCalculator              = new ResponderRetainedSecretsCalculator(retainedSecrets);
+    RetainedSecretsDerivatives derivatives = retainedSecretsCalculator.getRetainedSecretsDerivatives();
+
     switch (getKeyAgreementType()) {
-    case KA_TYPE_EC25: localDH = new EC25DHPartOnePacket(hashChain, getPublicKey()); break;
-    case KA_TYPE_DH3K: localDH = new DH3KDHPartOnePacket(hashChain, getPublicKey()); break;
+    case KA_TYPE_EC25: localDH = new EC25DHPartOnePacket(hashChain, getPublicKey(), derivatives); break;
+    case KA_TYPE_DH3K: localDH = new DH3KDHPartOnePacket(hashChain, getPublicKey(), derivatives); break;
     }
 
     foreignHello.verifyMac(foreignCommit.getHash());
@@ -92,7 +103,10 @@ public class ZRTPResponderSocket extends ZRTPSocket {
     byte[] totalHash    = calculator.calculateTotalHash(localHello, foreignCommit,
                                                         localDH, foreignDH);
 
-    byte[] sharedSecret = calculator.calculateSharedSecret(dhResult, totalHash,
+    byte[] s1           = retainedSecretsCalculator.getS1(foreignDH.getDerivativeSecretOne(),
+                                                          foreignDH.getDerivativeSecretTwo());
+
+    byte[] sharedSecret = calculator.calculateSharedSecret(dhResult, totalHash, s1,
                                                            foreignHello.getZID(),
                                                            localHello.getZID());
 
@@ -117,6 +131,14 @@ public class ZRTPResponderSocket extends ZRTPSocket {
 
     setState(HANDSHAKE_COMPLETE);
     sendFreshPacket(new ConfAckPacket());
+
+    boolean continuity = retainedSecretsCalculator.hasContinuity(foreignDH.getDerivativeSecretOne(),
+                                                                 foreignDH.getDerivativeSecretTwo());
+    byte[] foreignZid  = foreignHello.getZID();
+    byte[] rs1         = masterSecret.getRetainedSecret();
+    long expiration    = System.currentTimeMillis() + (confirmPacket.getCacheTime() * 1000L);
+
+    cacheRetainedSecret(remoteNumber, foreignZid, rs1, expiration, continuity);
   }
 
   @Override

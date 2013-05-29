@@ -49,6 +49,7 @@ public class MasterSecret {
   private byte[] zrtpKeyI;
   private byte[] zrtpKeyR;
   private byte[] sas;
+  private byte[] rs1;
 
   public MasterSecret(byte[] sharedSecret, byte[] totalHash, byte[] zidi, byte[] zidr) {
     this.zidi         = zidi;
@@ -69,6 +70,8 @@ public class MasterSecret {
     this.zrtpKeyR  = calculateKDF("Responder ZRTP key", 16);
 
     this.sas       = calculateKDF("SAS", 4);
+
+    this.rs1       = calculateKDF("retained secret", 32);
   }
 
   public byte[] getSAS() {
@@ -105,6 +108,10 @@ public class MasterSecret {
 
   public byte[] getResponderZrtpKey() {
     return this.zrtpKeyR;
+  }
+
+  public byte[] getRetainedSecret() {
+    return rs1;
   }
 
   private byte[] calculateKDF(String label, int truncatedLength) {

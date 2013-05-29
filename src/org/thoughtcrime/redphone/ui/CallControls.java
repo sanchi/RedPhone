@@ -18,6 +18,7 @@
 package org.thoughtcrime.redphone.ui;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
@@ -30,6 +31,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import org.thoughtcrime.redphone.R;
+import org.thoughtcrime.redphone.crypto.zrtp.SASInfo;
 import org.thoughtcrime.redphone.util.PhoneUtils;
 import org.thoughtcrime.redphone.util.com.android.internal.widget.multiwaveview.MultiWaveView;
 
@@ -44,9 +46,12 @@ public class CallControls extends RelativeLayout {
 
   private ImageButton endCallButton;
   private TextView sasTextView;
+  private ImageButton confirmSasButton;
+  private View confirmSasWrapper;
 
   private View activeCallWidget;
   private MultiWaveView incomingCallWidget;
+  private TextView redphoneLabel;
 
   private CompoundButton muteButton;
   private InCallAudioButton audioButton;
@@ -88,29 +93,52 @@ public class CallControls extends RelativeLayout {
 
     incomingCallWidget.reset(false);
     incomingCallWidget.setVisibility(View.VISIBLE);
+    redphoneLabel.setVisibility(View.VISIBLE);
+    confirmSasWrapper.setVisibility(View.GONE);
 
     handler.sendEmptyMessageDelayed(0, 500);
   }
 
   public void setActiveCall() {
     incomingCallWidget.setVisibility(View.GONE);
+    redphoneLabel.setVisibility(View.GONE);
     activeCallWidget.setVisibility(View.VISIBLE);
     sasTextView.setVisibility(View.GONE);
+    confirmSasWrapper.setVisibility(View.GONE);
   }
 
-  public void setActiveCall(String sas) {
+  public void setActiveCall(SASInfo sas) {
     setActiveCall();
-    sasTextView.setText(sas);
+    sasTextView.setText(sas.getSasText());
     sasTextView.setVisibility(View.VISIBLE);
+
+    if (sas.isVerified()) {
+      confirmSasWrapper.setVisibility(View.GONE);
+      sasTextView.setTextColor(Color.parseColor("#ffffff"));
+    } else{
+      confirmSasWrapper.setVisibility(View.VISIBLE);
+      sasTextView.setTextColor(Color.parseColor("#f0a621"));
+    }
   }
 
   public void reset() {
     incomingCallWidget.setVisibility(View.GONE);
+    redphoneLabel.setVisibility(View.GONE);
     activeCallWidget.setVisibility(View.GONE);
     sasTextView.setText("");
     audioButton.setAudioMode(InCallAudioButton.AudioMode.DEFAULT);
     audioButton.setHeadsetAvailable(PhoneUtils.isBluetoothAvailable());
     muteButton.setChecked(false);
+  }
+
+  public void setConfirmSasButtonListener(final ConfirmSasButtonListener listener) {
+    confirmSasButton.setOnClickListener(new OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        setActiveCall(new SASInfo(sasTextView.getText().toString(), true));
+        listener.onClick();
+      }
+    });
   }
 
   public void setHangupButtonListener(final HangupButtonListener listener) {
@@ -141,14 +169,17 @@ public class CallControls extends RelativeLayout {
       @Override
       public void onTrigger(View v, int target) {
         switch (target) {
-        case 0: listener.onAcceptClick(); break;
-        case 2: listener.onDenyClick();   break;
+          case 0: listener.onAcceptClick(); break;
+          case 2: listener.onDenyClick();   break;
         }
       }
+
       @Override
       public void onReleased(View v, int handle) {}
+
       @Override
       public void onGrabbedStateChange(View v, int handle) {}
+
       @Override
       public void onGrabbed(View v, int handle) {}
     });
@@ -159,12 +190,19 @@ public class CallControls extends RelativeLayout {
         .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     inflater.inflate(R.layout.call_controls, this, true);
 
+    this.confirmSasButton   = (ImageButton)findViewById(R.id.confirm_sas);
+    this.confirmSasWrapper  = findViewById(R.id.confirm_wrapper);
     this.endCallButton      = (ImageButton)findViewById(R.id.endButton);
     this.incomingCallWidget = (MultiWaveView)findViewById(R.id.incomingCallWidget);
+    this.redphoneLabel      = (TextView)findViewById(R.id.redphone_banner);
     this.activeCallWidget   = (View)findViewById(R.id.inCallControls);
     this.sasTextView        = (TextView)findViewById(R.id.sas);
     this.muteButton         = (CompoundButton)findViewById(R.id.muteButton);
     this.audioButton        = new InCallAudioButton((CompoundButton)findViewById(R.id.audioButton));
+  }
+
+  public static interface ConfirmSasButtonListener {
+    public void onClick();
   }
 
   public static interface HangupButtonListener {

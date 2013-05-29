@@ -17,6 +17,7 @@
 
 package org.thoughtcrime.redphone.crypto.zrtp;
 
+import org.thoughtcrime.redphone.crypto.zrtp.retained.RetainedSecretsDerivatives;
 import org.thoughtcrime.redphone.network.RtpPacket;
 
 /**
@@ -38,8 +39,8 @@ public class EC25DHPartTwoPacket extends DHPartTwoPacket {
     super(packet, DHPacket.EC25_AGREEMENT_TYPE, deepCopy);
   }
 
-  public EC25DHPartTwoPacket(HashChain hashChain, byte[] pvr) {
-    super(DHPacket.EC25_AGREEMENT_TYPE, hashChain, pvr);
+  public EC25DHPartTwoPacket(HashChain hashChain, byte[] pvr, RetainedSecretsDerivatives retainedSecrets) {
+    super(DHPacket.EC25_AGREEMENT_TYPE, hashChain, pvr, retainedSecrets);
     assert(pvr.length == 64);
   }
 
