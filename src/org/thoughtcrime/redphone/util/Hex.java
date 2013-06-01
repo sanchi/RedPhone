@@ -32,15 +32,17 @@ public class Hex {
   };
 
   public static String toString(byte[] bytes) {
-    if (bytes == null)
+    if (bytes == null) {
       return null;
+    }
 
     return toString(bytes, 0, bytes.length);
   }
 
   public static String toString(byte[] bytes, int offset, int length) {
-    if (bytes == null)
+    if (bytes == null) {
       return null;
+    }
 
     StringBuffer buf = new StringBuffer();
     for (int i = 0; i < length; i++) {
