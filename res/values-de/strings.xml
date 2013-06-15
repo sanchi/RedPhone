@@ -43,6 +43,9 @@
   <string name="CreateAccountActivity_you_must_specify_your_country_code">Sie müssen ihre Landesvorwahl angeben</string>
   <string name="CreateAccountActivity_the_number_you_specified_s_is_invalid">Die angegebene Nummer (%s) ist ungültig.</string>
   <string name="CreateAccountActivity_invalid_number">Ungültige Nummer</string>
+  <string name="CreateAccountActivity_we_will_now_verify_that_the_following_number_is_associated">Wir werden nun prüfen, ob die folgende Zahl mit diesem Gerät verbunden ist:⏎\n⏎\n%s⏎\n⏎\nIst diese Zahl korrekt, oder möchten Sie sie bearbeiten?</string>
+  <string name="CreateAccountActivity_continue">Fohrtfahren</string>
+  <string name="CreateAccountActivity_edit">Bearbeiten</string>
   <string name="NotificationBarManager_redphone_call_in_progress">RedPhone-Gespräch in Vorbereitung</string>
   <string name="NotificationBarManager_missed_redphone_call_from_s">Verpasster RedPhone-Anruf von %s</string>
   <string name="NotificationBarManager_missed_redphone_call">Verpasster RedPhone Anruf</string>
@@ -67,6 +70,7 @@
   <string name="about_activity__aboutText">Bitte besuchen Sie whispersystems.org für weitere Informationen oder kontakieren Sie support@whispersystems.org (in Englisch) bei Problemen, Fragen oder Anregungen.</string>
   <string name="about_activity__attributionText">RedPhone links to the SpanDSP library, which is licensed under the LGPL.\n\nRedPhone uses the SPEEX Codec, which is used under the Xiph.Org variant of the BSD license: © 2002-2003, Jean-Marc Valin/Xiph.Org Foundation\n\nRedistribution and use of the SPEEX library in source and binary forms, with or without modification, are permitted provided that the following conditions are met:\n\n\t* Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.\n\t* Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.\n\t* Neither the name of the Xiph.org Foundation nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.\n\nThe SPEEX library is provided by the copyright holders and contributors “as is” and any express or implied warranties, including, but not limited to, the implied warranties of merchantability and fitness for a particular purpose are disclaimed. In no event shall the foundation or contributors be liable for any direct, indirect, incidental, special, exemplary, or consequential damages (including, but not limited to, procurement of substitute goods or services; loss of use, data, or profits; or business interruption) however caused and on any theory of liability, whether in contract, strict liability, or tort (including negligence or otherwise) arising in any way out of the use of this software, even if advised of the possibility of such damage.\n\n\nSome sound samples are licensed under the Creative Commons Sampling Plus License: http://creativecommons.org/licenses/sampling+/1.0/\n\nBy acclivity (http://www.freesound.org/usersViewSingle.php?id=37876):\nShipsBell.wav (http://www.freesound.org/samplesViewSingle.php?id=32304)\n\nBy Splashdust (http://www.freesound.org/usersViewSingle.php?id=754949):\nnegativebeep.wav (http://www.freesound.org/samplesViewSingle.php?id=67454)\n\nBy Peter_Gross (http://www.freesound.org/usersViewSingle.php?id=33429):\nSonar_pings.ogg (http://www.freesound.org/samplesViewSingle.php?id=12677\n\nBy suonho: http://www.freesound.org/samplesViewSingle.php?id=58348: ambienta_soundtrack_moog_sweep\n\nBy Mike Koenig: Busy Signal</string>
   <string name="create_account__register">Registrieren</string>
+  <string name="create_acount__please_confirm_your_country_code_and_phone_number">Um tätigen und empfangen sicherer Anrufe muss RedPhone Ihre Telefonnummer überprüfen und registrieren Sie es mit dem System. ⏎ ⏎ Bitte bestätigen Sie Ihre Vorwahl und Telefonnummer für dieses Gerät.</string>
   <string name="create_account__your_country">DEIN LAND</string>
   <string name="create_account__your_country_code_and_phone_number">DEINE LANDESVORWAHL UND TELEFONNUMMER</string>
   <string name="create_account__phone_number">Telefonnummer</string>
@@ -100,15 +104,21 @@
   <string name="preferences__signaling_method">Benachrichtigungsmethode</string>
   <string name="preferences__modify_the_method_used_to_notify_your_device_of_incoming_calls">Ändere die Methode, die zur Benachrichtung ihres Geräts über eingehende Gespräche verwendet wird.</string>
   <string name="registration_progress__sms_verification_failed">SMS Verifikation fehlgeschlagen.</string>
+  <string name="registration_progress__redphone_timed_out_while_waiting_for_an_sms_message_to_verify_your_phone_number">RedPhone Zeitüberschreitung beim Warten auf eine SMS-Nachricht um Ihre Telefonnummer zu überprüfen.</string>
   <string name="registration_progress__edit_number">Ändere Nummer</string>
   <string name="registration_progress__some_possible_problems_include">Mögliche Fehlerursachen sind:</string>
+  <string name="registration_progress__sms_interceptors">SMS Abfangjäger. </string>
+  <string name="registration_progress__some_third_party_text_messaging_clients_explanation">Einige Text Messaging-Clients, wie z. B. Handcent oder GoSMS, fangen alle eingehenden SMS-Nachrichten ab. Prüfen Sie, ob Sie eine SMS-Nachricht , die mit \" A RedPhone versucht, Sie zu überprüfen, \".</string>
   <string name="registration_progress__incorrect_number">Ungültige Nummer.</string>
   <string name="registration_progress__please_check_to_make_sure_you_entered_your_number_correctly">Bitte stelle sicher, dass du die Nummer richtig eingegeben hast und dass sie die für dein Land richtige Schreibweise hat.</string>
   <string name="registration_progress__old_versions_of_google_voice">Alte Versionen von Google Voice</string>
   <string name="registration_progress__if_youre_attempting_to_register_a_google_voice_number_explanation">Wenn du dich mit einer Google Voice Nummer registrierst, stelle bitte sicher, dass du die neueste Version der Google Voice App verwendest.</string>
   <string name="registration_progress__connectivity_error">Verbindungsfehler</string>
+  <string name="registration_progress__redphone_was_unable_to_connect_to_the_switch">RedPhone konnte sich nicht mit dem Switch verbinden. </string>
   <string name="registration_progress__no_network_connectivity">Keine Netzwerkverbindung</string>
+  <string name="registration_progress__your_device_needs_network_connectivity_explanation">Ihr Gerät braucht über eine Netzwerkverbindung, um RedPhone zu verwenden. Stellen Sie sicher, dass es mit dem Internet verbunden ist.</string>
   <string name="registration_progress__restrictive_firewall">Restriktive Firewall.</string>
+  <string name="registration_progress__if_you_are_connected_via_wifi_explanation">Wenn Sie über WLAN verbunden sind, ist es möglich, dass eine Firewall den Zugriff auf den RedPhone Signalports blockiert. Probieren Sie ein anderes Netzwerk.</string>
   <string name="registration_progress__redphone_will_now_automatically_verify_your_number_with_a_confirmation_sms_message">RedPhone wird nun automatisch deine Nummer mit einer Bestätigungs-SMS verifizieren.</string>
   <string name="registration_progress__registering_with_server">Registriere beim Server...</string>
   <string name="registration_progress__waiting_for_sms_verification">Warte auf SMS Verifikation...</string>

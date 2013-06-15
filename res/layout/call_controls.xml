@@ -54,6 +54,20 @@
         android:visibility="gone"
         />
 
+    <TextView android:id="@+id/redphone_banner"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:layout_alignTop="@id/incomingCallWidget"
+              android:gravity="center"
+              android:paddingTop="8dp"
+              android:paddingBottom="8dp"
+              android:textAppearance="?android:attr/textAppearanceLarge"
+              android:textColor="#A0000000"
+              android:textAllCaps="true"
+              android:background="#ccf0a621"
+              android:text="@string/call_controls__redphone_call"/>
+
+
     <!--
         (2) inCallControls: the widgets visible while a regular call
         (or calls) is in progress
@@ -70,8 +84,42 @@
                       android:orientation="vertical"
                       android:layout_width="match_parent"
                       android:layout_height="wrap_content"
-                      android:layout_alignParentBottom="true"
-                      >
+                      android:layout_alignParentBottom="true">
+
+            <RelativeLayout android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                <TextView android:id="@+id/sas"
+                          android:layout_width="match_parent"
+                          android:layout_height="wrap_content"
+                          android:textAppearance="?android:attr/textAppearanceLarge"
+                          android:textColor="#FFFFFF"
+                          android:background="#a0000000"
+                          android:gravity="center"
+                          android:padding="20dip"
+                          android:singleLine="true"
+                          android:visibility="gone"/>
+
+                <LinearLayout android:id="@+id/confirm_wrapper"
+                              android:layout_width="wrap_content"
+                              android:layout_height="wrap_content"
+                              android:layout_alignParentRight="true"
+                              android:layout_alignTop="@id/sas"
+                              android:layout_alignBottom="@id/sas"
+                              android:background="@drawable/dialpad_dark_background">
+
+                    <ImageButton android:id="@+id/confirm_sas"
+                                 android:layout_width="wrap_content"
+                                 android:layout_height="fill_parent"
+                                 android:gravity="center"
+                                 android:layout_gravity="center"
+                                 android:paddingRight="10dip"
+                                 android:paddingLeft="10dip"
+                                 android:contentDescription="verify sas"
+                                 android:src="@drawable/check_light"
+                                 android:background="@drawable/selectable_item_background"/>
+                </LinearLayout>
+            </RelativeLayout>
 
 
             <!-- Row 2: The "End call" button. -->
@@ -212,22 +260,6 @@
 
             </LinearLayout>
 
-            <LinearLayout android:orientation="horizontal"
-                          android:layout_width="match_parent"
-                          android:layout_height="wrap_content">
-
-                <TextView android:id="@+id/sas"
-                          android:layout_width="match_parent"
-                          android:layout_height="match_parent"
-                          android:textAppearance="?android:attr/textAppearanceLarge"
-                          android:textColor="#FFFFFF"
-                          android:background="#000000"
-                          android:gravity="center"
-                          android:padding="20dip"
-                          android:singleLine="true"
-                          android:visibility="gone"/>
-
-            </LinearLayout>
 
             <!-- Row 3: The main batch of in-call buttons:
                     Dialpad / Audio mode / Mute / Hold / Add call

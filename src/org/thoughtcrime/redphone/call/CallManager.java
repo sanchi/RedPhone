@@ -18,34 +18,28 @@
 package org.thoughtcrime.redphone.call;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Process;
-import android.text.format.DateFormat;
 import android.util.Log;
-
 import org.thoughtcrime.redphone.audio.AudioException;
 import org.thoughtcrime.redphone.audio.CallAudioManager;
 import org.thoughtcrime.redphone.crypto.SecureRtpSocket;
 import org.thoughtcrime.redphone.crypto.zrtp.MasterSecret;
 import org.thoughtcrime.redphone.crypto.zrtp.NegotiationFailedException;
 import org.thoughtcrime.redphone.crypto.zrtp.RecipientUnavailableException;
-import org.thoughtcrime.redphone.crypto.zrtp.SASCalculator;
+import org.thoughtcrime.redphone.crypto.zrtp.SASInfo;
 import org.thoughtcrime.redphone.crypto.zrtp.ZRTPSocket;
 import org.thoughtcrime.redphone.monitor.CallMonitor;
 import org.thoughtcrime.redphone.monitor.EventStream;
 import org.thoughtcrime.redphone.signaling.SessionDescriptor;
 import org.thoughtcrime.redphone.signaling.SignalingSocket;
 import org.thoughtcrime.redphone.ui.ApplicationPreferencesActivity;
-import org.thoughtcrime.redphone.ui.CallQualityDialog;
 import org.thoughtcrime.redphone.util.AudioUtils;
 
 import java.io.IOException;
-import java.util.Date;
-import java.util.List;
 
 /**
  * The base class for both Initiating and Responder call
@@ -68,7 +62,7 @@ public abstract class CallManager extends Thread {
   private boolean loopbackMode;
   private CallAudioManager callAudioManager;
   private SignalManager signalManager;
-  private String sas;
+  private SASInfo sasInfo;
   private boolean muteEnabled;
 
   protected SessionDescriptor sessionDescriptor;
@@ -120,9 +114,8 @@ public abstract class CallManager extends Thread {
 
       if (!terminated) {
         setSecureSocketKeys(zrtpSocket.getMasterSecret());
-        sas = SASCalculator.calculateSAS(zrtpSocket.getMasterSecret().getSAS());
-        callStateListener.notifyCallConnected(sas);
-        lifecycleMonitor.emitEvent("connected");
+        sasInfo = zrtpSocket.getSasInfo();
+        callStateListener.notifyCallConnected(sasInfo);
       }
 
       if (!terminated) {
@@ -167,8 +160,13 @@ public abstract class CallManager extends Thread {
     return this.sessionDescriptor;
   }
 
-  public String getSAS() {
-    return this.sas;
+  public SASInfo getSasInfo() {
+    return this.sasInfo;
+  }
+
+  public void setSasVerified() {
+    if (zrtpSocket != null)
+      zrtpSocket.setSasVerified();
   }
 
   protected void processSignals() {
@@ -177,9 +175,6 @@ public abstract class CallManager extends Thread {
   }
 
   protected abstract void setSecureSocketKeys(MasterSecret masterSecret);
-
-  ///**********************
-  // Methods below are SOA's loopback and testing shims.
 
   private void printInitDebug() {
     Context c = context;
@@ -203,16 +198,18 @@ public abstract class CallManager extends Thread {
     monitor.addNominalValue("network-extra", networkInfo == null ? null : networkInfo.getExtraInfo());
   }
 
-  //For loopback operation
-  public void doLoopback() throws AudioException, IOException {
-    callAudioManager = new CallAudioManager(null, "SPEEX", context, new CallMonitor(context));
-    callAudioManager.run();
-  }
-
   public void setMute(boolean enabled) {
     muteEnabled = enabled;
     if(callAudioManager != null) {
       callAudioManager.setMute(muteEnabled);
     }
+  }
+
+  ///**********************
+  // Methods below are SOA's loopback and testing shims.
+  //For loopback operation
+  public void doLoopback() throws AudioException, IOException {
+    callAudioManager = new CallAudioManager(null, "SPEEX", context, new CallMonitor(context));
+    callAudioManager.run();
   }
 }

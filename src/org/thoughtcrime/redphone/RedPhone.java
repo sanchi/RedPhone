@@ -41,6 +41,7 @@ import android.widget.Toast;
 
 import org.thoughtcrime.redphone.codec.CodecSetupException;
 import org.thoughtcrime.redphone.contacts.PersonInfo;
+import org.thoughtcrime.redphone.crypto.zrtp.SASInfo;
 import org.thoughtcrime.redphone.directory.DirectoryUpdateReceiver;
 import org.thoughtcrime.redphone.monitor.MonitorConfigUpdateReceiver;
 import org.thoughtcrime.redphone.ui.ApplicationPreferencesActivity;
@@ -177,6 +178,7 @@ public class RedPhone extends Activity {
     callScreen.setIncomingCallActionListener(new IncomingCallActionListener());
     callScreen.setMuteButtonListener(new MuteButtonListener());
     callScreen.setAudioButtonListener(new AudioButtonListener());
+    callScreen.setConfirmSasButtonListener(new ConfirmSasButtonListener());
 
     PeriodicActionUtils.scheduleUpdate(this, DirectoryUpdateReceiver.class);
     PeriodicActionUtils.scheduleUpdate(this, MonitorConfigUpdateReceiver.class);
@@ -265,7 +267,7 @@ public class RedPhone extends Activity {
     delayedFinish(BUSY_SIGNAL_DELAY_FINISH);
   }
 
-  private void handleCallConnected(String sas) {
+  private void handleCallConnected(SASInfo sas) {
     getWindow().addFlags(WindowManager.LayoutParams.FLAG_IGNORE_CHEEK_PRESSES);
     callScreen.setActiveCall(redPhoneService.getRemotePersonInfo(),
                              getString(R.string.RedPhone_connected), sas);
@@ -399,7 +401,7 @@ public class RedPhone extends Activity {
     public void handleMessage(Message message) {
       Log.w("RedPhone", "Got message from service: " + message.what);
       switch (message.what) {
-      case HANDLE_CALL_CONNECTED:          handleCallConnected((String)message.obj);                break;
+      case HANDLE_CALL_CONNECTED:          handleCallConnected((SASInfo)message.obj);               break;
       case HANDLE_SERVER_FAILURE:          handleServerFailure();                                   break;
       case HANDLE_PERFORMING_HANDSHAKE:    handlePerformingHandshake();                             break;
       case HANDLE_HANDSHAKE_FAILED:        handleHandshakeFailed();                                 break;
@@ -417,6 +419,14 @@ public class RedPhone extends Activity {
       case HANDLE_CLIENT_FAILURE:			     handleClientFailure((String)message.obj);                break;
       case HANDLE_DEBUG_INFO:				       handleDebugInfo((String)message.obj);					          break;
       }
+    }
+  }
+
+  private class ConfirmSasButtonListener implements CallControls.ConfirmSasButtonListener {
+    public void onClick() {
+      Intent intent = new Intent(RedPhone.this, RedPhoneService.class);
+      intent.setAction(RedPhoneService.ACTION_CONFIRM_SAS);
+      startService(intent);
     }
   }
 

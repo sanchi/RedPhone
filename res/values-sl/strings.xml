@@ -43,6 +43,9 @@
   <string name="CreateAccountActivity_you_must_specify_your_country_code">Navesti morate kodo svoje države</string>
   <string name="CreateAccountActivity_the_number_you_specified_s_is_invalid">Številka, ki ste jo navedli (%s) je neveljavna.</string>
   <string name="CreateAccountActivity_invalid_number">Neveljavna številka</string>
+  <string name="CreateAccountActivity_we_will_now_verify_that_the_following_number_is_associated">Preverjam, če je spodnja telefonska številka povezana s to napravo:\n\n%\n\nJe ta številka prava, oz. bi jo želeli popraviti?</string>
+  <string name="CreateAccountActivity_continue">Nadaljuj</string>
+  <string name="CreateAccountActivity_edit">Uredi</string>
   <string name="NotificationBarManager_redphone_call_in_progress">RedPhone klic v teku</string>
   <string name="NotificationBarManager_missed_redphone_call_from_s">Zgrešen klic na RedPhone od %s</string>
   <string name="NotificationBarManager_missed_redphone_call">Zgrešen RedPhone klic</string>
@@ -116,10 +119,10 @@
   <string name="registration_progress__your_device_needs_network_connectivity_explanation">Za uporabo aplikacije RedPhone potrebuje vaša naprava dostop do omrežja. Preverite, če ste povezani z internetom.</string>
   <string name="registration_progress__restrictive_firewall">Omejujoč požarni zid.</string>
   <string name="registration_progress__if_you_are_connected_via_wifi_explanation">Če ste povezani prek wifi omrežja, je mogoče, da požarni zid omejuje dostop do RedPhone vrat za obveščanje. Poskusite z drugim wifi omrežjem ali z mobilnim omrežjem.</string>
-  <string name="registration_progress__redphone_will_now_automatically_verify_your_number_with_a_confirmation_sms_message">RedPhone bo avtomatsko preveril vašo telefonsko številko s potrditvenim SMS sporočilom.</string>
+  <string name="registration_progress__redphone_will_now_automatically_verify_your_number_with_a_confirmation_sms_message">RedPhone bo samodejno preveril vašo telefonsko številko s potrditvenim SMS sporočilom.</string>
   <string name="registration_progress__registering_with_server">Registracija s strežnikom poteka...</string>
   <string name="registration_progress__waiting_for_sms_verification">Čakam na SMS potrditev...</string>
-  <string name="registration_progress__this_could_take_a_moment_please_be_patient_well_notify_you_when_verification_is_complete">To lahko traja nekaj trebutkov. Ko bo potrjevanje končano, boste obveščeni.</string>
+  <string name="registration_progress__this_could_take_a_moment_please_be_patient_well_notify_you_when_verification_is_complete">To lahko traja nekaj trenutkov. Ko bo potrjevanje končano, boste obveščeni.</string>
   <string name="registration_progress__waiting_for_sms">ČAKAM NA SMS</string>
   <!--EOF-->
 </resources>

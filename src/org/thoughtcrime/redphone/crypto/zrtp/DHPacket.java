@@ -17,6 +17,7 @@
 
 package org.thoughtcrime.redphone.crypto.zrtp;
 
+import org.thoughtcrime.redphone.crypto.zrtp.retained.RetainedSecretsDerivatives;
 import org.thoughtcrime.redphone.network.RtpPacket;
 
 import java.security.NoSuchAlgorithmException;
@@ -72,11 +73,11 @@ public abstract class DHPacket extends HandshakePacket {
     this.agreementType = agreementType;
   }
 
-  public DHPacket(String typeTag, int agreementType, HashChain hashChain, byte[] pvr) {
+  public DHPacket(String typeTag, int agreementType, HashChain hashChain, byte[] pvr, RetainedSecretsDerivatives retainedSecrets) {
     super(typeTag, agreementType == DH3K_AGREEMENT_TYPE ? DH3K_DH_LENGTH : EC25_DH_LENGTH);
 
     setHash(hashChain.getH1());
-    setState();
+    setState(retainedSecrets);
     setPvr(pvr);
 
     switch (agreementType) {
@@ -108,6 +109,18 @@ public abstract class DHPacket extends HandshakePacket {
     }
   }
 
+  public byte[] getDerivativeSecretOne() {
+    byte[] rs1 = new byte[8];
+    System.arraycopy(this.data, RS1_OFFSET, rs1, 0, rs1.length);
+    return rs1;
+  }
+
+  public byte[] getDerivativeSecretTwo() {
+    byte[] rs2 = new byte[8];
+    System.arraycopy(this.data, RS2_OFFSET, rs2, 0, rs2.length);
+    return rs2;
+  }
+
   public byte[] getHash() {
     byte[] hash = new byte[32];
     System.arraycopy(this.data, HASH_OFFSET, hash, 0, hash.length);
@@ -135,17 +148,26 @@ public abstract class DHPacket extends HandshakePacket {
     System.arraycopy(pvr, 0, this.data, PVR_OFFSET, pvr.length);
   }
 
-  private void setState() {
-    try {
-      SecureRandom random = SecureRandom.getInstance("SHA1PRNG");
-      byte[] randomBytes  = new byte[8];
+  private void setState(RetainedSecretsDerivatives retainedSecrets) {
+    setDerivativeSecret(retainedSecrets.getRetainedSecretOneDerivative(), RS1_OFFSET);
+    setDerivativeSecret(retainedSecrets.getRetainedSecretTwoDerivative(), RS2_OFFSET);
+    setDerivativeSecret(null                                            , AUX_OFFSET);
+    setDerivativeSecret(null                                            , PBX_OFFSET);
+  }
 
-      for (int i=0;i<4;i++) {
+  private void setDerivativeSecret(byte[] rs, int rsOffset) {
+    try {
+      if (rs != null) {
+        System.arraycopy(rs, 0, this.data, rsOffset, rs.length);
+      } else {
+        SecureRandom random = SecureRandom.getInstance("SHA1PRNG");
+        byte[] randomBytes  = new byte[8];
+
         random.nextBytes(randomBytes);
-        System.arraycopy(randomBytes, 0, this.data, RS1_OFFSET + (i * 8), randomBytes.length);
+        System.arraycopy(randomBytes, 0, this.data, rsOffset, randomBytes.length);
       }
     } catch (NoSuchAlgorithmException e) {
-      throw new IllegalArgumentException(e);
+      throw new AssertionError(e);
     }
   }
 }
