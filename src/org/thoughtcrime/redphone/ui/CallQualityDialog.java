@@ -197,7 +197,11 @@ public class CallQualityDialog extends SherlockActivity  {
       ApplicationPreferencesActivity.setMetricsOptInFlag(getApplicationContext(), optIn);
       ApplicationPreferencesActivity.setDisplayDialogPreference(getApplicationContext(), enableDialog);
       ApplicationPreferencesActivity.setUserNotfiedOfCallQualitySettings(getApplicationContext(),true);
-      setupInterface();
+      if(enableDialog) {
+        setupInterface();
+      } else {
+        finish();
+      }
     }
   }
 
