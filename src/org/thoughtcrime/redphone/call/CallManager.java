@@ -64,6 +64,7 @@ public abstract class CallManager extends Thread {
   private SignalManager signalManager;
   private SASInfo sasInfo;
   private boolean muteEnabled;
+  private boolean callConnected;
 
   protected SessionDescriptor sessionDescriptor;
   protected ZRTPSocket zrtpSocket;
@@ -120,6 +121,7 @@ public abstract class CallManager extends Thread {
 
       if (!terminated) {
         Log.d("CallManager", "Finished handshake, calling run() on CallAudioManager...");
+        callConnected = true;
         callAudioManager.run();
       }
 
@@ -203,6 +205,14 @@ public abstract class CallManager extends Thread {
     if(callAudioManager != null) {
       callAudioManager.setMute(muteEnabled);
     }
+  }
+
+  /**
+   * Did this call ever successfully complete SRTP setup
+   * @return true if the call connected
+   */
+  public boolean callConnected() {
+    return callConnected;
   }
 
   ///**********************

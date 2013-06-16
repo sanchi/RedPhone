@@ -92,7 +92,8 @@
         	
         <activity android:name=".ui.CallQualityDialog"
                   android:theme="@style/Theme.Sherlock.Dialog"
-                  android:screenOrientation="portrait"/>
+                  android:screenOrientation="portrait"
+                  android:launchMode="singleInstance"/>
 
         <service android:enabled="true" android:name=".RedPhoneService"/>
         <service android:enabled="true" android:name=".gcm.GCMRegistrationService"/>

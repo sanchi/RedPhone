@@ -53,6 +53,7 @@ import org.thoughtcrime.redphone.signaling.OtpCounterProvider;
 import org.thoughtcrime.redphone.signaling.SessionDescriptor;
 import org.thoughtcrime.redphone.signaling.SignalingException;
 import org.thoughtcrime.redphone.signaling.SignalingSocket;
+import org.thoughtcrime.redphone.ui.ApplicationPreferencesActivity;
 import org.thoughtcrime.redphone.ui.CallQualityDialog;
 import org.thoughtcrime.redphone.ui.NotificationBarManager;
 import org.thoughtcrime.redphone.util.Base64;
@@ -388,9 +389,13 @@ public class RedPhoneService extends Service implements CallStateListener, CallS
   }
 
   public void maybeStartQualityMetricsActivity() {
-    if(currentCallManager.getSessionDescriptor() == null) {
+    if(currentCallManager.getSessionDescriptor() == null
+      || !currentCallManager.callConnected()
+      || (!ApplicationPreferencesActivity.getDisplayDialogPreference(this)
+      && ApplicationPreferencesActivity.wasUserNotifedOfCallQaulitySettings(this))) {
       return;
     }
+
     SessionDescriptor sessionDescriptor = currentCallManager.getSessionDescriptor();
     Intent callQualityDialogIntent = new Intent(this,CallQualityDialog.class);
     callQualityDialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -398,11 +403,12 @@ public class RedPhoneService extends Service implements CallStateListener, CallS
     startActivity(callQualityDialogIntent);
 
     Notification notification = new NotificationCompat.Builder(this)
-      .setAutoCancel(false)
-      .setContentTitle(getResources().getText(R.string.CallQualityDialog__provide_call_quality_feedback))
+      .setAutoCancel(true)
+      .setContentTitle(getResources().getText(R.string.CallQualityDialog__redphone))
+      .setContentText(getResources().getText(R.string.CallQualityDialog__provide_call_quality_feedback))
       .setContentIntent(PendingIntent.getActivity(this, 0, callQualityDialogIntent, PendingIntent.FLAG_UPDATE_CURRENT))
       .setSmallIcon(R.drawable.registration_notification)
-      .setDefaults(Notification.DEFAULT_VIBRATE)
+      .setDefaults(Notification.DEFAULT_LIGHTS)
       .setTicker(getResources().getText(R.string.CallQualityDialog__provide_call_quality_feedback))
       .build();
 

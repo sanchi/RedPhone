@@ -1,20 +1,33 @@
+/*
+ * Copyright (C) 2013 Open Whisper Systems
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package org.thoughtcrime.redphone.ui;
 
 
 import android.app.NotificationManager;
 import android.content.Context;
-import android.graphics.Color;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
-import android.util.SparseBooleanArray;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.ListView;
+import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import com.actionbarsherlock.app.SherlockActivity;
@@ -34,123 +47,115 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.zip.GZIPOutputStream;
 
 import static org.thoughtcrime.redphone.monitor.stream.EncryptedStreamUtils.getPublicKeyFromResource;
 
+/**
+ * Displays dialog boxes for the call quality reporting system, and send call quality data to the
+ * call metrics server.  The initial dialog alerts the user that we've added call quality reporting
+ * and asks them to opt in.  The standard dialog displays an overall star rating for the call and
+ * a list of potential call issues that are stored in the application preferences.
+ *
+ * @author Jazz Alyxzander
+ * @author Stuart O. Anderson
+ */
 
 public class CallQualityDialog extends SherlockActivity  {
+  private static final String METRIC_DATA_TYPE = "user-feedback";
+  private static final int NUM_QUESTIONS_TO_DISPLAY = 3;
+  private static final float DEFAULT_RATING = 1.5f;
   public static final int CALL_QUALITY_NOTIFICATION_ID = 1982;
-  private long callId;
 
+  private long callId;
   private Button sendButton;
   private Button doneDialogButton;
-
   private List<String> feedbackQuestions;
-  private ArrayAdapter<String> adapter;
 
-  private String typeOfData = "user-feedback";
-  private int numQuestionsToDisplay = 3;
-  private float defaultRating = 1.5f;
-
-  public static final String LIST_ITEM_TITLE = "title";
   public void onCreate(Bundle icicle) {
     super.onCreate(icicle);
-    this.callId = getIntent().getLongExtra("callId", -1);
+
+    callId = getIntent().getLongExtra("callId", -1);
     feedbackQuestions = getFeedbackQuestions();
     setupInterface();
   }
 
-  private List<String> getFeedbackQuestions()
-  {
+  @Override
+  protected void onNewIntent(Intent intent) {
+    callId = getIntent().getLongExtra("callId", callId);
+  }
+
+  private List<String> getFeedbackQuestions() {
     CallQualityConfig config = ApplicationPreferencesActivity.getCallQualityConfig(this);
     List<String> questions = config.getCallQualityQuestions();
-    if(questions.size() > numQuestionsToDisplay){
-      questions = questions.subList(0, numQuestionsToDisplay);
+    if(questions.size() > NUM_QUESTIONS_TO_DISPLAY){
+      questions = questions.subList(0, NUM_QUESTIONS_TO_DISPLAY);
     }
     return questions;
   }
 
-  protected List<Map<String, Object>> getData() {
-    if(!ApplicationPreferencesActivity.wasUserNotifedOfCallQaulitySettings(this) ){return null;}
-    feedbackQuestions = getFeedbackQuestions();
-    List<Map<String, Object>> data = new ArrayList<Map<String, Object>>();
-    for(String s: feedbackQuestions)
-    {
-      Map<String,Object> m = new HashMap<String,Object>();
-      m.put(LIST_ITEM_TITLE, s);
-      data.add(m);
-    }
-    return data;
-  }
-
-  private void setViewToInitialDialog(){
+  private void setViewToInitialDialog() {
     setContentView(R.layout.call_quality_initial_dialog);
     setTitle(R.string.CallQualityDialog__we_re_making_changes);
   }
 
-  private void setViewToStandardDialog()
-  {
+  private void setViewToStandardDialog() {
     setContentView(R.layout.call_quality_dialog);
     setTitle(R.string.CallQualityDialog_call_feedback);
-    TextView listLabel = (TextView)findViewById(R.id.listLabel);
-    ListView list = (ListView)findViewById(android.R.id.list);
+    TextView listLabel = (TextView)findViewById(R.id.issueLabel);
+    LinearLayout list = (LinearLayout)findViewById(android.R.id.list);
 
-    adapter = new QuestionListAdapter(this,android.R.layout.select_dialog_multichoice, feedbackQuestions);
-
-    list.setAdapter(adapter);
-    list.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-    if(0 >= feedbackQuestions.size() ){
+    if(feedbackQuestions.isEmpty()){
       listLabel.setVisibility(View.GONE);
+    } else {
+      addQuestions(list);
     }
   }
 
-  private void initializeInitialDialogResources()
-  {
+  private void addQuestions(LinearLayout list) {
+    for(String question : feedbackQuestions) {
+      CheckBox checkBox = new CheckBox(this);
+      checkBox.setText(question);
+      list.addView(checkBox);
+    }
+  }
+
+  private void initializeInitialDialogResources() {
     this.doneDialogButton        		= (Button)findViewById(R.id.doneDialogButton);
     this.doneDialogButton.setOnClickListener(new DoneDialogListener());
   }
 
-  private void initializeStandardDialogResources()
-  {
+  private void initializeStandardDialogResources() {
     RatingBar ratingBar = (RatingBar)findViewById(R.id.callRatingBar);
-    ratingBar.setRating(defaultRating);
+    ratingBar.setRating(DEFAULT_RATING);
     this.sendButton        	= (Button)findViewById(R.id.sendButton);
     this.sendButton.setOnClickListener(new SendButtonListener());
   }
 
-  private void setupInterface()
-  {
-    if(!ApplicationPreferencesActivity.wasUserNotifedOfCallQaulitySettings(this)){
+  private void setupInterface() {
+    if(!ApplicationPreferencesActivity.wasUserNotifedOfCallQaulitySettings(this)) {
       setViewToInitialDialog();
       initializeInitialDialogResources();
-    }else if(ApplicationPreferencesActivity.getDisplayDialogPreference(this)){
+    } else {
       setViewToStandardDialog();
       initializeStandardDialogResources();
-    }else{
-      finish();
     }
   }
 
-  private  UserFeedback buildUserFeedbackObject()
-  {
+  private UserFeedback buildUserFeedbackObject() {
     UserFeedback userFeedback = new UserFeedback();
     userFeedback.setRating(((RatingBar)findViewById(R.id.callRatingBar)).getRating());
 
-    ListView list = (ListView)findViewById(android.R.id.list);
+    LinearLayout list = (LinearLayout)findViewById(android.R.id.list);
 
-    SparseBooleanArray checkedItems = list.getCheckedItemPositions();
-    for (int i = 0; i < feedbackQuestions.size(); i++){
-      userFeedback.addQuestionResponse(feedbackQuestions.get(i), checkedItems.indexOfKey(i) >= 0);
+    for (int i = 0; i < feedbackQuestions.size(); i++) {
+      userFeedback.addQuestionResponse(feedbackQuestions.get(i),((CheckBox)list.getChildAt(i)).isChecked());
     }
     return userFeedback;
   }
 
-  private void sendData(){
+  private void sendData() {
     Writer writer = null;
     try {
       File cacheSubdir = new File(this.getCacheDir(), "/calldata");
@@ -170,13 +175,13 @@ public class CallQualityDialog extends SherlockActivity  {
       writer.write(new Gson().toJson(feedbackObject));
       writer.close();
 
-      UploadService.beginUpload(this,String.valueOf(callId),  typeOfData, jsonFile );
+      UploadService.beginUpload(this, String.valueOf(callId), METRIC_DATA_TYPE, jsonFile);
     } catch (IOException e){
       Log.e("CallQualityDialog", "failed to write quality data to cache", e);
     } catch (InvalidKeySpecException e) {
       Log.e("CallQualityDialog", "failed setup stream encryption", e);
     } finally {
-      if(null != writer){
+      if(null != writer) {
         try{ writer.close(); } catch (Exception e){}
       }
     }
@@ -195,6 +200,7 @@ public class CallQualityDialog extends SherlockActivity  {
       setupInterface();
     }
   }
+
   private class SendButtonListener implements View.OnClickListener {
     @Override
     public void onClick(View v) {
@@ -218,39 +224,5 @@ public class CallQualityDialog extends SherlockActivity  {
   private void cancelNotification() {
     NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
     nm.cancel(CALL_QUALITY_NOTIFICATION_ID);
-  }
-
-  private static class QuestionListAdapter extends ArrayAdapter<String> {
-
-    private Context context;
-    private int id;
-    private List <String>items ;
-
-    public QuestionListAdapter(Context context, int textViewResourceId , List<String> list )
-    {
-      super(context, textViewResourceId, list);
-      this.context = context;
-      id = textViewResourceId;
-      items = list ;
-    }
-
-    @Override
-    public View getView(int position, View v, ViewGroup parent)
-    {
-      View mView = v ;
-      if(mView == null){
-        LayoutInflater vi = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        mView = vi.inflate(id, null);
-      }
-
-      TextView text = (TextView) mView.findViewById(android.R.id.text1);
-
-      if(items.get(position) != null )
-      {
-        text.setTextColor(Color.WHITE);
-        text.setText(items.get(position));
-      }
-      return mView;
-    }
   }
 }

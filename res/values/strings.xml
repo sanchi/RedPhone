@@ -40,7 +40,19 @@
     <string name="ApplicationPreferencesActivity_error_registering_with_c2dm_server">Error registering with C2DM server...</string>
     <string name="ApplicationPreferencesActivity_error_unregistering_with_c2dm_server">Error unregistering with C2DM server...</string>
     <string name="ApplicationPreferencesActivity_error_communicating_with_c2dm_server">Error communicating with C2DM server...</string>
-    
+
+    <string name="CallQualityDialog_call_feedback">Call Feedback</string>
+    <string name="CallQualityDialog_call_quality">Call Quality</string>
+    <string name="CallQualityDialog_call_quality_rating">Call Quality Rating</string>
+    <string name="CallQualityDialog__i_would_like_to_help_by_sending_performance_statistics">Send performance metrics</string>
+    <string name="CallQualityDialog__i_would_like_to_rate_the_quality_of_my_call_once_it_is_over">Provide call ratings</string>
+    <string name="CallQualityDialog__provide_call_quality_feedback">Provide call quality feedback</string>
+    <string name="CallQualityDialog__redphone">RedPhone</string>
+    <string name="CallQualityDialog__we_re_making_changes">We\'re Making Changes</string>
+    <string name="CallQualityDialog__whispersystems_needs_your_help_as_we_work_to_improve_the_quality_of_our_calls_we_need_feedback_and_performance_statistics_to_improve_the_system_opt_in_below_to_make_redphone_better">WhisperSystems needs your help. As we work to improve the quality of our calls, we need feedback and performance metrics to improve the system. Opt in below to help make RedPhone better.</string>
+    <string name="CallQualityDialog__you_can_update_these_settings_at_any_time_through_the_general_settings_menu">You can update these settings at any time through the general settings menu</string>
+    <string name="CallQualityDialog__please_rate_the_audio_quality_of_the_call_below">Please rate the quality of this call</string>
+
     <string name="CallScreen_incoming_call">Incoming call...</string>
 
     <string name="ContactsListActivity_loading">Loading...</string>
@@ -132,6 +144,12 @@
     <string name="preferences__reduce_latency_at_the_expense_of_audio_quality">Reduce latency at the expense of audio quality</string>
     <string name="preferences__signaling_method">Signaling Method</string>
     <string name="preferences__modify_the_method_used_to_notify_your_device_of_incoming_calls">Modify the method used to notify your device of incoming calls.</string>
+    <string name="preferences__analytics_settings">Analytics Settings</string>
+    <string name="preferences__enable_call_metrics_upload">Send Data</string>
+    <string name="preferences__enable_call_quality_dialog">Provide Feedback</string>
+    <string name="preferences__provide_feeback">Provide Feedback</string>
+    <string name="preferences__prompt_for_feedback_on_call_quality_after_call_has_ended">Prompt for feedback on call quality after call has ended</string>
+    <string name="preferences__securely_upload_metrics_to_improve_audio_quality">Securely upload metrics to improve audio quality</string>
 
     <string name="registration_progress__sms_verification_failed">SMS verification failed.</string>
     <string name="registration_progress__redphone_timed_out_while_waiting_for_an_sms_message_to_verify_your_phone_number">RedPhone timed out while waiting for an SMS message to verify your phone number.</string>
@@ -154,22 +172,5 @@
     <string name="registration_progress__waiting_for_sms_verification">Waiting for SMS verification...</string>
     <string name="registration_progress__this_could_take_a_moment_please_be_patient_well_notify_you_when_verification_is_complete">This could take a moment. Please be patient, we\'ll notify you when verification is complete.</string>
     <string name="registration_progress__waiting_for_sms">WAITING FOR SMS</string>
-
-    <string name="CallQualityDialog_call_feedback">Call Feedback</string>
-    <string name="CallQualityDialog_call_quality">Call Quality</string>
-    <string name="CallQualityDialog_call_quality_rating">Call Quality Rating</string>
-    <string name="CallQualityDialog__i_would_like_to_help_by_sending_performance_statistics"> I would like to help by sending performance statistics</string>
-    <string name="CallQualityDialog__i_would_like_to_rate_the_quality_of_my_call_once_it_is_over">I would like to rate the quality    of my call once it is over</string>
-    <string name="CallQualityDialog__provide_call_quality_feedback">Provide Call Quality Feedback</string>
-    <string name="CallQualityDialog__we_re_making_changes">We\'re Making Changes</string>
-    <string name="CallQualityDialog__whispersystems_needs_your_help_as_we_work_to_improve_the_quality_of_our_calls_we_need_feedback_and_performance_statistics_to_improve_the_system_opt_in_below_to_make_redphone_better">WhisperSystems needs your help. As we work to improve the quality of our calls, we need feedback and performance statistics to improve the system. Opt in below to make RedPhone better.</string>
-    <string name="CallQualityDialog__you_can_update_these_settings_at_any_time_through_the_general_settings_menu">You can update these settings at any time through the general settings menu</string>
-
-    <string name="preferences__analytics_settings">Analytics Settings</string>
-    <string name="preferences__enable_call_metrics_upload">Send Data</string>
-    <string name="preferences__enable_call_quality_dialog">Provide Feedback</string>
-    <string name="preferences__provide_feeback">Provide Feedback</string>
-    <string name="preferences__prompt_for_feedback_on_call_quality_after_call_has_ended">Prompt for feedback on call quality after call has ended</string>
-    <string name="preferences__securely_upload_metrics_to_improve_audio_quality">Securely upload metrics to improve audio quality</string>
     <!-- EOF -->
 </resources>

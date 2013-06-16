@@ -1,85 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/topLevelLayout"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_marginLeft="6dp"
-    android:layout_marginRight="0dp"
-    android:orientation="vertical" >
-
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
     <RelativeLayout
-        android:id="@+id/ratingBlockLayout"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/questionBlockLayout"
-        android:orientation="vertical"
-        android:paddingLeft="2dp"
-        android:paddingRight="0dp" >
+        android:padding="10dp">
+
+        <TextView
+            android:id="@+id/issueLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Select the issues that affected this call"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:layout_alignParentTop="true"
+            />
+
+        <LinearLayout
+            android:id="@android:id/list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_below="@id/issueLabel"/>
 
         <TextView
             android:id="@+id/ratingLabel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            android:layout_marginLeft="1dp"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:text="Please rate the audio quality of the call below"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
+            android:text="@string/CallQualityDialog__please_rate_the_audio_quality_of_the_call_below"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:layout_below="@android:id/list"
+            />
 
         <RatingBar
             android:id="@+id/callRatingBar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_below="@+id/ratingLabel"
             android:layout_margin="3dp"
-            android:numStars="4" />
+            android:numStars="4"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/ratingLabel"
+            />
+
+        <Button
+            android:id="@+id/sendButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Submit"
+            android:layout_below="@id/callRatingBar"
+            />
     </RelativeLayout>
-
-    <LinearLayout
-        android:id="@+id/questionBlockLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingLeft="2dp">
-
-        <TextView
-            android:id="@+id/listLabel"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="4dp"
-            android:paddingLeft="1dp"
-            android:text="Select any/all of the items from the list below that caused an issue or interrupted your call"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
-
-        <ListView
-            android:id="@android:id/list"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:divider="@null" >
-        </ListView>
-    </LinearLayout>
-
-    <Button
-        android:id="@+id/sendButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/ratingBlockLayout"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="12dp"
-        android:paddingTop="7dp"
-        android:paddingBottom="8dp"
-        android:text="Submit"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-    />
-
-    <View
-        android:layout_width="1dp"
-        android:layout_below="@+id/sendButton"
-        android:layout_height="0dp"
-        android:layout_weight="1">
-    </View>
-
-</RelativeLayout>
+</ScrollView>
