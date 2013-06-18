@@ -39,27 +39,31 @@ public class AccountCreationSocket extends SignalingSocket {
     super(context, Release.MASTER_SERVER_HOST, Release.SERVER_PORT, localNumber, password, null);
   }
 
-  public void createAccount() throws SignalingException, AccountCreationException {
-    sendSignal(new CreateAccountSignal(localNumber, password));
+  public void createAccount(boolean voice)
+      throws SignalingException, AccountCreationException, RateLimitExceededException
+  {
+    sendSignal(new CreateAccountSignal(localNumber, password, voice));
     SignalResponse response = readSignalResponse();
 
     switch (response.getStatusCode()) {
-    case 200: return;
-    default:  throw new AccountCreationException("Account creation failed: " +
-                                                 response.getStatusCode());
+      case 200: return;
+      case 413: throw new RateLimitExceededException("Rate limit exceeded.");
+      default:  throw new AccountCreationException("Account creation failed: " +
+                                                   response.getStatusCode());
     }
   }
 
   public void verifyAccount(String challenge, String key)
-      throws SignalingException, AccountCreationException
+      throws SignalingException, AccountCreationException, RateLimitExceededException
   {
     sendSignal(new VerifyAccountSignal(localNumber, password, challenge, key));
     SignalResponse response = readSignalResponse();
 
     switch (response.getStatusCode()) {
-    case 200: return;
-    default: throw new AccountCreationException("Account verification failed: " +
-                                                response.getStatusCode());
+      case 200: return;
+      case 413: throw new RateLimitExceededException("Verify rate exceeded!");
+      default: throw new AccountCreationException("Account verification failed: " +
+                                                  response.getStatusCode());
     }
   }
 

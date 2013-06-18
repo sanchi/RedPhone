@@ -27,8 +27,11 @@ package org.thoughtcrime.redphone.signaling.signals;
 
 public class CreateAccountSignal extends Signal {
 
-  public CreateAccountSignal(String localNumber, String password) {
+  private final boolean voice;
+
+  public CreateAccountSignal(String localNumber, String password, boolean voice) {
     super(localNumber, password, -1);
+    this.voice = voice;
   }
 
   @Override
@@ -38,7 +41,8 @@ public class CreateAccountSignal extends Signal {
 
   @Override
   protected String getLocation() {
-    return "/users/verification";
+    if (!voice) return "/users/verification/sms";
+    else        return "/users/verification/voice";
   }
 
   @Override
