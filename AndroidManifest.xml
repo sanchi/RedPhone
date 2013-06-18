@@ -2,8 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="org.thoughtcrime.redphone"
           android:versionCode="25"
-          android:versionName="0.9.3"
-          android:installLocation="auto">
+          android:versionName="0.9.3">
 
     <uses-sdk android:targetSdkVersion="14" android:minSdkVersion="8"/>
 
