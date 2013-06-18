@@ -11,7 +11,7 @@
             android:id="@+id/issueLabel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Select the issues that affected this call"
+            android:text="@string/CallQualityDialog__select_the_issues_that_affected_this_call"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:layout_alignParentTop="true"
             />
@@ -46,7 +46,7 @@
             android:id="@+id/sendButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Submit"
+            android:text="@string/CallQualityDialog__submit"
             android:layout_below="@id/callRatingBar"
             />
     </RelativeLayout>

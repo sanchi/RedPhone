@@ -44,7 +44,6 @@ import java.security.spec.X509EncodedKeySpec;
 public class EncryptedStreamUtils {
   static {
     Security.addProvider(new org.spongycastle.jce.provider.BouncyCastleProvider());
-    Log.d("FOO", "FOO");
   }
 
   public static final int HMAC_SIZE = 20;
