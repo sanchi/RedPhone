@@ -156,7 +156,7 @@ public class RegistrationService extends Service {
     AccountCreationSocket socket = null;
 
     try {
-      setState(new RegistrationState(RegistrationState.STATE_VERIFYING, number));
+      setState(new RegistrationState(RegistrationState.STATE_VERIFYING_VOICE, number));
       markAsVerified(number, password, key);
 
       socket = new AccountCreationSocket(this, number, password);
@@ -193,7 +193,7 @@ public class RegistrationService extends Service {
       socket.createAccount(false);
       socket.close();
 
-      setState(new RegistrationState(RegistrationState.STATE_VERIFYING, number));
+      setState(new RegistrationState(RegistrationState.STATE_VERIFYING_SMS, number));
       String challenge = waitForChallenge();
       socket           = new AccountCreationSocket(this, number, password);
       socket.verifyAccount(challenge, key);
@@ -333,12 +333,13 @@ public class RegistrationService extends Service {
 
     public static final int STATE_IDLE            = 0;
     public static final int STATE_CONNECTING      = 1;
-    public static final int STATE_VERIFYING       = 2;
+    public static final int STATE_VERIFYING_SMS   = 2;
     public static final int STATE_TIMER           = 3;
     public static final int STATE_COMPLETE        = 4;
     public static final int STATE_TIMEOUT         = 5;
     public static final int STATE_NETWORK_ERROR   = 6;
     public static final int STATE_VOICE_REQUESTED = 7;
+    public static final int STATE_VERIFYING_VOICE = 8;
 
     public final int    state;
     public final String number;

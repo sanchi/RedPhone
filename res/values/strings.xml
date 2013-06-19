@@ -91,6 +91,8 @@
     <string name="RegistrationProgressActivity_the_server_encountered_an_error">The server encountered an error. Please try again.</string>
     <string name="RegistrationProgressActivity_too_many_requests">Too Many Requests!</string>
     <string name="RegistrationProgressActivity_youve_already_requested_a_voice_call">You\'ve already recently requested a voice call. You can request another in 20 minutes.</string>
+    <string name="RegistrationProgressActivity_verifying_voice_code">Verifying voice code...</string>
+
     <string name="RegistrationProblemsActivity_possible_problems">Possible Problems</string>
 
     <string name="RegistrationService_registration_complete">Registration complete</string>

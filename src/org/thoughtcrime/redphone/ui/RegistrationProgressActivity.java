@@ -1,6 +1,5 @@
 package org.thoughtcrime.redphone.ui;
 
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -14,27 +13,21 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
-import android.text.Editable;
 import android.text.SpannableString;
 import android.text.Spanned;
-import android.text.TextWatcher;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.util.Log;
-import android.view.ContextThemeWrapper;
-import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.actionbarsherlock.app.SherlockActivity;
 import org.thoughtcrime.redphone.R;
 import org.thoughtcrime.redphone.registration.RegistrationService;
 import org.thoughtcrime.redphone.registration.RegistrationService.RegistrationState;
@@ -44,8 +37,6 @@ import org.thoughtcrime.redphone.signaling.RateLimitExceededException;
 import org.thoughtcrime.redphone.signaling.SignalingException;
 import org.thoughtcrime.redphone.util.PhoneNumberFormatter;
 import org.thoughtcrime.redphone.util.Util;
-
-import com.actionbarsherlock.app.SherlockActivity;
 
 public class RegistrationProgressActivity extends SherlockActivity {
 
@@ -197,6 +188,16 @@ public class RegistrationProgressActivity extends SherlockActivity {
     this.verificationText.setTextColor(UNFOCUSED_COLOR);
   }
 
+  private void handleStateVerifyingSms() {
+    this.verificationText.setText(getString(R.string.registration_progress__waiting_for_sms_verification));
+    handleStateVerifying();
+  }
+
+  private void handleStateVerifyingVoice() {
+    this.verificationText.setText(getString(R.string.RegistrationProgressActivity_verifying_voice_code));
+    handleStateVerifying();
+  }
+
   private void handleStateVerifying() {
     this.registrationLayout.setVisibility(View.VISIBLE);
     this.verificationFailureLayout.setVisibility(View.GONE);
@@ -224,7 +225,7 @@ public class RegistrationProgressActivity extends SherlockActivity {
     this.connectivityFailureLayout.setVisibility(View.GONE);
     this.verificationFailureLayout.setVisibility(View.VISIBLE);
     this.verificationFailureButton.setText(String.format(getString(R.string.RegistrationProgressActivity_edit_s),
-                                                          PhoneNumberFormatter.formatNumberInternational(state.number)));
+                                                         PhoneNumberFormatter.formatNumberInternational(state.number)));
   }
 
   private void handleConnectivityError(RegistrationState state) {
@@ -314,7 +315,8 @@ public class RegistrationProgressActivity extends SherlockActivity {
       switch (message.what) {
       case RegistrationState.STATE_IDLE:            handleStateIdle();                       break;
       case RegistrationState.STATE_CONNECTING:      handleStateConnecting();                 break;
-      case RegistrationState.STATE_VERIFYING:       handleStateVerifying();                  break;
+      case RegistrationState.STATE_VERIFYING_SMS:   handleStateVerifyingSms();               break;
+      case RegistrationState.STATE_VERIFYING_VOICE: handleStateVerifyingVoice();             break;
       case RegistrationState.STATE_TIMER:           handleTimerUpdate();                     break;
       case RegistrationState.STATE_TIMEOUT:         handleVerificationTimeout(state);        break;
       case RegistrationState.STATE_COMPLETE:        handleVerificationComplete();            break;
