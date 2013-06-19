@@ -67,7 +67,7 @@
     <string name="CallQualityDialog__whispersystems_needs_your_help_pretext">Open WhisperSystems needs your help. As we work to improve the quality of our calls, we need feedback and performance metrics to improve the system. </string>
     <string name="CallQualityDialog__linktext">Learn more about data collection</string>
     <string name="CallQualityDialog__whispersystems_needs_your_help_posttext">.\n\nOpt in below to help make RedPhone better.</string>
-    <string name="CallQualityDialog__you_can_update_these_settings_at_any_time_through_the_general_settings_menu">You can update these settings at any time through the RedPhone settings menu</string>
+    <string name="CallQualityDialog__you_can_update_these_settings_at_any_time_through_the_general_settings_menu">You can update these preferences at any time through the RedPhone settings menu</string>
     <string name="CallQualityDialog__please_rate_the_audio_quality_of_the_call_below">Please rate the quality of this call</string>
     <string name="CallQualityDialog__submit">Submit</string>
     <string name="CallQualityDialog__select_the_issues_that_affected_this_call">Select the issues that affected this call</string>
