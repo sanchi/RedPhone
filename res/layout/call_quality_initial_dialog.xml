@@ -17,7 +17,6 @@
             android:layout_marginTop="6dp"
             android:layout_marginLeft="12dp"
             android:layout_marginRight="12dp"
-            android:text="@string/CallQualityDialog__whispersystems_needs_your_help_as_we_work_to_improve_the_quality_of_our_calls_we_need_feedback_and_performance_statistics_to_improve_the_system_opt_in_below_to_make_redphone_better"
             android:textAppearance="?android:attr/textAppearanceSmall" />
 
         <CheckBox

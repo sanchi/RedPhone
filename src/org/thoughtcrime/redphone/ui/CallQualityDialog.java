@@ -23,6 +23,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -124,6 +128,25 @@ public class CallQualityDialog extends SherlockActivity  {
   private void initializeInitialDialogResources() {
     this.doneDialogButton        		= (Button)findViewById(R.id.doneDialogButton);
     this.doneDialogButton.setOnClickListener(new DoneDialogListener());
+
+    TextView descText = (TextView) findViewById(R.id.description);
+
+    String pretext =    getString(R.string.CallQualityDialog__whispersystems_needs_your_help_pretext);
+    String posttext =   getString(R.string.CallQualityDialog__whispersystems_needs_your_help_posttext);
+    String link =       getString(R.string.CallQualityDialog__linktext);
+
+    SpannableString spanString = new SpannableString(pretext + link + posttext);
+
+    spanString.setSpan(new ClickableSpan() {
+      @Override
+      public void onClick(View widget) {
+        Intent intent = new Intent(CallQualityDialog.this, CallMetricsInfoActivity.class);
+        startActivity(intent);
+      }
+    }, pretext.length(), pretext.length() + link.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+    descText.setText(spanString);
+    descText.setMovementMethod(LinkMovementMethod.getInstance());
   }
 
   private void initializeStandardDialogResources() {

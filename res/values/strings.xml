@@ -41,6 +41,21 @@
     <string name="ApplicationPreferencesActivity_error_unregistering_with_c2dm_server">Error unregistering with C2DM server...</string>
     <string name="ApplicationPreferencesActivity_error_communicating_with_c2dm_server">Error communicating with C2DM server...</string>
 
+    <string name="CallMetricsInfo__metrics_collection_details">To help improve call quality, you can choose to send Open WhisperSystems information that will help us to better understand RedPhone\'s performance.  This data is never visible to a third party.  All call metrics data is encrypted before it is stored or uploaded to Open WhisperSystem\'s servers.  When enabled, the following information is collected during each call:</string>
+    <string name="CallMetricsInfo__title">Quality Metrics</string>
+    <string name="CallMetricsInfo__device_description">Device Description</string>
+    <string name="CallMetricsInfo__device_description_explanation">Model, manufacturer, carrier, connection type, OS version, persistent random UUID</string>
+    <string name="CallMetricsInfo__mic_and_codec_performance">Microphone and Codec Performance</string>
+    <string name="CallMetricsInfo__mic_and_codec_performance_explanation">Mic clipping, dropped audio samples, average call volume</string>
+    <string name="CallMetricsInfo__packet_arrival">Packet arrival interval histogram</string>
+    <string name="CallMetricsInfo__packet_arrival_explanation">Provides data on network latency jitter</string>
+    <string name="CallMetricsInfo__out_of_order_arrival">Out of order arrival counts</string>
+    <string name="CallMetricsInfo__out_of_order_arrival_explanation">Tracks packet delivery irregularities</string>
+    <string name="CallMetricsInfo__audio_gap_fill_counts">Audio Gap Fills</string>
+    <string name="CallMetricsInfo__audio_gap_fill_counts_explanation">Indicates when missing data required audio to be synthesized</string>
+    <string name="CallMetricsInfo__system_metrics">System Metrics</string>
+    <string name="CallMetricsInfo__system_metrics_explanation">CPU load, memory usage</string>
+
     <string name="CallQualityDialog_call_feedback">Call Feedback</string>
     <string name="CallQualityDialog_call_quality">Call Quality</string>
     <string name="CallQualityDialog_call_quality_rating">Call Quality Rating</string>
@@ -49,13 +64,14 @@
     <string name="CallQualityDialog__provide_call_quality_feedback">Provide call quality feedback</string>
     <string name="CallQualityDialog__redphone">RedPhone</string>
     <string name="CallQualityDialog__we_re_making_changes">We\'re Making Changes</string>
-    <string name="CallQualityDialog__whispersystems_needs_your_help_as_we_work_to_improve_the_quality_of_our_calls_we_need_feedback_and_performance_statistics_to_improve_the_system_opt_in_below_to_make_redphone_better">Open WhisperSystems needs your help. As we work to improve the quality of our calls, we need feedback and performance metrics to improve the system.  You can read more about what data we collect and how it\'s secured at WhisperSystems.org.\n\nOpt in below to help make RedPhone better.</string>
+    <string name="CallQualityDialog__whispersystems_needs_your_help_pretext">Open WhisperSystems needs your help. As we work to improve the quality of our calls, we need feedback and performance metrics to improve the system. </string>
+    <string name="CallQualityDialog__linktext">Learn more about data collection</string>
+    <string name="CallQualityDialog__whispersystems_needs_your_help_posttext">.\n\nOpt in below to help make RedPhone better.</string>
     <string name="CallQualityDialog__you_can_update_these_settings_at_any_time_through_the_general_settings_menu">You can update these settings at any time through the RedPhone settings menu</string>
     <string name="CallQualityDialog__please_rate_the_audio_quality_of_the_call_below">Please rate the quality of this call</string>
     <string name="CallQualityDialog__submit">Submit</string>
     <string name="CallQualityDialog__select_the_issues_that_affected_this_call">Select the issues that affected this call</string>
     <string name="CallQualityDialog__done">Done</string>
-
 
     <string name="CallScreen_incoming_call">Incoming call...</string>
 
