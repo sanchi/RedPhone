@@ -49,125 +49,98 @@
                     android:textSize="16.0sp" />
 
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
-                    android:layout_below="@+id/alert"
-                    android:paddingLeft="4dip"
-                    android:paddingRight="4dip"
-                    android:text="@string/registration_progress__redphone_timed_out_while_waiting_for_an_sms_message_to_verify_your_phone_number" />
+                        android:id="@+id/sms_failed_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:layout_below="@+id/alert"
+                        android:paddingLeft="4dip"
+                        android:paddingRight="4dip"
+                        android:text="@string/registration_progress__redphone_timed_out_while_waiting_for_an_sms_message_to_verify_your_phone_number" />
             </RelativeLayout>
 
-            <Button
-                android:id="@+id/verification_failure_edit_button"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginBottom="10.0dip"
-                android:gravity="center"
-                android:text="@string/registration_progress__edit_number"
-                android:textStyle="bold" />
 
-            <TextView
-                style="@style/Registration.Description"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10dip"
-                android:text="@string/registration_progress__some_possible_problems_include" />
+            <RelativeLayout android:id="@+id/voice_verification_layout"
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="10dip"
+                            android:background="@drawable/background_pane" >
 
-            <TableLayout
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content" >
-
-                <TableRow>
-
-                    <TextView
-                        style="@style/Registration.Description"
+                <ImageView
+                        android:id="@+id/telephone"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:paddingRight="10dip"
-                        android:text="•" />
+                        android:layout_alignParentLeft="true"
+                        android:paddingLeft="4dip"
+                        android:paddingRight="4dip"
+                        android:src="@drawable/telephone" />
 
-                    <LinearLayout
+                <TextView
+                        style="@style/Registration.Constant"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical" >
+                        android:layout_alignBottom="@id/alert"
+                        android:layout_toRightOf="@id/telephone"
+                        android:paddingLeft="4.0dip"
+                        android:paddingRight="8.0dip"
+                        android:text="@string/registration_progress__voice_verification"
+                        android:textColor="#333333"
+                        android:textSize="16.0sp" />
 
-                        <TextView
-                            style="@style/Registration.Description"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/registration_progress__sms_interceptors"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            style="@style/Registration.Description"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:paddingRight="10dip"
-                            android:text="@string/registration_progress__some_third_party_text_messaging_clients_explanation" />
-                    </LinearLayout>
-                </TableRow>
-
-                <TableRow>
-
-                    <TextView
-                        style="@style/Registration.Description"
+                <TextView
+                        android:id="@+id/telephone_text"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:paddingRight="10dip"
-                        android:text="•" />
+                        android:layout_alignParentLeft="true"
+                        android:layout_below="@id/telephone"
+                        android:paddingLeft="4dip"
+                        android:paddingRight="4dip"
+                        android:paddingBottom="10dip"
+                        android:text="@string/registration_progress__redphone_can_also_call_you_to_verify_your_number" />
 
-                    <LinearLayout
-                        android:layout_width="wrap_content"
+                <LinearLayout android:id="@+id/code_container"
+                              android:orientation="horizontal"
+                              android:layout_width="wrap_content"
+                              android:layout_height="wrap_content"
+                              android:layout_centerHorizontal="true"
+                              android:layout_below="@id/telephone_text">
+
+                    <EditText android:id="@+id/telephone_code"
+                              android:layout_width="wrap_content"
+                              android:layout_height="wrap_content"
+                              android:ems="6"
+                              android:inputType="number"
+                              android:enabled="false"/>
+
+                    <Button android:id="@+id/verify_button"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/registration_progress__verify"
+                            android:enabled="false"/>
+
+                </LinearLayout>
+
+                <Button android:id="@+id/call_button"
+                        android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical" >
+                        android:layout_centerHorizontal="true"
+                        android:layout_below="@id/code_container"
+                        android:paddingLeft="5dip"
+                        android:paddingRight="5dip"
+                        android:layout_marginTop="10dip"
+                        android:text="@string/registration_progress__call_me"/>
 
-                        <TextView
-                            style="@style/Registration.Description"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/registration_progress__incorrect_number"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            style="@style/Registration.Description"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:paddingRight="10dip"
-                            android:text="@string/registration_progress__please_check_to_make_sure_you_entered_your_number_correctly" />
-                    </LinearLayout>
-                </TableRow>
-
-                <TableRow>
-
-                    <TextView
-                        style="@style/Registration.Description"
-                        android:layout_width="wrap_content"
+                <Button
+                        android:id="@+id/verification_failure_edit_button"
+                        android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:text="•" />
+                        android:layout_centerHorizontal="true"
+                        android:layout_below="@id/call_button"
+                        android:layout_marginTop="10.0dip"
+                        android:text="@string/registration_progress__edit_number"
+                        android:textStyle="bold" />
 
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical" >
-
-                        <TextView
-                            style="@style/Registration.Description"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/registration_progress__old_versions_of_google_voice"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            style="@style/Registration.Description"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:paddingRight="10dip"
-                            android:text="@string/registration_progress__if_youre_attempting_to_register_a_google_voice_number_explanation" />
-                    </LinearLayout>
-                </TableRow>
-            </TableLayout>
+            </RelativeLayout>
         </LinearLayout>
 
         <LinearLayout

@@ -107,6 +107,25 @@
     <string name="RegistrationProgressActivity_verifying_number">Verifying number</string>
     <string name="RegistrationProgressActivity_edit_s">Edit %s</string>
     <string name="RegistrationProgressActivity_registration_complete">Registration complete!</string>
+    <string name="RegistrationProgressActivity_possible_problems">Possible problems.</string>
+    <string name="RegistrationProgressActivity_you_must_enter_the_code_you_received_first">You must enter the code you received first...</string>
+    <string name="RegistrationProgressActivity_connecting">Connecting</string>
+    <string name="RegistrationProgressActivity_connecting_for_verification">Connecting for verification...</string>
+    <string name="RegistrationProgressActivity_network_error">Network Error!</string>
+    <string name="RegistrationProgressActivity_unable_to_connect">Unable to connect. Please check your network connection and try again.</string>
+    <string name="RegistrationProgressActivity_verification_failed">Verification Failed!</string>
+    <string name="RegistrationProgressActivity_the_verification_code_you_submitted_is_incorrect">The verification code you submitted is incorrect. Please try again.</string>
+    <string name="RegistrationProgressActivity_too_many_attempts">Too many attempts</string>
+    <string name="RegistrationProgressActivity_youve_submitted_an_incorrect_verification_code_too_many_times">You\'ve submitted an incorrect verification code too many times. Please wait a minute before trying again.</string>
+    <string name="RegistrationProgressActivity_requesting_call">Requesting Call</string>
+    <string name="RegistrationProgressActivity_requesting_incoming_call">Requesting incoming verification call...</string>
+    <string name="RegistrationProgressActivity_server_error">Server Error</string>
+    <string name="RegistrationProgressActivity_the_server_encountered_an_error">The server encountered an error. Please try again.</string>
+    <string name="RegistrationProgressActivity_too_many_requests">Too Many Requests!</string>
+    <string name="RegistrationProgressActivity_youve_already_requested_a_voice_call">You\'ve already recently requested a voice call. You can request another in 20 minutes.</string>
+    <string name="RegistrationProgressActivity_verifying_voice_code">Verifying voice code...</string>
+
+    <string name="RegistrationProblemsActivity_possible_problems">Possible Problems</string>
 
     <string name="RegistrationService_registration_complete">Registration complete</string>
     <string name="RegistrationService_redphone_registration_has_successfully_completed">RedPhone registration has successfully completed.</string>
@@ -192,5 +211,9 @@
     <string name="registration_progress__waiting_for_sms_verification">Waiting for SMS verification...</string>
     <string name="registration_progress__this_could_take_a_moment_please_be_patient_well_notify_you_when_verification_is_complete">This could take a moment. Please be patient, we\'ll notify you when verification is complete.</string>
     <string name="registration_progress__waiting_for_sms">WAITING FOR SMS</string>
+    <string name="registration_progress__voice_verification">Voice Verification</string>
+    <string name="registration_progress__redphone_can_also_call_you_to_verify_your_number">RedPhone can also call you to verify your number. Tap \'Call Me\' and enter the six digit code that you hear below.</string>
+    <string name="registration_progress__verify">Verify</string>
+    <string name="registration_progress__call_me">Call Me</string>
     <!-- EOF -->
 </resources>

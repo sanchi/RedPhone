@@ -86,9 +86,14 @@
                   android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize"/>
                   
         <activity android:name=".ui.RegistrationProgressActivity"
-                  android:launchMode="singleTask"                        
+                  android:windowSoftInputMode="stateUnchanged"
+                  android:launchMode="singleTask"
                   android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize"/>
-        	
+
+        <activity android:name=".ui.RegistrationProblemsActivity"
+                  android:theme="@style/Theme.Sherlock.Light.Dialog"
+                  android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize"/>
+
         <activity android:name=".ui.CallQualityDialog"
                   android:theme="@style/Theme.Sherlock.Light.Dialog"
                   android:screenOrientation="portrait"
