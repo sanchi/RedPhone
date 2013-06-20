@@ -43,13 +43,17 @@ import org.thoughtcrime.redphone.codec.CodecSetupException;
 import org.thoughtcrime.redphone.contacts.PersonInfo;
 import org.thoughtcrime.redphone.crypto.zrtp.SASInfo;
 import org.thoughtcrime.redphone.directory.DirectoryUpdateReceiver;
+import org.thoughtcrime.redphone.monitor.MonitorConfigUpdateReceiver;
 import org.thoughtcrime.redphone.ui.ApplicationPreferencesActivity;
 import org.thoughtcrime.redphone.ui.CallControls;
 import org.thoughtcrime.redphone.ui.CallScreen;
 import org.thoughtcrime.redphone.ui.InCallAudioButton;
 import org.thoughtcrime.redphone.ui.QualityReporting;
 import org.thoughtcrime.redphone.util.AudioUtils;
+import org.thoughtcrime.redphone.util.PeriodicActionUtils;
 
+
+import java.security.Security;
 import java.util.ArrayList;
 
 /**
@@ -62,6 +66,10 @@ import java.util.ArrayList;
  *
  */
 public class RedPhone extends Activity {
+  static {
+    Security.addProvider(new org.spongycastle.jce.provider.BouncyCastleProvider());
+  }
+
 
   private static final int REMOTE_TERMINATE = 0;
   private static final int LOCAL_TERMINATE  = 1;
@@ -112,6 +120,7 @@ public class RedPhone extends Activity {
     setVolumeControlStream(AudioManager.STREAM_VOICE_CALL);
 
     initializeResources();
+
   }
 
 
@@ -171,7 +180,8 @@ public class RedPhone extends Activity {
     callScreen.setAudioButtonListener(new AudioButtonListener());
     callScreen.setConfirmSasButtonListener(new ConfirmSasButtonListener());
 
-    DirectoryUpdateReceiver.scheduleDirectoryUpdate(this);
+    PeriodicActionUtils.scheduleUpdate(this, DirectoryUpdateReceiver.class);
+    PeriodicActionUtils.scheduleUpdate(this, MonitorConfigUpdateReceiver.class);
   }
 
   private void sendInstallLink(String user) {

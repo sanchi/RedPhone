@@ -38,6 +38,8 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
+import org.thoughtcrime.redphone.monitor.MonitorConfigUpdateReceiver;
+import org.thoughtcrime.redphone.util.PeriodicActionUtils;
 
 /**
  * The base dialer activity.  A tab container for the contacts, call log, and favorites tab.
@@ -160,7 +162,8 @@ public class DialerActivity extends SherlockFragmentActivity {
       finish();
     }
 
-    DirectoryUpdateReceiver.scheduleDirectoryUpdate(this);
+    PeriodicActionUtils.scheduleUpdate(this, DirectoryUpdateReceiver.class);
+    PeriodicActionUtils.scheduleUpdate(this, MonitorConfigUpdateReceiver.class);
   }
 
   @Override

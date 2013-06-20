@@ -7,6 +7,16 @@
                         android:title="@string/preferences__prompt_for_call_upgrade"
                         android:summary="@string/preferences__when_making_insecure_calls_prompt_for_upgrade_to_redphone_if_contact_is_redphone_enabled"/>
   </PreferenceCategory>
+  <PreferenceCategory android:title="@string/preferences__analytics_settings">
+    <CheckBoxPreference android:defaultValue="false"
+                        android:key="pref_enable_call_metrics_upload"
+                        android:title="@string/preferences__enable_call_metrics_upload"
+                        android:summary="@string/preferences__securely_upload_metrics_to_improve_audio_quality"/>
+    <CheckBoxPreference android:defaultValue="false"
+                        android:key="pref_enable_call_quality_dialog"
+                        android:title="@string/preferences__provide_feeback"
+                        android:summary="@string/preferences__prompt_for_feedback_on_call_quality_after_call_has_ended"/>
+  </PreferenceCategory>
   <PreferenceCategory android:title="@string/preferences__advanced_signaling_settings">
     <ListPreference android:title="@string/preferences__signaling_method"
                     android:summary="@string/preferences__modify_the_method_used_to_notify_your_device_of_incoming_calls"

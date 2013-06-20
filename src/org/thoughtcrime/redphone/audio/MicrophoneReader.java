@@ -23,10 +23,12 @@ import android.media.MediaRecorder;
 import android.os.Build;
 import android.os.SystemClock;
 import android.util.Log;
-
 import org.thoughtcrime.redphone.ApplicationContext;
 import org.thoughtcrime.redphone.R;
 import org.thoughtcrime.redphone.codec.AudioCodec;
+import org.thoughtcrime.redphone.monitor.CallMonitor;
+import org.thoughtcrime.redphone.monitor.CountMetric;
+import org.thoughtcrime.redphone.monitor.HistogramMetric;
 import org.thoughtcrime.redphone.network.RtpAudioSender;
 import org.thoughtcrime.redphone.profiling.PacketLogger;
 import org.thoughtcrime.redphone.profiling.PeriodicTimer;
@@ -83,6 +85,8 @@ public class MicrophoneReader {
 
   private final AtomicReference<AudioException> micThreadException;
   private final AtomicReference<Boolean> enableMute;
+  private final CountMetric counter;
+  private final HistogramMetric waveformStats = new HistogramMetric(Short.MIN_VALUE, Short.MAX_VALUE, 16);
 
   private List<AudioChunk> micAudioList =
     Collections.synchronizedList(new ArrayList<AudioChunk>());
@@ -93,12 +97,16 @@ public class MicrophoneReader {
   });
 
   public MicrophoneReader(LinkedList<EncodedAudioData> outgoingAudio,
-      AudioCodec codec, PacketLogger packetLogger) {
+      AudioCodec codec, PacketLogger packetLogger, CallMonitor monitor) {
     this.codec = codec;
     this.packetLogger = packetLogger;
     audioQueue = outgoingAudio;
     micThreadException = new AtomicReference<AudioException>();
     enableMute = new AtomicReference<Boolean>(false);
+
+    counter = new CountMetric();
+    monitor.addSampledMetrics("mic-reader", counter);
+    monitor.addSampledMetrics("mic-reader", waveformStats);
   }
 
   private void waitForMicReady() throws AudioException {
@@ -247,6 +255,8 @@ public class MicrophoneReader {
 
       packetLogger.logPacket( chunk.sequenceNumber, PacketLogger.PACKET_IN_MIC_QUEUE );
 
+      checkClipping(chunk);
+
       if(enableMute.get()) {
         muteAudio(chunk);
       }
@@ -268,6 +278,18 @@ public class MicrophoneReader {
             + (readStopTime - readStartTime));
       }
     }
+  }
+
+  private void checkClipping(AudioChunk chunk) {
+    int clips = 0;
+    for (short sample : chunk.getChunk()) {
+      waveformStats.addEvent(sample);
+      if(sample == Short.MAX_VALUE || sample == Short.MIN_VALUE) {
+        clips++;
+      }
+    }
+    counter.increment("clipped", clips);
+    counter.increment("samples", chunk.getChunk().length);
   }
 
   public void flush() {

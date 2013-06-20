@@ -30,5 +30,6 @@ public interface Release {
   public static final String  SERVER_ROOT             = ".whispersystems.org";
   public static final String MASTER_SERVER_HOST       = "master.whispersystems.org";
   public static final String RELAY_SERVER_HOST        = "relay.whispersystems.org";
+  public static final String DATA_COLLECTION_SERVER_HOST = "redphone-call-metrics.herokuapp.com";
   public static final int     SERVER_PORT             = 31337;
 }

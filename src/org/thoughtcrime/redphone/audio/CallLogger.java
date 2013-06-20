@@ -71,7 +71,7 @@ public class CallLogger extends FileLogger {
     final String line =  ""
         + " waiting:" + waitingFrames
         //+ " framedelay: " + frameDelay
-        //+ " avgframedelay: " + logFormat.format(averageFrameDelay.getAvgBufferSize())
+        //+ " avgframedelay: " + logFormat.format(averageFrameDelay.getAvg())
         + " dynDes: "+ desBufLvl
         + " late: " + logFormat.format(lateCount)
         + " lost: " + logFormat.format(lostCount)
@@ -80,8 +80,8 @@ public class CallLogger extends FileLogger {
         + " avgDelay: " + logFormat.format(avgDelay)
         + " shiftMode: " + shiftMode
         //+ " rate: " + logFormat.format(playRate)
-        //+ " frameavgsize: " + logFormat.format(avgFrameObs.getAvgBufferSize())
-        //+ " avgsframespp: " + logFormat.format(avgSamplesPerPacket.getAvgBufferSize()
+        //+ " frameavgsize: " + logFormat.format(avgFrameObs.getAvg())
+        //+ " avgsframespp: " + logFormat.format(avgSamplesPerPacket.getAvg()
         ;
     Log.d(TAG, line);
 

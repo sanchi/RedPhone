@@ -18,6 +18,7 @@
 package org.thoughtcrime.redphone.audio;
 
 import org.thoughtcrime.redphone.codec.AudioCodec;
+import org.thoughtcrime.redphone.monitor.CallMonitor;
 import org.thoughtcrime.redphone.profiling.PacketLogger;
 
 import java.util.List;
@@ -37,8 +38,8 @@ public class CallAudioStream {
   private CallLogger callAudioLog = new CallLogger();
   private List<EncodedAudioData> incomingAudio;
   private PacketLogger packetLogger;
-  public CallAudioStream( List<EncodedAudioData> incomingAudio, AudioCodec codec, PacketLogger packetLogger ) {
-    audioProvider = new CallAudioProvider( codec, packetLogger, callAudioLog );
+  public CallAudioStream( List<EncodedAudioData> incomingAudio, AudioCodec codec, PacketLogger packetLogger, CallMonitor monitor ) {
+    audioProvider = new CallAudioProvider(codec, packetLogger, callAudioLog, monitor);
     this.packetLogger = packetLogger;
     audioPlayer = new LatencyMinimizingAudioPlayer(audioProvider, new RobustAudioTrack());
     this.incomingAudio = incomingAudio;

@@ -30,10 +30,12 @@ import android.widget.Toast;
 import com.actionbarsherlock.app.SherlockPreferenceActivity;
 import com.actionbarsherlock.view.MenuItem;
 import com.google.android.gcm.GCMRegistrar;
+import com.google.thoughtcrimegson.Gson;
 
+import org.thoughtcrime.redphone.audio.DeviceAudioSettings;
+import org.thoughtcrime.redphone.monitor.CallQualityConfig;
 import org.thoughtcrime.redphone.R;
 import org.thoughtcrime.redphone.Release;
-import org.thoughtcrime.redphone.audio.DeviceAudioSettings;
 import org.thoughtcrime.redphone.signaling.SignalingException;
 import org.thoughtcrime.redphone.signaling.SignalingSocket;
 
@@ -47,20 +49,26 @@ import org.thoughtcrime.redphone.signaling.SignalingSocket;
 //TODO(Stuart Anderson): Consider splitting this into an Activity and a utility class
 public class ApplicationPreferencesActivity extends SherlockPreferenceActivity {
 
-  public static final String UI_DEBUG_PREF              = "pref_debug_ui";
-  public static final String AUDIO_COMPAT_PREF          = "pref_audio_compat";
-  public static final String AUDIO_SPEAKER_INCALL       = "pref_speaker_incall";
-  public static final String LOOPBACK_MODE_PREF         = "pref_loopback";
-  public static final String DEBUG_VIEW_PREF            = "pref_debugview";
-  public static final String SIMULATE_PACKET_DROPS      = "pref_simulate_packet_loss";
-  public static final String MINIMIZE_LATENCY           = "pref_min_latency";
-  public static final String SINGLE_THREAD		          = "pref_singlethread";
-  public static final String USE_C2DM_LEGACY            = "pref_use_c2dm";
-  public static final String SIGNALING_METHOD           = "pref_signaling_method";
-  public static final String AUDIO_TRACK_DES_LEVEL      = "pref_audio_track_des_buffer_level";
-  public static final String CALL_STREAM_DES_LEVEL      = "pref_call_stream_des_buffer_level";
-  public static final String ASK_DIAGNOSTIC_REPORTING   = "pref_ask_diagnostic_reporting";
-  public static final String OPPORTUNISTIC_UPGRADE_PREF = "pref_prompt_upgrade";
+  public static final String UI_DEBUG_PREF              	  = "pref_debug_ui";
+  public static final String AUDIO_COMPAT_PREF          	  = "pref_audio_compat";
+  public static final String AUDIO_SPEAKER_INCALL       	  = "pref_speaker_incall";
+  public static final String LOOPBACK_MODE_PREF         	  = "pref_loopback";
+  public static final String DEBUG_VIEW_PREF            	  = "pref_debugview";
+  public static final String SIMULATE_PACKET_DROPS      	  = "pref_simulate_packet_loss";
+  public static final String MINIMIZE_LATENCY           	  = "pref_min_latency";
+  public static final String SINGLE_THREAD		        	    = "pref_singlethread";
+  public static final String USE_C2DM_LEGACY            	  = "pref_use_c2dm";
+  public static final String SIGNALING_METHOD           	  = "pref_signaling_method";
+  public static final String AUDIO_TRACK_DES_LEVEL      	  = "pref_audio_track_des_buffer_level";
+  public static final String CALL_STREAM_DES_LEVEL      	  = "pref_call_stream_des_buffer_level";
+  public static final String ASK_DIAGNOSTIC_REPORTING  	 	  = "pref_ask_diagnostic_reporting";
+  public static final String ENABLE_CALL_METRICS_UPLOAD		  = "pref_enable_call_metrics_upload";
+  public static final String ENABLE_CALL_QUALITY_DIALOG		  = "pref_enable_call_quality_dialog";
+  public static final String OPPORTUNISTIC_UPGRADE_PREF 	  = "pref_prompt_upgrade";
+  public static final String CALL_QUALITY_QUESTIONS_PREF 	  = "pref_call_quality_questions";
+  public static final String USER_ASKED_FOR_FEEDBACK_OPT_IN	= "pref_user_asked_to_opt_int_for_feedback";
+
+  private static final Gson gson = new Gson();
 
   private ProgressDialog progressDialog;
 
@@ -270,5 +278,44 @@ public class ApplicationPreferencesActivity extends SherlockPreferenceActivity {
     return PreferenceManager
            .getDefaultSharedPreferences(context)
            .getBoolean(ASK_DIAGNOSTIC_REPORTING, true);
+  }
+
+  public static void setCallQualityConfig(Context context, CallQualityConfig callQualityConfig) {
+    PreferenceManager.getDefaultSharedPreferences(context).edit()
+      .putString(CALL_QUALITY_QUESTIONS_PREF, gson.toJson(callQualityConfig)).commit();
+  }
+
+  public static CallQualityConfig getCallQualityConfig(Context context) {
+    String configJson = PreferenceManager.getDefaultSharedPreferences(context).
+      getString(CALL_QUALITY_QUESTIONS_PREF, gson.toJson(new CallQualityConfig()));
+
+    return gson.fromJson(configJson, CallQualityConfig.class);
+  }
+  public static void setUserNotfiedOfCallQualitySettings(Context context,boolean value){
+	  PreferenceManager.getDefaultSharedPreferences(context).edit()
+        .putBoolean(USER_ASKED_FOR_FEEDBACK_OPT_IN, value)
+        .commit();
+  }
+  public static boolean wasUserNotifedOfCallQaulitySettings(Context context){
+	  return PreferenceManager
+	           .getDefaultSharedPreferences(context).getBoolean(USER_ASKED_FOR_FEEDBACK_OPT_IN, false);
+  }
+  public static boolean getMetricsOptInFlag(Context context){
+	  return PreferenceManager
+	           .getDefaultSharedPreferences(context).getBoolean(ENABLE_CALL_METRICS_UPLOAD, true);
+  }
+  public static void setMetricsOptInFlag(Context context,boolean value){
+	  PreferenceManager.getDefaultSharedPreferences(context).edit()
+        .putBoolean(ENABLE_CALL_METRICS_UPLOAD, value)
+        .commit();
+  }
+  public static boolean getDisplayDialogPreference(Context context){
+	  return PreferenceManager
+	           .getDefaultSharedPreferences(context).getBoolean(ENABLE_CALL_QUALITY_DIALOG, true);
+  }
+  public static void setDisplayDialogPreference(Context context,boolean value){
+	  PreferenceManager.getDefaultSharedPreferences(context).edit()
+        .putBoolean(ENABLE_CALL_QUALITY_DIALOG, value)
+        .commit();
   }
 }
