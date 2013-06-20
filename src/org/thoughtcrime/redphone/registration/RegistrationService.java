@@ -19,12 +19,14 @@ import org.thoughtcrime.redphone.RedPhoneService;
 import org.thoughtcrime.redphone.directory.DirectoryUpdateReceiver;
 import org.thoughtcrime.redphone.directory.NumberFilter;
 import org.thoughtcrime.redphone.gcm.GCMRegistrarHelper;
+import org.thoughtcrime.redphone.monitor.MonitorConfigUpdateReceiver;
 import org.thoughtcrime.redphone.signaling.AccountCreationException;
 import org.thoughtcrime.redphone.signaling.AccountCreationSocket;
 import org.thoughtcrime.redphone.signaling.DirectoryResponse;
 import org.thoughtcrime.redphone.signaling.RateLimitExceededException;
 import org.thoughtcrime.redphone.signaling.SignalingException;
 import org.thoughtcrime.redphone.ui.AccountVerificationTimeoutException;
+import org.thoughtcrime.redphone.util.PeriodicActionUtils;
 import org.thoughtcrime.redphone.util.Util;
 
 import java.util.concurrent.ExecutorService;
@@ -264,7 +266,7 @@ public class RegistrationService extends Service {
       Log.w("RegistrationService", se);
     }
 
-    DirectoryUpdateReceiver.scheduleDirectoryUpdate(this);
+    PeriodicActionUtils.scheduleUpdate(this, DirectoryUpdateReceiver.class);
   }
 
   private void markAsVerifying(boolean verifying) {

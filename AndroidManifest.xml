@@ -2,8 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="org.thoughtcrime.redphone"
           android:versionCode="25"
-          android:versionName="0.9.3"
-          android:installLocation="auto">
+          android:versionName="0.9.3">
 
     <uses-sdk android:targetSdkVersion="14" android:minSdkVersion="8"/>
 
@@ -95,10 +94,21 @@
                   android:theme="@style/Theme.Sherlock.Light.Dialog"
                   android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize"/>
 
+        <activity android:name=".ui.CallQualityDialog"
+                  android:theme="@style/Theme.Sherlock.Light.Dialog"
+                  android:screenOrientation="portrait"
+                  android:launchMode="singleInstance"/>
+
+        <activity android:name=".ui.CallMetricsInfoActivity"
+                  android:theme="@style/Theme.Sherlock.Light.Dialog"
+                  android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize"/>
+
         <service android:enabled="true" android:name=".RedPhoneService"/>
         <service android:enabled="true" android:name=".gcm.GCMRegistrationService"/>
         <service android:enabled="true" android:name=".gcm.GCMIntentService"/>
         <service android:enabled="true" android:name=".registration.RegistrationService"/>
+        <service android:enabled="true" android:name=".monitor.UploadService"/>
+        <service android:enabled="true" android:name=".monitor.MonitorConfigUpdateService"/>
 
         <receiver android:name=".call.CallListener"
                   android:enabled="true"
@@ -134,8 +144,10 @@
                 <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
                 <category android:name="org.thoughtcrime.redphone" />
             </intent-filter>
-        </receiver>        
-        
+        </receiver>
+
+        <receiver android:name=".monitor.MonitorConfigUpdateReceiver" android:exported="false"/>
+
         <receiver android:name=".registration.RegistrationNotifier"
                   android:exported="false">
             <intent-filter>

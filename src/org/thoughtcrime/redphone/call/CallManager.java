@@ -23,9 +23,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Process;
-import android.text.format.DateFormat;
 import android.util.Log;
-
 import org.thoughtcrime.redphone.audio.AudioException;
 import org.thoughtcrime.redphone.audio.CallAudioManager;
 import org.thoughtcrime.redphone.crypto.SecureRtpSocket;
@@ -34,13 +32,14 @@ import org.thoughtcrime.redphone.crypto.zrtp.NegotiationFailedException;
 import org.thoughtcrime.redphone.crypto.zrtp.RecipientUnavailableException;
 import org.thoughtcrime.redphone.crypto.zrtp.SASInfo;
 import org.thoughtcrime.redphone.crypto.zrtp.ZRTPSocket;
+import org.thoughtcrime.redphone.monitor.CallMonitor;
+import org.thoughtcrime.redphone.monitor.EventStream;
 import org.thoughtcrime.redphone.signaling.SessionDescriptor;
 import org.thoughtcrime.redphone.signaling.SignalingSocket;
 import org.thoughtcrime.redphone.ui.ApplicationPreferencesActivity;
 import org.thoughtcrime.redphone.util.AudioUtils;
 
 import java.io.IOException;
-import java.util.Date;
 
 /**
  * The base class for both Initiating and Responder call
@@ -57,6 +56,7 @@ public abstract class CallManager extends Thread {
   protected final String remoteNumber;
   protected final CallStateListener callStateListener;
   protected final Context context;
+  protected final CallMonitor monitor;
 
   private boolean terminated;
   private boolean loopbackMode;
@@ -64,11 +64,14 @@ public abstract class CallManager extends Thread {
   private SignalManager signalManager;
   private SASInfo sasInfo;
   private boolean muteEnabled;
+  private boolean callConnected;
 
   protected SessionDescriptor sessionDescriptor;
   protected ZRTPSocket zrtpSocket;
   protected SecureRtpSocket secureSocket;
   protected SignalingSocket signalingSocket;
+
+  private EventStream lifecycleMonitor;
 
   public CallManager(Context context, CallStateListener callStateListener,
                     String remoteNumber, String threadName)
@@ -79,24 +82,33 @@ public abstract class CallManager extends Thread {
     this.terminated        = false;
     this.context           = context;
     this.loopbackMode      = ApplicationPreferencesActivity.getLoopbackEnabled(context);
+    this.monitor           = new CallMonitor(context);
 
+    initMonitor();
     printInitDebug();
     AudioUtils.resetConfiguration(context);
+  }
+
+  private void initMonitor() {
+     lifecycleMonitor = monitor.addEventStream("call-setup");
   }
 
   @Override
   public void run() {
     Process.setThreadPriority(Process.THREAD_PRIORITY_URGENT_AUDIO);
 
+    lifecycleMonitor.emitEvent("call-begin");
     try {
       Log.d( "CallManager", "negotiating..." );
       if (!terminated) {
-        callAudioManager = new CallAudioManager(secureSocket, CODEC_NAME, context);
+        callAudioManager = new CallAudioManager(secureSocket, CODEC_NAME, context, monitor);
         callAudioManager.setMute(muteEnabled);
+        lifecycleMonitor.emitEvent("start-negotiate");
         zrtpSocket.negotiateStart();
       }
 
       if (!terminated) {
+        lifecycleMonitor.emitEvent("performing-handshake");
         callStateListener.notifyPerformingHandshake();
         zrtpSocket.negotiateFinish();
       }
@@ -109,6 +121,7 @@ public abstract class CallManager extends Thread {
 
       if (!terminated) {
         Log.d("CallManager", "Finished handshake, calling run() on CallAudioManager...");
+        callConnected = true;
         callAudioManager.run();
       }
 
@@ -129,6 +142,11 @@ public abstract class CallManager extends Thread {
 
   public void terminate() {
     this.terminated = true;
+    lifecycleMonitor.emitEvent("terminate");
+
+    if (monitor != null && sessionDescriptor != null) {
+      monitor.startUpload(context, String.valueOf(sessionDescriptor.sessionId));
+    }
 
     if (callAudioManager != null)
       callAudioManager.terminate();
@@ -160,9 +178,6 @@ public abstract class CallManager extends Thread {
 
   protected abstract void setSecureSocketKeys(MasterSecret masterSecret);
 
-  ///**********************
-  // Methods below are SOA's loopback and testing shims.
-
   private void printInitDebug() {
     Context c = context;
     String vName = "unknown";
@@ -174,26 +189,15 @@ public abstract class CallManager extends Thread {
     ConnectivityManager cm = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
     NetworkInfo networkInfo = cm.getActiveNetworkInfo();
 
-    Date date = new Date();
-    Log.d( "CallManager", "Initializing:"
-            + " audioMode: " + ApplicationPreferencesActivity.getAudioModeIncall(c)
-            + " singleThread: " + ApplicationPreferencesActivity.isSingleThread(c)
-            + " device: " + Build.DEVICE
-            + " manufacturer: " + Build.MANUFACTURER
-            + " os-version: " + Build.VERSION.RELEASE
-            + " product: " + Build.PRODUCT
-            + " redphone-version: " + vName
-            + " network-type: " + (networkInfo == null ? null : networkInfo.getTypeName())
-            + " network-subtype: " + (networkInfo == null ? null : networkInfo.getSubtypeName())
-            + " network-extra: " + (networkInfo == null ? null : networkInfo.getExtraInfo())
-            + " time: " + DateFormat.getDateFormat(context).format(date) + DateFormat.getTimeFormat(context).format(date)
-            );
-  }
-
-  //For loopback operation
-  public void doLoopback() throws AudioException, IOException {
-    callAudioManager = new CallAudioManager( null, "SPEEX", context );
-    callAudioManager.run();
+    monitor.addNominalValue("audio-mode", ApplicationPreferencesActivity.getAudioModeIncall(c));
+    monitor.addNominalValue("device", Build.DEVICE);
+    monitor.addNominalValue("manufacturer", Build.MANUFACTURER);
+    monitor.addNominalValue("android-version", Build.VERSION.RELEASE);
+    monitor.addNominalValue("product", Build.PRODUCT);
+    monitor.addNominalValue("redphone-version", vName);
+    monitor.addNominalValue("network-type", networkInfo == null ? null : networkInfo.getTypeName());
+    monitor.addNominalValue("network-subtype", networkInfo == null ? null : networkInfo.getSubtypeName());
+    monitor.addNominalValue("network-extra", networkInfo == null ? null : networkInfo.getExtraInfo());
   }
 
   public void setMute(boolean enabled) {
@@ -201,5 +205,21 @@ public abstract class CallManager extends Thread {
     if(callAudioManager != null) {
       callAudioManager.setMute(muteEnabled);
     }
+  }
+
+  /**
+   * Did this call ever successfully complete SRTP setup
+   * @return true if the call connected
+   */
+  public boolean callConnected() {
+    return callConnected;
+  }
+
+  ///**********************
+  // Methods below are SOA's loopback and testing shims.
+  //For loopback operation
+  public void doLoopback() throws AudioException, IOException {
+    callAudioManager = new CallAudioManager(null, "SPEEX", context, new CallMonitor(context));
+    callAudioManager.run();
   }
 }

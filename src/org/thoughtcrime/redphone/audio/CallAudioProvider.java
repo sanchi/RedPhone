@@ -20,6 +20,7 @@ package org.thoughtcrime.redphone.audio;
 import android.util.Log;
 
 import org.thoughtcrime.redphone.codec.AudioCodec;
+import org.thoughtcrime.redphone.monitor.CallMonitor;
 import org.thoughtcrime.redphone.profiling.PacketLogger;
 import org.thoughtcrime.redphone.profiling.StatisticsWatcher;
 
@@ -72,9 +73,9 @@ public class CallAudioProvider {
   private final short decodeBuffer[] = new short[1024];
   private final short rateBuffer[] = new short[2048];
 
-  private StatisticsWatcher averageFrameDelay = new StatisticsWatcher();
-  private StatisticsWatcher avgSamplesPerPacket = new StatisticsWatcher();
-  private StatisticsWatcher avgFrameObs = new StatisticsWatcher();
+  private StatisticsWatcher frameDelayStats = new StatisticsWatcher();
+  private StatisticsWatcher samplesPerPacketStats = new StatisticsWatcher();
+  private StatisticsWatcher frameSizeStats = new StatisticsWatcher();
 
   private AudioCodec codec;
   private TreeMap<Long, EncodedAudioData> audioFrames = new TreeMap<Long, EncodedAudioData>();
@@ -82,16 +83,20 @@ public class CallAudioProvider {
 
   private int gapLength;
 
-  private int decodedCount;;
+  private int decodedCount;
 
-  CallAudioProvider( AudioCodec _codec, PacketLogger packetLogger, CallLogger callLogger ) {
+  CallAudioProvider(AudioCodec _codec, PacketLogger packetLogger, CallLogger callLogger, CallMonitor monitor) {
     delayChooser = new DesiredCallAudioDelayChooser( packetLogger );
     codec = _codec;
     this.packetLogger = packetLogger;
     this.callAudioLogger = callLogger;
-    averageFrameDelay.setW( 1/20.0f);
-    avgFrameObs.setW( 1/20f );
-    avgSamplesPerPacket.setW( 1/20f );
+    frameDelayStats.setW(1 / 20.0f);
+    frameSizeStats.setW(1 / 20f);
+    samplesPerPacketStats.setW(1 / 20f);
+
+    monitor.addSampledMetrics("cap-latency", frameDelayStats.getSampler());
+    monitor.addSampledMetrics("cap-samples-per-packet", samplesPerPacketStats.getSampler());
+    monitor.addSampledMetrics("cap-frame-size", frameSizeStats.getSampler());
   }
 
   private void pullAudio() {
@@ -161,7 +166,7 @@ public class CallAudioProvider {
     if( audioFrames.size() > 0 ) {
       frameDelay = audioFrames.lastKey() - streamPlayheadPosition;
     }
-    averageFrameDelay.observeValue((int)frameDelay);
+    frameDelayStats.observeValue((int)frameDelay);
 
     float desFrameDelay = delayChooser.getDesFrameDelay();
 
@@ -175,30 +180,30 @@ public class CallAudioProvider {
       shiftMode == RATE_BIG ) {
       playRate = 1;
       shiftMode = RATE_NORMAL;
-      averageFrameDelay.setAvg(desFrameDelay);
+      frameDelayStats.setAvg(desFrameDelay);
       Log.d( TAG,"Normal Rate" );
     }
 
-    if( averageFrameDelay.getAvgBufferSize() > desFrameDelay + littleStartShrink &&
+    if( frameDelayStats.getAvg() > desFrameDelay + littleStartShrink &&
       shiftMode == RATE_NORMAL ) {
       shiftMode = RATE_LITTLE;
       playRate = 1-littleRateShift;
       Log.d( TAG, "Small shrink" );
     }
-    if( averageFrameDelay.getAvgBufferSize() < desFrameDelay &&
+    if( frameDelayStats.getAvg() < desFrameDelay &&
       shiftMode == RATE_LITTLE && playRate < 1 ) {
       playRate = 1;
       shiftMode = RATE_NORMAL;
       Log.d(TAG, "Small shrink complete" );
     }
 
-    if( averageFrameDelay.getAvgBufferSize() < desFrameDelay - littleStartStretch &&
+    if( frameDelayStats.getAvg() < desFrameDelay - littleStartStretch &&
       shiftMode == RATE_NORMAL ) {
       shiftMode = RATE_LITTLE;
       playRate = 1+littleRateShift;
       Log.d(TAG, "Small stretch" );
     }
-    if (averageFrameDelay.getAvgBufferSize() > desFrameDelay
+    if (frameDelayStats.getAvg() > desFrameDelay
         && shiftMode == RATE_LITTLE && playRate > 1) {
       shiftMode = RATE_NORMAL;
       playRate = 1;
@@ -224,7 +229,7 @@ public class CallAudioProvider {
   private void setDebugInfo() {
     CallLogger.waitingFrames = audioFrames.size();
     CallLogger.streamPlayheadPosition = streamPlayheadPosition;
-    CallLogger.avgDelay = averageFrameDelay.getAvgBufferSize();
+    CallLogger.avgDelay = frameDelayStats.getAvg();
     CallLogger.shiftMode = shiftMode;
     if( audioFrames.size() > 0 )
       CallLogger.largestHeldFrame = audioFrames.lastKey();
@@ -235,18 +240,18 @@ public class CallAudioProvider {
     setDebugInfo();
 
     pullAudio();
-    avgSamplesPerPacket.observeValue( decodeBufferLength );
+    samplesPerPacketStats.observeValue(decodeBufferLength);
 
     updatePlayRate();
     //model prediction frame delay offset ... is this really a good idea - confirm that it improves our estimates
-    averageFrameDelay.setAvg(averageFrameDelay.getAvgBufferSize() + playRate-1 );//include our actions in the buffer model
+    frameDelayStats.setAvg(frameDelayStats.getAvg() + playRate-1 );//include our actions in the buffer model
 
     if( lastGoodFrame == streamPlayheadPosition ) {
       outputFrameLength = PacketLossConcealer.changeSpeed(rateBuffer, decodeBuffer, decodeBufferLength, playRate);
     } else {
       outputFrameLength = PacketLossConcealer.changeSpeed(rateBuffer, decodeBuffer, decodeBufferLength, 1 );
     }
-    avgFrameObs.observeValue( outputFrameLength );
+    frameSizeStats.observeValue(outputFrameLength);
     streamPlayheadPosition++;
     packetLogger.logPacket(streamPlayheadPosition, PacketLogger.PLAYHEAD);
 

@@ -19,7 +19,6 @@ package org.thoughtcrime.redphone.signaling;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-
 import org.thoughtcrime.redphone.Release;
 
 /**
