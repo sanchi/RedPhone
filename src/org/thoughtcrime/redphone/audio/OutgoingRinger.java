@@ -140,6 +140,11 @@ public class OutgoingRinger implements MediaPlayer.OnCompletionListener,
 
   public void onPrepared(MediaPlayer mp) {
     mediaPlayer.setLooping(loopEnabled);
+    AudioManager am = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+    if (am.isBluetoothScoAvailableOffCall()) {
+      am.startBluetoothSco();
+      am.setBluetoothScoOn(true);
+    }
     mediaPlayer.start();
   }
 }

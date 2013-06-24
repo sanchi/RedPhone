@@ -18,6 +18,7 @@
 package org.thoughtcrime.redphone.ui;
 
 import android.content.Context;
+import android.content.Intent;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.widget.FrameLayout;
@@ -100,5 +101,9 @@ public class CallScreen extends FrameLayout {
 
     this.callCard     = (CallCard)findViewById(R.id.callCard);
     this.callControls = (CallControls)findViewById(R.id.callControls);
+  }
+
+  public void notifyBluetoothChange() {
+    callControls.updateAudioButton();
   }
 }

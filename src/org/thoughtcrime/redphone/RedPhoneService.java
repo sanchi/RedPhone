@@ -254,14 +254,18 @@ public class RedPhoneService extends Service implements CallStateListener, CallS
     state = RedPhone.STATE_ANSWERING;
     incomingRinger.stop();
     currentCallRecord = CallLogger.logIncomingCall(this, remoteNumber);
-    ((ResponderCallManager)this.currentCallManager).answer(true);
+    if (currentCallManager != null) {
+      ((ResponderCallManager)this.currentCallManager).answer(true);
+    }
   }
 
   private void handleDenyCall(Intent intent) {
     state = RedPhone.STATE_IDLE;
     incomingRinger.stop();
     CallLogger.logMissedCall(this, remoteNumber, System.currentTimeMillis());
-    ((ResponderCallManager)this.currentCallManager).answer(false);
+    if(currentCallManager != null) {
+      ((ResponderCallManager)this.currentCallManager).answer(false);
+    }
     this.terminate();
   }
 
@@ -272,7 +276,6 @@ public class RedPhoneService extends Service implements CallStateListener, CallS
   private void handleSetMute(Intent intent) {
     if(currentCallManager != null) {
       currentCallManager.setMute(intent.getBooleanExtra(Constants.MUTE_VALUE, false));
-
     }
   }
 

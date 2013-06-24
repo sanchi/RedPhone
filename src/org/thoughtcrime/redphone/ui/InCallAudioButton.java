@@ -1,10 +1,13 @@
 package org.thoughtcrime.redphone.ui;
 
+import android.content.Context;
 import android.graphics.drawable.LayerDrawable;
 import android.util.Log;
 import android.widget.CompoundButton;
+import android.widget.PopupMenu;
 import org.thoughtcrime.redphone.R;
 import org.thoughtcrime.redphone.Release;
+import org.thoughtcrime.redphone.util.AudioUtils;
 
 /**
  * Manages the audio button displayed on the in-call screen
@@ -17,33 +20,37 @@ import org.thoughtcrime.redphone.Release;
  *
  * @author Stuart O. Anderson
  */
-public class InCallAudioButton {
+public class InCallAudioButton implements PopupMenu.OnMenuItemClickListener, PopupMenu.OnDismissListener{
   private static final String TAG = InCallAudioButton.class.getName();
   private final CompoundButton mAudioButton;
   private boolean headsetAvailable;
-  private AudioMode currentMode;
+  private AudioUtils.AudioMode currentMode;
+  private PopupMenu popupMenu;
+  private Context context;
+  private CallControls.AudioButtonListener listener;
 
   public InCallAudioButton(CompoundButton audioButton) {
     mAudioButton = audioButton;
-    currentMode = AudioMode.DEFAULT;
+
+    currentMode = AudioUtils.AudioMode.DEFAULT;
     headsetAvailable = false;
+
     updateView();
     setListener(new CallControls.AudioButtonListener() {
       @Override
-      public void onAudioChange(AudioMode mode) {
+      public void onAudioChange(AudioUtils.AudioMode mode) {
         //No Action By Default.
       }
     });
+    context = audioButton.getContext();
   }
-
 
   public void setHeadsetAvailable(boolean available) {
-    //TODO(Stuart Anderson): Bluetooth Support
-    /*headsetAvailable = available;
-    updateView();*/
+    headsetAvailable = available;
+    updateView();
   }
 
-  public void setAudioMode(AudioMode newMode) {
+  public void setAudioMode(AudioUtils.AudioMode newMode) {
     currentMode = newMode;
     updateView();
   }
@@ -68,7 +75,7 @@ public class InCallAudioButton {
     boolean showHandsetIcon = false;
     boolean showHeadsetIcon = false;
 
-    boolean speakerOn = currentMode == AudioMode.SPEAKER;
+    boolean speakerOn = currentMode == AudioUtils.AudioMode.SPEAKER;
 
     if (headsetAvailable) {
       if (Release.DEBUG) log("- updateAudioButton: 'popup menu action button' mode...");
@@ -81,7 +88,7 @@ public class InCallAudioButton {
 
       // Update desired layers:
       showMoreIndicator = true;
-      if (currentMode == AudioMode.HEADSET) {
+      if (currentMode == AudioUtils.AudioMode.HEADSET) {
         showHeadsetIcon = true;
       } else if (speakerOn) {
         showSpeakerOnIcon = true;
@@ -129,22 +136,55 @@ public class InCallAudioButton {
     Log.d(TAG, msg);
   }
 
-  public static enum AudioMode {
-    DEFAULT,
-    HEADSET,
-    SPEAKER,
-  }
-
   public void setListener(final CallControls.AudioButtonListener listener) {
+    this.listener = listener;
     mAudioButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
       @Override
       public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-        //TODO: Stuart O. Anderson - Add bluetooth support here.
-        currentMode = b ? AudioMode.SPEAKER : AudioMode.DEFAULT;
-        listener.onAudioChange(currentMode);
-        updateView();
+        if(headsetAvailable) {
+          displayAudioChoiceDialog();
+        } else {
+          currentMode = b ? AudioUtils.AudioMode.SPEAKER : AudioUtils.AudioMode.DEFAULT;
+          listener.onAudioChange(currentMode);
+          updateView();
+        }
       }
     });
   }
 
+  private void displayAudioChoiceDialog() {
+    popupMenu = new PopupMenu(context, mAudioButton);
+    popupMenu.getMenuInflater().inflate(R.menu.incall_audio_choice, popupMenu.getMenu());
+    popupMenu.setOnMenuItemClickListener(this);
+    popupMenu.setOnDismissListener(this);
+    popupMenu.show();
+  }
+
+  @Override
+  public void onDismiss(PopupMenu menu) {
+    if (popupMenu != null) {
+      popupMenu.dismiss();
+      popupMenu = null;
+    }
+  }
+
+  @Override
+  public boolean onMenuItemClick(android.view.MenuItem item) {
+    switch (item.getItemId()) {
+      case R.id.audio_mode_earpiece:
+        currentMode = AudioUtils.AudioMode.DEFAULT;
+        break;
+      case R.id.audio_mode_speaker:
+        currentMode = AudioUtils.AudioMode.SPEAKER;
+        break;
+      case R.id.audio_mode_bluetooth:
+        currentMode = AudioUtils.AudioMode.HEADSET;
+        break;
+      default:
+        Log.w(TAG, "Unknown item selected in audio popup menu: " + item.toString());
+    }
+    listener.onAudioChange(currentMode);
+    updateView();
+    return true;
+  }
 }

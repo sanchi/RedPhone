@@ -18,7 +18,10 @@
 package org.thoughtcrime.redphone.ui;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
+import android.media.AudioManager;
 import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
@@ -32,7 +35,7 @@ import android.widget.TextView;
 
 import org.thoughtcrime.redphone.R;
 import org.thoughtcrime.redphone.crypto.zrtp.SASInfo;
-import org.thoughtcrime.redphone.util.PhoneUtils;
+import org.thoughtcrime.redphone.util.AudioUtils;
 import org.thoughtcrime.redphone.util.com.android.internal.widget.multiwaveview.MultiWaveView;
 
 /**
@@ -126,8 +129,7 @@ public class CallControls extends RelativeLayout {
     redphoneLabel.setVisibility(View.GONE);
     activeCallWidget.setVisibility(View.GONE);
     sasTextView.setText("");
-    audioButton.setAudioMode(InCallAudioButton.AudioMode.DEFAULT);
-    audioButton.setHeadsetAvailable(PhoneUtils.isBluetoothAvailable());
+    updateAudioButton();
     muteButton.setChecked(false);
   }
 
@@ -199,7 +201,36 @@ public class CallControls extends RelativeLayout {
     this.sasTextView        = (TextView)findViewById(R.id.sas);
     this.muteButton         = (CompoundButton)findViewById(R.id.muteButton);
     this.audioButton        = new InCallAudioButton((CompoundButton)findViewById(R.id.audioButton));
+
+    updateAudioButton();
   }
+
+  public void updateAudioButton() {
+    audioButton.setAudioMode(AudioUtils.getCurrentAudioMode(getContext()));
+
+    IntentFilter filter = new IntentFilter();
+    filter.addAction(AudioManager.ACTION_SCO_AUDIO_STATE_UPDATED);
+    handleBluetoothIntent(getContext().registerReceiver(null, filter));
+  }
+
+
+  private void handleBluetoothIntent(Intent intent) {
+    if (intent == null) {
+      return;
+    }
+
+    if (intent.getAction() != AudioManager.ACTION_SCO_AUDIO_STATE_UPDATED) {
+      return;
+    }
+
+    Integer state = intent.getIntExtra(AudioManager.EXTRA_SCO_AUDIO_STATE, -1);
+    if (state.equals(AudioManager.SCO_AUDIO_STATE_CONNECTED)) {
+      audioButton.setHeadsetAvailable(true);
+    } else if (state.equals(AudioManager.SCO_AUDIO_STATE_DISCONNECTED)) {
+      audioButton.setHeadsetAvailable(false);
+    }
+  }
+
 
   public static interface ConfirmSasButtonListener {
     public void onClick();
@@ -219,6 +250,8 @@ public class CallControls extends RelativeLayout {
   }
 
   public static interface AudioButtonListener {
-    public void onAudioChange(InCallAudioButton.AudioMode mode);
+    public void onAudioChange(AudioUtils.AudioMode mode);
   }
+
+
 }
