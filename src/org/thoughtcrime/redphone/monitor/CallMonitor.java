@@ -22,6 +22,7 @@ import android.content.Intent;
 import android.util.Log;
 import android.util.Pair;
 import com.google.thoughtcrimegson.Gson;
+import org.thoughtcrime.redphone.ui.ApplicationPreferencesActivity;
 
 import java.io.File;
 import java.io.IOException;
@@ -48,12 +49,17 @@ public class CallMonitor {
 
   public CallMonitor(Context context) {
     CallData data;
-    try {
-      data = new CallDataImpl(context);
-    } catch (IOException e) {
-      Log.e("CallMonitor", "Failed to create call data store", e);
+    if (ApplicationPreferencesActivity.getMetricsOptInFlag(context)) {
+      try {
+        data = new CallDataImpl(context);
+      } catch (IOException e) {
+        Log.e("CallMonitor", "Failed to create call data store", e);
+        data = new CallDataMock();
+      }
+    } else {
       data = new CallDataMock();
     }
+
     this.data = data;
 
     Log.d("CallMonitor", "Scheduling periodic sampler");
