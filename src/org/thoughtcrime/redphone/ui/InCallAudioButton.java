@@ -3,11 +3,18 @@ package org.thoughtcrime.redphone.ui;
 import android.content.Context;
 import android.graphics.drawable.LayerDrawable;
 import android.util.Log;
+import android.view.View;
 import android.widget.CompoundButton;
-import android.widget.PopupMenu;
+import com.actionbarsherlock.internal.view.menu.MenuBuilder;
+import com.actionbarsherlock.internal.view.menu.MenuPopupHelper;
+import com.actionbarsherlock.view.MenuItem;
 import org.thoughtcrime.redphone.R;
 import org.thoughtcrime.redphone.Release;
 import org.thoughtcrime.redphone.util.AudioUtils;
+
+import static org.thoughtcrime.redphone.util.AudioUtils.AudioMode.DEFAULT;
+import static org.thoughtcrime.redphone.util.AudioUtils.AudioMode.HEADSET;
+import static org.thoughtcrime.redphone.util.AudioUtils.AudioMode.SPEAKER;
 
 /**
  * Manages the audio button displayed on the in-call screen
@@ -20,19 +27,22 @@ import org.thoughtcrime.redphone.util.AudioUtils;
  *
  * @author Stuart O. Anderson
  */
-public class InCallAudioButton implements PopupMenu.OnMenuItemClickListener, PopupMenu.OnDismissListener{
+public class InCallAudioButton {
   private static final String TAG = InCallAudioButton.class.getName();
+  private static final int HANDSET_ID = 0x10;
+  private static final int HEADSET_ID = 0x20;
+  private static final int SPEAKER_ID = 0x30;
+
   private final CompoundButton mAudioButton;
   private boolean headsetAvailable;
   private AudioUtils.AudioMode currentMode;
-  private PopupMenu popupMenu;
   private Context context;
   private CallControls.AudioButtonListener listener;
 
   public InCallAudioButton(CompoundButton audioButton) {
     mAudioButton = audioButton;
 
-    currentMode = AudioUtils.AudioMode.DEFAULT;
+    currentMode = DEFAULT;
     headsetAvailable = false;
 
     updateView();
@@ -88,6 +98,7 @@ public class InCallAudioButton implements PopupMenu.OnMenuItemClickListener, Pop
 
       // Update desired layers:
       showMoreIndicator = true;
+      Log.d(TAG, "UI Mode: " + currentMode);
       if (currentMode == AudioUtils.AudioMode.HEADSET) {
         showHeadsetIcon = true;
       } else if (speakerOn) {
@@ -130,6 +141,8 @@ public class InCallAudioButton implements PopupMenu.OnMenuItemClickListener, Pop
 
     layers.findDrawableByLayerId(R.id.speakerphoneOffItem)
       .setAlpha(showSpeakerOffIcon ? VISIBLE : HIDDEN);
+
+    mAudioButton.invalidate();
   }
 
   private void log(String msg) {
@@ -144,7 +157,7 @@ public class InCallAudioButton implements PopupMenu.OnMenuItemClickListener, Pop
         if(headsetAvailable) {
           displayAudioChoiceDialog();
         } else {
-          currentMode = b ? AudioUtils.AudioMode.SPEAKER : AudioUtils.AudioMode.DEFAULT;
+          currentMode = b ? AudioUtils.AudioMode.SPEAKER : DEFAULT;
           listener.onAudioChange(currentMode);
           updateView();
         }
@@ -153,38 +166,46 @@ public class InCallAudioButton implements PopupMenu.OnMenuItemClickListener, Pop
   }
 
   private void displayAudioChoiceDialog() {
-    popupMenu = new PopupMenu(context, mAudioButton);
-    popupMenu.getMenuInflater().inflate(R.menu.incall_audio_choice, popupMenu.getMenu());
-    popupMenu.setOnMenuItemClickListener(this);
-    popupMenu.setOnDismissListener(this);
-    popupMenu.show();
+    MenuBuilder mb = new MenuBuilder(context);
+    mb.add(0, HANDSET_ID, 0, R.string.CallScreen_audio_menu_handset);
+    mb.add(0, HEADSET_ID, 0, R.string.CallScreen_audio_menu_headset);
+    mb.add(0, SPEAKER_ID, 0, R.string.CallScreen_audio_menu_speaker);
+    mb.setCallback(new AudioRoutingPopupListener());
+
+    View attachmentView = ((View) mAudioButton.getParent()).findViewById(R.id.menuAttachment);
+    MenuPopupHelper mph = new MenuPopupHelper(context, mb, attachmentView);
+
+    mph.show();
   }
 
-  @Override
-  public void onDismiss(PopupMenu menu) {
-    if (popupMenu != null) {
-      popupMenu.dismiss();
-      popupMenu = null;
-    }
-  }
+  private class AudioRoutingPopupListener implements MenuBuilder.Callback {
 
-  @Override
-  public boolean onMenuItemClick(android.view.MenuItem item) {
-    switch (item.getItemId()) {
-      case R.id.audio_mode_earpiece:
-        currentMode = AudioUtils.AudioMode.DEFAULT;
-        break;
-      case R.id.audio_mode_speaker:
-        currentMode = AudioUtils.AudioMode.SPEAKER;
-        break;
-      case R.id.audio_mode_bluetooth:
-        currentMode = AudioUtils.AudioMode.HEADSET;
-        break;
-      default:
-        Log.w(TAG, "Unknown item selected in audio popup menu: " + item.toString());
+    @Override
+    public boolean onMenuItemSelected(MenuBuilder menu, MenuItem item) {
+      switch (item.getItemId()) {
+        case HANDSET_ID:
+          currentMode = DEFAULT;
+          break;
+        case HEADSET_ID:
+          currentMode = HEADSET;
+          break;
+        case SPEAKER_ID:
+          currentMode = SPEAKER;
+          break;
+        default:
+          Log.w(TAG, "Unknown item selected in audio popup menu: " + item.toString());
+      }
+      Log.d(TAG, "Selected: " + currentMode + " -- " + item.getItemId());
+
+      listener.onAudioChange(currentMode);
+      updateView();
+      return true;
     }
-    listener.onAudioChange(currentMode);
-    updateView();
-    return true;
+
+    @Override
+    public void onMenuModeChange(MenuBuilder menu) {
+      //To change body of implemented methods use File | Settings | File Templates.
+    }
+
   }
 }

@@ -2,6 +2,7 @@ package org.thoughtcrime.redphone.util;
 
 import android.content.Context;
 import android.media.AudioManager;
+import android.os.Build;
 import android.util.Log;
 
 /**
@@ -47,6 +48,14 @@ public class AudioUtils {
       return AudioMode.SPEAKER;
     } else {
       return AudioMode.DEFAULT;
+    }
+  }
+
+  public static String getScoUpdateAction() {
+    if (Build.VERSION.SDK_INT >= 14) {
+      return AudioManager.ACTION_SCO_AUDIO_STATE_UPDATED;
+    } else {
+      return AudioManager.ACTION_SCO_AUDIO_STATE_CHANGED;
     }
   }
 }

@@ -30,6 +30,7 @@ import android.content.ServiceConnection;
 import android.content.res.Configuration;
 import android.media.AudioManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -376,7 +377,7 @@ public class RedPhone extends Activity {
   private void handleCodecFailure(CodecSetupException e) {
     Log.w("RedPhone", e);
     Toast.makeText(this, R.string.RedPhone_codec_failed_to_initialize, Toast.LENGTH_LONG).show();
-    handleTerminate( LOCAL_TERMINATE );
+    handleTerminate(LOCAL_TERMINATE);
   }
 
   private void delayedFinish() {
@@ -440,7 +441,7 @@ public class RedPhone extends Activity {
       intent.setAction(RedPhoneService.ACTION_HANGUP_CALL);
       startService(intent);
 
-      RedPhone.this.handleTerminate( LOCAL_TERMINATE );
+      RedPhone.this.handleTerminate(LOCAL_TERMINATE);
     }
   }
 
@@ -453,8 +454,7 @@ public class RedPhone extends Activity {
 
   private void registerBluetoothReceiver() {
     IntentFilter filter = new IntentFilter();
-    filter.addAction(AudioManager.ACTION_SCO_AUDIO_STATE_UPDATED);
-
+    filter.addAction(AudioUtils.getScoUpdateAction());
     bluetoothStateReceiver = new BroadcastReceiver() {
       @Override
       public void onReceive(Context context, Intent intent) {

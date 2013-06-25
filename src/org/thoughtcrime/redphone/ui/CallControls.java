@@ -22,9 +22,11 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
 import android.media.AudioManager;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.Animation;
@@ -209,17 +211,18 @@ public class CallControls extends RelativeLayout {
     audioButton.setAudioMode(AudioUtils.getCurrentAudioMode(getContext()));
 
     IntentFilter filter = new IntentFilter();
-    filter.addAction(AudioManager.ACTION_SCO_AUDIO_STATE_UPDATED);
+    filter.addAction(AudioUtils.getScoUpdateAction());
     handleBluetoothIntent(getContext().registerReceiver(null, filter));
   }
 
 
   private void handleBluetoothIntent(Intent intent) {
+    Log.d("CallControls", intent.toString());
     if (intent == null) {
       return;
     }
 
-    if (intent.getAction() != AudioManager.ACTION_SCO_AUDIO_STATE_UPDATED) {
+    if (!intent.getAction().equals(AudioUtils.getScoUpdateAction())) {
       return;
     }
 
