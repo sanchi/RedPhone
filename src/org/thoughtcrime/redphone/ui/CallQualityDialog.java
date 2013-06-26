@@ -223,6 +223,7 @@ public class CallQualityDialog extends SherlockActivity  {
       if(enableDialog) {
         setupInterface();
       } else {
+        cancelNotification();
         finish();
       }
     }
