@@ -217,7 +217,6 @@ public class CallControls extends RelativeLayout {
 
 
   private void handleBluetoothIntent(Intent intent) {
-    Log.d("CallControls", intent.toString());
     if (intent == null) {
       return;
     }
