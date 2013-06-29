@@ -74,6 +74,9 @@
     <string name="CallQualityDialog__done">Done</string>
 
     <string name="CallScreen_incoming_call">Incoming call...</string>
+    <string name="CallScreen_audio_menu_handset">Handset</string>
+    <string name="CallScreen_audio_menu_speaker">Speaker</string>
+    <string name="CallScreen_audio_menu_headset">Bluetooth</string>
 
     <string name="ContactsListActivity_loading">Loading...</string>
     <string name="ContactsListActivity_no_contacts_found">No contacts found.</string>    

@@ -4,8 +4,8 @@
             android:layout_height="match_parent">
     <RelativeLayout
         android:id="@+id/topLevelLayout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginLeft="11dp"
         android:layout_marginRight="0dp"
         android:orientation="vertical" >
@@ -63,12 +63,5 @@
             android:layout_marginTop="12dp"
             android:text="@string/CallQualityDialog__done"
             android:textAppearance="?android:attr/textAppearanceSmall" />
-
-        <ListView
-            android:id="@android:id/list"
-            android:layout_width="match_parent"
-            android:layout_height="1dp" >
-
-        </ListView>
     </RelativeLayout>
 </ScrollView>
