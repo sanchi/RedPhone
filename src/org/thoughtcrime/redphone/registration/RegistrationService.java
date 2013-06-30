@@ -128,14 +128,14 @@ public class RegistrationService extends Service {
     return registrationState;
   }
 
-  private void initializeChallengeListener() {
+  private synchronized void initializeChallengeListener() {
     this.challenge      = null;
     receiver            = new ChallengeReceiver();
     IntentFilter filter = new IntentFilter(CHALLENGE_EVENT);
     registerReceiver(receiver, filter);
   }
 
-  private void shutdownChallengeListener() {
+  private synchronized void shutdownChallengeListener() {
     if (receiver != null) {
       unregisterReceiver(receiver);
       receiver = null;
@@ -199,12 +199,13 @@ public class RegistrationService extends Service {
       String challenge = waitForChallenge();
       socket           = new AccountCreationSocket(this, number, password);
       socket.verifyAccount(challenge, key);
-      socket.close();
 
       markAsVerified(number, password, key);
 
       GCMRegistrarHelper.registerClient(this, true);
       retrieveDirectory(socket);
+      socket.close();
+
       setState(new RegistrationState(RegistrationState.STATE_COMPLETE, number));
       broadcastComplete(true);
       stopService(new Intent(this, RedPhoneService.class));
