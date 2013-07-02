@@ -37,7 +37,9 @@
   <string name="CallScreen_incoming_call">Prichádzajúci hovor...</string>
   <string name="ContactsListActivity_loading">Nahrávam...</string>
   <string name="ContactsListActivity_no_contacts_found">Kontakt nenájdený...</string>
+  <string name="CreateAccountActivity_register_your_redphone">Zaregistrujte svoj RedPhone</string>
   <string name="CreateAccountActivity_you_must_specify_your_phone_number">Musíte zadať svoje telefónne číslo!</string>
+  <string name="CreateAccountActivity_select_your_country">Vyberte si Vašu krajinu</string>
   <string name="NotificationBarManager_redphone_call_in_progress">Prebieha RedPhone hovor</string>
   <string name="NotificationBarManager_missed_redphone_call_from_s">Zmeškaný RedPhone hovor od %s</string>
   <string name="NotificationBarManager_missed_redphone_call">Zmeškaný RedPhone hovor</string>

@@ -34,6 +34,15 @@
   <string name="ApplicationPreferencesActivity_error_registering_with_c2dm_server">Erro ao se registrar com servidor C2DM...</string>
   <string name="ApplicationPreferencesActivity_error_unregistering_with_c2dm_server">Erro ao fechar registro com servidor C2DM...</string>
   <string name="ApplicationPreferencesActivity_error_communicating_with_c2dm_server">Erro de comunicação com servidor C2DM....</string>
+  <string name="CallMetricsInfo__title">Métricas de Qualidade</string>
+  <string name="CallMetricsInfo__device_description">Descrição do Aparelho</string>
+  <string name="CallMetricsInfo__device_description_explanation">Modelo, fabricante, operadora, tipo de conexão, versão do sistema, UUID persistente aleatório</string>
+  <string name="CallMetricsInfo__mic_and_codec_performance">Performance de Microfone e Codec</string>
+  <string name="CallMetricsInfo__system_metrics">Métricas do Sistema</string>
+  <string name="CallMetricsInfo__system_metrics_explanation">Carga da CPU, uso de memória</string>
+  <string name="CallQualityDialog_call_quality">Qualidade de Chamada</string>
+  <string name="CallQualityDialog__i_would_like_to_help_by_sending_performance_statistics">Enviar métricas de performance</string>
+  <string name="CallQualityDialog__redphone">RedPhone</string>
   <string name="CallScreen_incoming_call">Recebendo chamada...</string>
   <string name="ContactsListActivity_loading">Carregando...</string>
   <string name="ContactsListActivity_no_contacts_found">Nenhum contato encontrado.</string>
@@ -61,6 +70,12 @@
   <string name="RegistrationProgressActivity_verifying_number">Verificando número</string>
   <string name="RegistrationProgressActivity_edit_s">Editar %s</string>
   <string name="RegistrationProgressActivity_registration_complete">Cadastro realizado!</string>
+  <string name="RegistrationProgressActivity_connecting">Conectando</string>
+  <string name="RegistrationProgressActivity_connecting_for_verification">Conectando para verificação...</string>
+  <string name="RegistrationProgressActivity_network_error">Erro de rede!</string>
+  <string name="RegistrationProgressActivity_verification_failed">Verificação falhou!</string>
+  <string name="RegistrationProgressActivity_the_verification_code_you_submitted_is_incorrect">O código de verificação que você enviou está incorreto. Favor tentar novamente.</string>
+  <string name="RegistrationProgressActivity_the_server_encountered_an_error">O servidor teve um erro. Favor tentar novamente.</string>
   <string name="RegistrationService_registration_complete">Cadastro realizado</string>
   <string name="RegistrationService_redphone_registration_has_successfully_completed">Cadastro RedPhone realizado com sucesso.</string>
   <string name="RegistrationService_registration_error">Erro de cadastro</string>
@@ -69,6 +84,8 @@
   <string name="about_activity__attribution">Atribuição:</string>
   <string name="about_activity__aboutText">Por favor visite whispersystems.org para informações adicionais, ou contate support@whispersystems.org se tiver problemas, questões, ou comentários.</string>
   <string name="about_activity__attributionText">RedPhone faz link com a biblioteca SpanDSP, que é licenciada sob a LGPL.\n\nRedPhone usa o Codec SPEEX, que é usado sob a variante do Xiph.Org da licença BSD: © 2002-2003, Jean-Marc Valin/Xiph.Org Foundation\n\nRedistribuição e uso da biblioteca SPEEX em formas fonmte e binário, com ou sem modificações, é permitido desde que as seguintes condições sejam satisfeitas:\n\n\t* Redistribuições de código fonte devem manter o aviso de copyright acima, esta lista de condições e o seguinte aviso legal.\n\t* Redistribuições na forma binário devem reproduzir o aviso de copyright acima, esta lista de condições e o seguinte aviso legal na documentação e/ou outros materiais providos com a distribuição.\n\t* Nem o nome da Fundação Xiph.org nem os nomes de seus colaboradores podem ser usados para apoiar ou promover produtos derivados deste software sem prévia permissão específica por escrito.\n\nA biblioteca SPEEX é fornecida pelos detentores do copyright e colaboradores “como é” e quaisquer garantias expressas ou implícitas, incluindo, mas não limitado às, implícitas garantias de mercantibilidade e condições para um propósito em particular são negadas. Em nenhum momento poderão a fundação ou colaboradores ser responsabilizados por quaisquer danos incidentes diretos, indiretos, acindentais, especiais, exemplários, ou consequentes (incluindo, mas não limitados a, aquisição de mercadoria ou serviços substitutos; perda de uso, dados, ou lucros; ou interrupção de negócios) como quer que causado e em qualquer teoria de responsabilidade, quer em contrato, responsabilidade estrita, ou dano (incluindo negligencia ou outro) advindo sob qualquer maneira do uso deste software, mesmo se advertido da possibilidade de tal dano.\n\n\nAlgumas amostras sólidas são licenciadas sob a licença Creative Commons Sampling Plus: http://creativecommons.org/licenses/sampling+/1.0/\n\nPor acclivity (http://www.freesound.org/usersViewSingle.php?id=37876):\nShipsBell.wav (http://www.freesound.org/samplesViewSingle.php?id=32304)\n\nPor Splashdust (http://www.freesound.org/usersViewSingle.php?id=754949):\nnegativebeep.wav (http://www.freesound.org/samplesViewSingle.php?id=67454)\n\nPor Peter_Gross (http://www.freesound.org/usersViewSingle.php?id=33429):\nSonar_pings.ogg (http://www.freesound.org/samplesViewSingle.php?id=12677\n\nPor suonho: http://www.freesound.org/samplesViewSingle.php?id=58348: ambienta_soundtrack_moog_sweep\n\nPor Mike Koenig: Busy Signal</string>
+  <string name="call_controls__redphone_call">CHAMADA REDPHONE</string>
+  <string name="call_card__redphone_call">Chamada RedPhone</string>
   <string name="create_account__register">Cadastrar-se</string>
   <string name="create_acount__please_confirm_your_country_code_and_phone_number">Para fazer e receber chamadas seguras, o RedPhone precisa verificar seu número de telefone e cadastrá-lo no sistema.⏎ ⏎ Favor confirmar o código do país e o número de telefone para este aparelho.</string>
   <string name="create_account__your_country">SEU PAÍS</string>
@@ -124,5 +141,6 @@
   <string name="registration_progress__waiting_for_sms_verification">Aguardando verficação de SMS...</string>
   <string name="registration_progress__this_could_take_a_moment_please_be_patient_well_notify_you_when_verification_is_complete">Isso pode demorar. Seja paciente, avisaremos quando a verificação terminar.</string>
   <string name="registration_progress__waiting_for_sms">AGUARDANDO SMS</string>
+  <string name="registration_progress__verify">Verificar</string>
   <!--EOF-->
 </resources>

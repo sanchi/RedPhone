@@ -34,7 +34,18 @@
   <string name="ApplicationPreferencesActivity_error_registering_with_c2dm_server">Hiba történt a C2DM szerverrel való regisztráció közben...</string>
   <string name="ApplicationPreferencesActivity_error_unregistering_with_c2dm_server">A regisztráció törlése közben hiba történt a C2DM szerveren...</string>
   <string name="ApplicationPreferencesActivity_error_communicating_with_c2dm_server">Hiba történt a C2DM szerverrel kommunikáció közben...</string>
+  <string name="CallMetricsInfo__device_description">Eszköz leírás</string>
+  <string name="CallMetricsInfo__system_metrics_explanation">CPU terhelés, memória használat</string>
+  <string name="CallQualityDialog_call_feedback">Hívás visszajelzés</string>
+  <string name="CallQualityDialog_call_quality">Hívásminőség</string>
+  <string name="CallQualityDialog_call_quality_rating">Hívásminőség értékelés</string>
+  <string name="CallQualityDialog__provide_call_quality_feedback">Hívásminőség visszajelzés küldés</string>
+  <string name="CallQualityDialog__redphone">RedPhone</string>
+  <string name="CallQualityDialog__submit">Beküldés</string>
+  <string name="CallQualityDialog__done">Kész</string>
   <string name="CallScreen_incoming_call">Bejövő hívás...</string>
+  <string name="CallScreen_audio_menu_speaker">Hangszóró</string>
+  <string name="CallScreen_audio_menu_headset">Bluetooth</string>
   <string name="ContactsListActivity_loading">Betöltés...</string>
   <string name="ContactsListActivity_no_contacts_found">Nincs ilyen.</string>
   <string name="CreateAccountActivity_register_your_redphone">Regisztráld a RedPhone-dat</string>
@@ -61,6 +72,14 @@
   <string name="RegistrationProgressActivity_verifying_number">Szám ellenőrzése</string>
   <string name="RegistrationProgressActivity_edit_s">%s szerkesztés</string>
   <string name="RegistrationProgressActivity_registration_complete">A regisztráció sikeres!</string>
+  <string name="RegistrationProgressActivity_possible_problems">Lehetséges problémák.</string>
+  <string name="RegistrationProgressActivity_connecting">Kapcsolódás</string>
+  <string name="RegistrationProgressActivity_network_error">Hálózati hiba!</string>
+  <string name="RegistrationProgressActivity_verification_failed">Ellenőrzés sikertelen!</string>
+  <string name="RegistrationProgressActivity_too_many_attempts">Túl sok próbálkozás</string>
+  <string name="RegistrationProgressActivity_server_error">Szerverhiba</string>
+  <string name="RegistrationProgressActivity_too_many_requests">Túl sok kérés!</string>
+  <string name="RegistrationProblemsActivity_possible_problems">Lehetséges problémák</string>
   <string name="RegistrationService_registration_complete">A regisztráció elkészült</string>
   <string name="RegistrationService_redphone_registration_has_successfully_completed">A RedPhone regisztáció sikeresen elkészült.</string>
   <string name="RegistrationService_registration_error">Regisztrációs hiba</string>
@@ -69,6 +88,8 @@
   <string name="about_activity__attribution">Tartalom:</string>
   <string name="about_activity__aboutText">A további információkért látogasd meg a whispersystems.org weboldalát vagy a problémákkal, kérdésekkel és javaslatokkal írj a support@whispersystems.org email címre.</string>
   <string name="about_activity__attributionText">RedPhone links to the SpanDSP library, which is licensed under the LGPL.\n\nRedPhone uses the SPEEX Codec, which is used under the Xiph.Org variant of the BSD license: © 2002-2003, Jean-Marc Valin/Xiph.Org Foundation\n\nRedistribution and use of the SPEEX library in source and binary forms, with or without modification, are permitted provided that the following conditions are met:\n\n\t* Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.\n\t* Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.\n\t* Neither the name of the Xiph.org Foundation nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.\n\nThe SPEEX library is provided by the copyright holders and contributors “as is” and any express or implied warranties, including, but not limited to, the implied warranties of merchantability and fitness for a particular purpose are disclaimed. In no event shall the foundation or contributors be liable for any direct, indirect, incidental, special, exemplary, or consequential damages (including, but not limited to, procurement of substitute goods or services; loss of use, data, or profits; or business interruption) however caused and on any theory of liability, whether in contract, strict liability, or tort (including negligence or otherwise) arising in any way out of the use of this software, even if advised of the possibility of such damage.\n\n\nSome sound samples are licensed under the Creative Commons Sampling Plus License: http://creativecommons.org/licenses/sampling+/1.0/\n\nBy acclivity (http://www.freesound.org/usersViewSingle.php?id=37876):\nShipsBell.wav (http://www.freesound.org/samplesViewSingle.php?id=32304)\n\nBy Splashdust (http://www.freesound.org/usersViewSingle.php?id=754949):\nnegativebeep.wav (http://www.freesound.org/samplesViewSingle.php?id=67454)\n\nBy Peter_Gross (http://www.freesound.org/usersViewSingle.php?id=33429):\nSonar_pings.ogg (http://www.freesound.org/samplesViewSingle.php?id=12677\n\nBy suonho: http://www.freesound.org/samplesViewSingle.php?id=58348: ambienta_soundtrack_moog_sweep\n\nBy Mike Koenig: Busy Signal</string>
+  <string name="call_controls__redphone_call">REDPHONE HÍVÁS</string>
+  <string name="call_card__redphone_call">RedPhone hívás</string>
   <string name="create_account__register">Regisztráció</string>
   <string name="create_acount__please_confirm_your_country_code_and_phone_number">A biztonságos hívások indításának és fogadásának érdekében a RedPhone-nak szüksége van a telefonszámod regisztrálására a rendszerben.\n\nKérjük, hogy add meg az eszköz országkódját és telefonszámát.</string>
   <string name="create_account__your_country">ORSZÁG</string>
@@ -103,6 +124,9 @@
   <string name="preferences__reduce_latency_at_the_expense_of_audio_quality">A gyengébb hangminőség árán csökkenti a késleltetést</string>
   <string name="preferences__signaling_method">Üzenetküldési mód</string>
   <string name="preferences__modify_the_method_used_to_notify_your_device_of_incoming_calls">A bejövő hívások értesítési módjának beállítása.</string>
+  <string name="preferences__enable_call_metrics_upload">Adatküldés</string>
+  <string name="preferences__enable_call_quality_dialog">Visszajelzés küldés</string>
+  <string name="preferences__provide_feeback">Visszajelzés küldés</string>
   <string name="registration_progress__sms_verification_failed">Az SMS ellenőrzés sikertelen.</string>
   <string name="registration_progress__redphone_timed_out_while_waiting_for_an_sms_message_to_verify_your_phone_number">A RedPhone időtúllépésbe került miközben a telefonszámod ellenőrzésének érdekében a beérkező SMS-re várt.</string>
   <string name="registration_progress__edit_number">Szám szerkesztés</string>
@@ -124,5 +148,9 @@
   <string name="registration_progress__waiting_for_sms_verification">Várakozás az SMS ellenőrzésre...</string>
   <string name="registration_progress__this_could_take_a_moment_please_be_patient_well_notify_you_when_verification_is_complete">Ez eltarthat egy ideig. Kérjük, légy türelemmel, azonnal értesítünk, amint az ellenőrzés elkészült.</string>
   <string name="registration_progress__waiting_for_sms">VÁRAKOZÁS AZ SMS-RE</string>
+  <string name="registration_progress__voice_verification">Hang ellenőrzés</string>
+  <string name="registration_progress__redphone_can_also_call_you_to_verify_your_number">A RedPhone fel is tud hívni a telefonszámod ellenőrzése miatt. Bökj a \'Hívj fel\'-re és a hallott hat jegyű számot lent add meg.</string>
+  <string name="registration_progress__verify">Ellenőrzés</string>
+  <string name="registration_progress__call_me">Hívj fel</string>
   <!--EOF-->
 </resources>

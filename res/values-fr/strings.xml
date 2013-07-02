@@ -34,7 +34,30 @@
   <string name="ApplicationPreferencesActivity_error_registering_with_c2dm_server">Erreur lors de l\'inscription au serveur C2DM...</string>
   <string name="ApplicationPreferencesActivity_error_unregistering_with_c2dm_server">Erreur lors de la désinscription du serveur C2DM...</string>
   <string name="ApplicationPreferencesActivity_error_communicating_with_c2dm_server">Erreur lors de la communication avec le serveur C2DM...</string>
+  <string name="CallMetricsInfo__metrics_collection_details">Pour aider à améliorer la qualité des appels, vous pouvez choisir d\'envoyer WhisperSystems des informations qui nous aideront à mieux comprendre la performance de RedPhone. Ces données ne sont jamais visibles à un tiers. Toutes les données métriques d\'appel sont cryptées avant d\'être stocké ou téléchargées sur les serveurs de WhisperSystem. Lorsqu\'elle est activée, les informations suivantes sont collectées lors de chaque appel:</string>
+  <string name="CallMetricsInfo__device_description">Description de l\'appareil</string>
+  <string name="CallMetricsInfo__device_description_explanation">Modèle, le fabricant, opérateur, type de connexion, version de l\'OS, UUID aléatoire persistante</string>
+  <string name="CallMetricsInfo__mic_and_codec_performance">Performance du Micro et du codec</string>
+  <string name="CallMetricsInfo__system_metrics_explanation">Charge CPU, utilisation de la mémoire</string>
+  <string name="CallQualityDialog_call_feedback">Évaluation Appel</string>
+  <string name="CallQualityDialog_call_quality">La qualité des appels</string>
+  <string name="CallQualityDialog_call_quality_rating">évaluation de la qualité des Appels</string>
+  <string name="CallQualityDialog__i_would_like_to_help_by_sending_performance_statistics">Envoyer indicateurs de performance</string>
+  <string name="CallQualityDialog__i_would_like_to_rate_the_quality_of_my_call_once_it_is_over">Permettez-moi de coter les appels après avoir terminé</string>
+  <string name="CallQualityDialog__redphone">RedPhone</string>
+  <string name="CallQualityDialog__we_re_making_changes">Nous apportons des changements</string>
+  <string name="CallQualityDialog__whispersystems_needs_your_help_pretext">Open WhisperSystems à besoin de votre aide. Comme nous travaillons à améliorer la qualité de nos appels, nous avons besoin de commentaires et mesures de performances pour améliorer le système.</string>
+  <string name="CallQualityDialog__linktext">En savoir plus sur la collecte de données</string>
+  <string name="CallQualityDialog__whispersystems_needs_your_help_posttext">Optez ci-dessous pour aider à rendre RedPhone meilleur.</string>
+  <string name="CallQualityDialog__you_can_update_these_settings_at_any_time_through_the_general_settings_menu">Vous pouvez mettre à jour ces préférences à tout moment via le menu des paramètres RedPhone</string>
+  <string name="CallQualityDialog__please_rate_the_audio_quality_of_the_call_below">S\'il vous plaît noter la qualité de cet appel</string>
+  <string name="CallQualityDialog__submit">soumettre</string>
+  <string name="CallQualityDialog__select_the_issues_that_affected_this_call">Sélectionnez les problèmes qui ont affecté cet appel</string>
+  <string name="CallQualityDialog__done">fait</string>
   <string name="CallScreen_incoming_call">Appel entrant...</string>
+  <string name="CallScreen_audio_menu_handset">combiné</string>
+  <string name="CallScreen_audio_menu_speaker">haut-parleur</string>
+  <string name="CallScreen_audio_menu_headset">Bluetooth</string>
   <string name="ContactsListActivity_loading">Chargement...</string>
   <string name="ContactsListActivity_no_contacts_found">Aucun contact trouvé.</string>
   <string name="CreateAccountActivity_register_your_redphone">S\'enregistrer à RedPhone</string>
@@ -61,6 +84,21 @@
   <string name="RegistrationProgressActivity_verifying_number">Vérification du numéro</string>
   <string name="RegistrationProgressActivity_edit_s">Modifier %s</string>
   <string name="RegistrationProgressActivity_registration_complete">Enregistrement fini !</string>
+  <string name="RegistrationProgressActivity_possible_problems">Les problèmes potentiels peuvent être</string>
+  <string name="RegistrationProgressActivity_you_must_enter_the_code_you_received_first">Vous devez entrer le code que vous avez reçu d\'abord ...</string>
+  <string name="RegistrationProgressActivity_connecting">Connexion en cours ...</string>
+  <string name="RegistrationProgressActivity_connecting_for_verification">Connexion pour vérification…</string>
+  <string name="RegistrationProgressActivity_network_error">Erreur réseau!</string>
+  <string name="RegistrationProgressActivity_unable_to_connect">Impossible de se connecter. S\'il vous plaît vérifier votre connexion réseau et réessayez.</string>
+  <string name="RegistrationProgressActivity_verification_failed">Échec de la vérification!</string>
+  <string name="RegistrationProgressActivity_the_verification_code_you_submitted_is_incorrect">Le code de vérification que vous avez soumis est incorrect. S\'il vous plaît essayer de nouveau.</string>
+  <string name="RegistrationProgressActivity_too_many_attempts">Trop de tentatives</string>
+  <string name="RegistrationProgressActivity_youve_submitted_an_incorrect_verification_code_too_many_times">Vous avez saisi un code de vérification erroné à plusieurs reprises. S\'il vous plaît attendez une minute avant de réessayer.</string>
+  <string name="RegistrationProgressActivity_server_error">Erreur de serveur</string>
+  <string name="RegistrationProgressActivity_the_server_encountered_an_error">Le serveur a rencontré une erreur. S\'il vous plaît essayer de nouveau.</string>
+  <string name="RegistrationProgressActivity_too_many_requests">Trop de demandes!</string>
+  <string name="RegistrationProgressActivity_youve_already_requested_a_voice_call">Vous avez déjà demandé récemment un appel vocal. Vous pouvez en demander un autre dans 20 minutes.</string>
+  <string name="RegistrationProgressActivity_verifying_voice_code">Vérification du code vocal ...</string>
   <string name="RegistrationService_registration_complete">Enregistrement fini</string>
   <string name="RegistrationService_redphone_registration_has_successfully_completed">L\'enregistrement de RedPhone s\'est bien fini.</string>
   <string name="RegistrationService_registration_error">Erreur d\'enregistrement</string>
@@ -69,6 +107,8 @@
   <string name="about_activity__attribution">Attribution:</string>
   <string name="about_activity__aboutText">Veuillez visiter whispersystems.org pour plus d\'informations, ou contactez support@whispersystems.org pour des problèmes, questions, or commentaires.</string>
   <string name="about_activity__attributionText">\nRedPhone est liée à la bibliothèque SpanDSP qui est régie par la LGPL.\n\nRedPhone utilise le codec SPEEX, qui est régi par la variante Xiph.Org de la licence BSD : © 2002-2003, Jean-Marc Valin/Fondation Xiph.Org\n\nLa redistribution du code source, modifié ou non, sous forme de binaire est soumise aux conditions suivantes :\n\n* Le copyright ci-dessus, la présente liste des conditions et l\'avertissement \nqui la suit doivent figurer dans le code source.\n\n* La documentation et/ou les fichiers accompagnant le code source distribué sous forme de binaire doivent faire apparaître le copyright ci-dessus, la présente liste des conditions et l\'avertissement qui la suit.\n\n* Le nom de la Fondation Xiph.Org, pas plus que ceux de ses collaborateurs, ne sauraient être utilisés dans le but de promouvoir ou de légitimer un produit dérivé de ce programme sans autorisation écrite préalable à cet effet.\n\nLA BIBLIOTHÈQUE SPEEX EST FOURNIE « TELLE QU\'EN L\'ÉTAT » PAR LES DÉTENTEURS DES DROITS D\'AUTEURS ET LEURS COLLABORATEURS ET IL N\'EST DONNÉ AUCUNE GARANTIE, IMPLICITE OU EXPLICITE, QUANT À SON UTILISATION COMMERCIALE, PROFESSIONNELLE OU AUTRE. LES DÉTENTEURS DES DROITS D\'AUTEURS ET LEURS COLLABORATEURS NE \nPEUVENT EN AUCUN CAS ÊTRE TENUS POUR RESPONSABLES DE QUELQUE DOMMAGE OU PRÉJUDICE DIRECT, INDIRECT, SECONDAIRE OU ACCESSOIRE (Y COMPRIS LES PERTES FINANCIÈRES DUES AU MANQUE À GAGNER, À L\'INTERRUPTION D\'ACTIVITÉS, OU LA PERTE D\'INFORMATIONS ET AUTRES) DÉCOULANT DE L\'UTILISATION DU PROGRAMME, OU DE L\'IMPOSSIBILITÉ D\'UTILISER CELUI-CI, ET DONT L\'UTILISATEUR ACCEPTE L\'ENTIÈRE RESPONSABILITÉ.\n\n\nCertains extraits audio sont régis par la licence Creative Commons Sampling Plus License: http://creativecommons.org/licenses/sampling+/1.0/\n\nPar acclivity (http://www.freesound.org/usersViewSingle.php?id=37876):\nShipsBell.wav (http://www.freesound.org/samplesViewSingle.php?id=32304)\n\nPar Splashdust (http://www.freesound.org/usersViewSingle.php?id=754949):\nnegativebeep.wav (http://www.freesound.org/samplesViewSingle.php?id=67454)\n\nPar Peter_Gross (http://www.freesound.org/usersViewSingle.php?id=33429):\nSonar_pings.ogg (http://www.freesound.org/samplesViewSingle.php?id=12677\n\nPar suonho: http://www.freesound.org/samplesViewSingle.php?id=58348: ambienta_soundtrack_moog_sweep\n\nPar Mike Koenig: Busy Signal</string>
+  <string name="call_controls__redphone_call">APPEL REDPHONE</string>
+  <string name="call_card__redphone_call">Appel RedPhone</string>
   <string name="create_account__register">S\'enregistrer</string>
   <string name="create_acount__please_confirm_your_country_code_and_phone_number">Pour faire et recevoir des appels sécurisés, RedPhone a besoin de vérifier votre numéro et de l\'enregistrer avec le système.\n\nVeuillez confirmer votre code pays et votre numéro pour ce téléphone.</string>
   <string name="create_account__your_country">VOTRE PAYS</string>
@@ -103,6 +143,12 @@
   <string name="preferences__reduce_latency_at_the_expense_of_audio_quality">Réduit le décalage audio, mais également la qualité</string>
   <string name="preferences__signaling_method">Méthode de notification</string>
   <string name="preferences__modify_the_method_used_to_notify_your_device_of_incoming_calls">Modifie la méthode utilisée pour notifier les appels entrants vers votre appareil.</string>
+  <string name="preferences__analytics_settings">Paramètres d\'analyses</string>
+  <string name="preferences__enable_call_metrics_upload">Envoyer les données</string>
+  <string name="preferences__enable_call_quality_dialog">Fournir des commentaires</string>
+  <string name="preferences__provide_feeback">Fournir des commentaires</string>
+  <string name="preferences__prompt_for_feedback_on_call_quality_after_call_has_ended">Demander des commentaires sur la qualité de l\'appel après que appel s\'est terminé</string>
+  <string name="preferences__securely_upload_metrics_to_improve_audio_quality">télécharger en toute sécurité des mesures pour améliorer la qualité audio</string>
   <string name="registration_progress__sms_verification_failed">vérification de SMS échouée</string>
   <string name="registration_progress__redphone_timed_out_while_waiting_for_an_sms_message_to_verify_your_phone_number">RedPhone a expiré en attendant un message SMS servant à la vérification de votre numéro.</string>
   <string name="registration_progress__edit_number">Modifier le numéro</string>
@@ -124,5 +170,9 @@
   <string name="registration_progress__waiting_for_sms_verification">Attente du SMS de vérification…</string>
   <string name="registration_progress__this_could_take_a_moment_please_be_patient_well_notify_you_when_verification_is_complete">Ceci peut prendre un moment. Veuillez patienter, nous vous indiquerons lorsque la vérification est complète.</string>
   <string name="registration_progress__waiting_for_sms">ATTENTE DU SMS</string>
+  <string name="registration_progress__voice_verification">Vérification vocale</string>
+  <string name="registration_progress__redphone_can_also_call_you_to_verify_your_number">RedPhone peut aussi vous appeler pour vérifier votre numéro. Appuyez sur «Call Me» et entrez le code à six chiffres que vous entendez ci-dessous.</string>
+  <string name="registration_progress__verify">vérifier</string>
+  <string name="registration_progress__call_me">appelez-moi</string>
   <!--EOF-->
 </resources>
