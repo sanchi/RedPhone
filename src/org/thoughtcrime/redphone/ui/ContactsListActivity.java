@@ -222,7 +222,7 @@ private void initializeSearch(android.widget.SearchView searchView) {
 
   private class ContactItemView extends RelativeLayout {
     private ImageView divider;
-    private ImageView sectionDivider;
+    private View sectionDivider;
     private TextView sectionLabel;
     private TextView name;
     private TextView number;
@@ -241,7 +241,7 @@ private void initializeSearch(android.widget.SearchView searchView) {
       this.type           = (TextView)findViewById(R.id.type);
       this.sectionLabel   = (TextView)findViewById(R.id.section_label);
       this.divider        = (ImageView)findViewById(R.id.divider);
-      this.sectionDivider = (ImageView)findViewById(R.id.section_divider);
+      this.sectionDivider = findViewById(R.id.section_divider);
       this.contactPhoto   = (QuickContactBadge)findViewById(R.id.contact_photo);
     }
 
