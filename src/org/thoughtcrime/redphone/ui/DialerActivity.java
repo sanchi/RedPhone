@@ -23,7 +23,9 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.ViewPager;
 import android.util.Log;
 
 import org.thoughtcrime.redphone.Constants;
@@ -55,6 +57,8 @@ public class DialerActivity extends SherlockFragmentActivity {
 
   private static final int CALL_LOG_TAB_INDEX = 1;
 
+  private ViewPager viewPager;
+
   @Override
   protected void onCreate(Bundle icicle) {
     super.onCreate(icicle);
@@ -68,9 +72,8 @@ public class DialerActivity extends SherlockFragmentActivity {
     checkForFreshInstall();
     setContentView(R.layout.dialer_activity);
 
-    setupContactsTab();
-    setupCallLogTab();
-    setupFavoritesTab();
+    setupViewPager();
+    setupTabs();
 
     GCMRegistrarHelper.registerClient(this, false);
   }
@@ -91,60 +94,49 @@ public class DialerActivity extends SherlockFragmentActivity {
     }
   }
 
-  private ActionBar.Tab constructTab(final Fragment fragment) {
-    ActionBar actionBar = this.getSupportActionBar();
-    ActionBar.Tab tab   = actionBar.newTab();
-
-    tab.setTabListener(new TabListener(){
+  private void setupViewPager() {
+    viewPager = (ViewPager) findViewById(R.id.pager);
+    viewPager.setAdapter(new DialerPagerAdapter(getSupportFragmentManager()));
+    viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
       @Override
-      public void onTabSelected(Tab tab, FragmentTransaction ignore) {
-        FragmentManager manager = DialerActivity.this.getSupportFragmentManager();
-        FragmentTransaction ft  = manager.beginTransaction();
-
-        ft.replace(R.id.fragment_container, fragment);
-        ft.commit();
+      public void onPageScrolled(int i, float v, int i2) {
       }
 
       @Override
-      public void onTabUnselected(Tab tab, FragmentTransaction ignore) {
-        FragmentManager manager = DialerActivity.this.getSupportFragmentManager();
-        FragmentTransaction ft  = manager.beginTransaction();
-        ft.remove(fragment);
-        ft.commit();
+      public void onPageSelected(int i) {
+        getSupportActionBar().setSelectedNavigationItem(i);
       }
+
       @Override
-      public void onTabReselected(Tab tab, FragmentTransaction ft) {}
+      public void onPageScrollStateChanged(int i) {
+      }
     });
-
-    return tab;
   }
 
-  private void setupContactsTab() {
-    final Fragment fragment   = Fragment.instantiate(DialerActivity.this,
-                                                     ContactsListActivity.class.getName());
-    ActionBar.Tab contactsTab = constructTab(fragment);
-    contactsTab.setIcon(R.drawable.ic_tab_contacts);
-    this.getSupportActionBar().addTab(contactsTab);
-  }
+  private void setupTabs() {
+    int[] icons = new int[] { R.drawable.ic_tab_contacts, R.drawable.ic_tab_recent, R.drawable.ic_tab_favorites };
 
-  private void setupCallLogTab() {
-    final Fragment fragment  = Fragment.instantiate(DialerActivity.this,
-                                                    RecentCallListActivity.class.getName());
-    ActionBar.Tab callLogTab = constructTab(fragment);
-    callLogTab.setIcon(R.drawable.ic_tab_recent);
-    this.getSupportActionBar().addTab(callLogTab);
-  }
+    for (int i = 0; i < icons.length; i++) {
+      ActionBar.Tab tab = getSupportActionBar().newTab();
+      tab.setIcon(icons[i]);
 
-  private void setupFavoritesTab() {
-    Bundle arguments = new Bundle();
-    arguments.putBoolean("favorites", true);
+      final int tabIndex = i;
+      tab.setTabListener(new TabListener() {
+        @Override
+        public void onTabSelected(Tab tab, FragmentTransaction ft) {
+          viewPager.setCurrentItem(tabIndex);
+        }
 
-    final Fragment fragment = Fragment.instantiate(DialerActivity.this,
-                                                   ContactsListActivity.class.getName(), arguments);
+        @Override
+        public void onTabUnselected(Tab tab, FragmentTransaction ft) {
+        }
 
-    ActionBar.Tab favoritesTab = constructTab(fragment);
-    favoritesTab.setIcon(R.drawable.ic_tab_favorites);
-    this.getSupportActionBar().addTab(favoritesTab);
+        @Override
+        public void onTabReselected(Tab tab, FragmentTransaction ft) {
+        }
+      });
+      getSupportActionBar().addTab(tab);
+    }
   }
 
   private void checkForFreshInstall() {
@@ -194,6 +186,36 @@ public class DialerActivity extends SherlockFragmentActivity {
 
   private void launchAboutActivity() {
     startActivity(new Intent(this, AboutActivity.class));
+  }
+
+  private static class DialerPagerAdapter extends FragmentPagerAdapter {
+
+    public DialerPagerAdapter(FragmentManager fm) {
+      super(fm);
+    }
+
+    @Override
+    public Fragment getItem(int i) {
+      switch (i) {
+        case 0:
+          return new ContactsListActivity();
+        case 1:
+          return new RecentCallListActivity();
+        case 2:
+        default:
+          ContactsListActivity fragment = new ContactsListActivity();
+          Bundle args = new Bundle();
+          args.putBoolean("favorites", true);
+          fragment.setArguments(args);
+          return fragment;
+      }
+    }
+
+    @Override
+    public int getCount() {
+      return 3;
+    }
+
   }
 
 }
