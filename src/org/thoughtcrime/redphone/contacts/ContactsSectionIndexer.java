@@ -44,6 +44,7 @@ public class ContactsSectionIndexer implements SectionIndexer {
         char lastSection = ' ';
         int i            = 0;
 
+        cursor.moveToPosition(-1);
         while (cursor.moveToNext()) {
           String item = cursor.getString(cursor.getColumnIndex(columnName)).trim().toUpperCase();
 
