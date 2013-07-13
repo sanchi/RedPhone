@@ -15,16 +15,19 @@
     <TextView android:id="@+id/section_label"
               android:layout_width="fill_parent"
               android:layout_height="wrap_content"
+              android:layout_marginLeft="8dp"
+              android:layout_marginTop="4dp"
+              android:layout_marginBottom="4dp"
               android:visibility="gone"
-              android:textColor="#ff00ddff"
-              android:textAppearance="?android:attr/textAppearanceLarge"/>
+              android:textColor="#33b5e5"
+              android:textAppearance="?android:attr/textAppearanceMedium"
+              android:textStyle="bold" />
 
-    <ImageView android:id="@+id/section_divider"
-               android:layout_width="fill_parent"
-               android:layout_height="1px"
-               android:visibility="gone"
-               android:layout_marginBottom="1dip"
-               android:src="@drawable/contacts_list_section_divider" />
+    <View android:id="@+id/section_divider"
+          android:layout_width="match_parent"
+          android:layout_height="1dp"
+          android:visibility="gone"
+          android:background="#33b5e5" />
 
     <LinearLayout android:layout_width="fill_parent"
                   android:layout_height="fill_parent"
