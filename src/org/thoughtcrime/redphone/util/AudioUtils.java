@@ -4,6 +4,7 @@ import android.content.Context;
 import android.media.AudioManager;
 import android.os.Build;
 import android.util.Log;
+import org.thoughtcrime.redphone.ui.ApplicationPreferencesActivity;
 
 /**
  * Utilities for manipulating device audio configuration
@@ -15,7 +16,6 @@ public class AudioUtils {
     am.setSpeakerphoneOn(false);
     am.setBluetoothScoOn(false);
     Log.d(TAG, "Set default audio routing");
-
   }
 
   public static void enableSpeakerphoneRouting(Context context) {

@@ -67,6 +67,7 @@ public class ApplicationPreferencesActivity extends SherlockPreferenceActivity {
   public static final String OPPORTUNISTIC_UPGRADE_PREF 	  = "pref_prompt_upgrade";
   public static final String CALL_QUALITY_QUESTIONS_PREF 	  = "pref_call_quality_questions";
   public static final String USER_ASKED_FOR_FEEDBACK_OPT_IN	= "pref_user_asked_to_opt_int_for_feedback";
+  public static final String BLUETOOTH_ENABLED              = "pref_bluetooth_enabled";
 
   private static final Gson gson = new Gson();
 
@@ -318,4 +319,9 @@ public class ApplicationPreferencesActivity extends SherlockPreferenceActivity {
         .putBoolean(ENABLE_CALL_QUALITY_DIALOG, value)
         .commit();
   }
+  public static boolean getBluetoothEnabled(Context context) {
+    return PreferenceManager
+      .getDefaultSharedPreferences(context).getBoolean(BLUETOOTH_ENABLED, true);
+  }
+
 }
