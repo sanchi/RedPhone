@@ -296,7 +296,7 @@ public class RegistrationProgressActivity extends SherlockActivity {
       registrationService.setRegistrationStateHandler(registrationStateHandler);
 
       RegistrationState state = registrationService.getRegistrationState();
-      registrationStateHandler.obtainMessage(state.state, state.number).sendToTarget();
+      registrationStateHandler.obtainMessage(state.state, state).sendToTarget();
 
       handleTimerUpdate();
     }
