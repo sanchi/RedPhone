@@ -65,6 +65,9 @@
   <string name="CallQualityDialog__select_the_issues_that_affected_this_call">Seleccione los problemas que afectaron esta llamada</string>
   <string name="CallQualityDialog__done">Listo</string>
   <string name="CallScreen_incoming_call">Llamada entrante...</string>
+  <string name="CallScreen_audio_menu_handset">Auricular</string>
+  <string name="CallScreen_audio_menu_speaker">Altavoz</string>
+  <string name="CallScreen_audio_menu_headset">Bluetooth</string>
   <string name="ContactsListActivity_loading">Cargando...</string>
   <string name="ContactsListActivity_no_contacts_found">Contactos no encontrados</string>
   <string name="CreateAccountActivity_register_your_redphone">Registra tu RedPhone</string>

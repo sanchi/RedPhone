@@ -44,6 +44,9 @@
   <string name="CallQualityDialog__i_would_like_to_help_by_sending_performance_statistics">Enviar métricas de performance</string>
   <string name="CallQualityDialog__redphone">RedPhone</string>
   <string name="CallScreen_incoming_call">Recebendo chamada...</string>
+  <string name="CallScreen_audio_menu_handset">Telefone</string>
+  <string name="CallScreen_audio_menu_speaker">Alto-falante</string>
+  <string name="CallScreen_audio_menu_headset">Bluetooth</string>
   <string name="ContactsListActivity_loading">Carregando...</string>
   <string name="ContactsListActivity_no_contacts_found">Nenhum contato encontrado.</string>
   <string name="CreateAccountActivity_register_your_redphone">Cadastre seu RedPhone</string>
@@ -76,6 +79,7 @@
   <string name="RegistrationProgressActivity_verification_failed">Verificação falhou!</string>
   <string name="RegistrationProgressActivity_the_verification_code_you_submitted_is_incorrect">O código de verificação que você enviou está incorreto. Favor tentar novamente.</string>
   <string name="RegistrationProgressActivity_the_server_encountered_an_error">O servidor teve um erro. Favor tentar novamente.</string>
+  <string name="RegistrationProblemsActivity_possible_problems">Possíveis Problemas</string>
   <string name="RegistrationService_registration_complete">Cadastro realizado</string>
   <string name="RegistrationService_redphone_registration_has_successfully_completed">Cadastro RedPhone realizado com sucesso.</string>
   <string name="RegistrationService_registration_error">Erro de cadastro</string>
@@ -142,5 +146,6 @@
   <string name="registration_progress__this_could_take_a_moment_please_be_patient_well_notify_you_when_verification_is_complete">Isso pode demorar. Seja paciente, avisaremos quando a verificação terminar.</string>
   <string name="registration_progress__waiting_for_sms">AGUARDANDO SMS</string>
   <string name="registration_progress__verify">Verificar</string>
+  <string name="registration_progress__call_me">Ligar para mim</string>
   <!--EOF-->
 </resources>

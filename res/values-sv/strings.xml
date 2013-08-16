@@ -65,6 +65,9 @@
   <string name="CallQualityDialog__select_the_issues_that_affected_this_call">Välj problem som uppstod under detta samtal</string>
   <string name="CallQualityDialog__done">Klar</string>
   <string name="CallScreen_incoming_call">Inkommande samtal...</string>
+  <string name="CallScreen_audio_menu_handset">Handenhet</string>
+  <string name="CallScreen_audio_menu_speaker">Högtalare</string>
+  <string name="CallScreen_audio_menu_headset">Bluetooth</string>
   <string name="ContactsListActivity_loading">Laddar...</string>
   <string name="ContactsListActivity_no_contacts_found">Inga kontakter funna.</string>
   <string name="CreateAccountActivity_register_your_redphone">Registrera din RedPhone</string>

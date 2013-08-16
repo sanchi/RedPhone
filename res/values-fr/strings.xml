@@ -1,14 +1,14 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources>
   <string name="app_name">Paramètres RedPhone</string>
-  <string name="RedPhone_id_like_to_call_you_securely_using_redphone_you_can_install_redphone_from_the_play_store_s">Je souhaite t\'appeler en toute sécurité avec RedPhone. Tu peux installer RedPhone à partir du Play Store: %s</string>
+  <string name="RedPhone_id_like_to_call_you_securely_using_redphone_you_can_install_redphone_from_the_play_store_s">Je tiens à vous appeler en toute sécurité en utilisant RedPhone. Vous pouvez installer RedPhone depuis Google Play: %s</string>
   <string name="RedPhone_answering">Se prépare à répondre...</string>
   <string name="RedPhone_ending_call">Appel terminé</string>
   <string name="RedPhone_dialing">Composition du numéro...</string>
   <string name="RedPhone_cancelling_call">Annulation de l\'appel</string>
   <string name="RedPhone_call_rejected">Appel rejeté</string>
   <string name="RedPhone_ringing">Sonne...</string>
-  <string name="RedPhone_busy">Correspondant occupé...</string>
+  <string name="RedPhone_busy">Occupé ...</string>
   <string name="RedPhone_connected">Connecté</string>
   <string name="RedPhone_connecting">Connexion en cours...</string>
   <string name="RedPhone_handshake_failed_exclamation">La négociation a échoué !</string>
@@ -35,15 +35,22 @@
   <string name="ApplicationPreferencesActivity_error_unregistering_with_c2dm_server">Erreur lors de la désinscription du serveur C2DM...</string>
   <string name="ApplicationPreferencesActivity_error_communicating_with_c2dm_server">Erreur lors de la communication avec le serveur C2DM...</string>
   <string name="CallMetricsInfo__metrics_collection_details">Pour aider à améliorer la qualité des appels, vous pouvez choisir d\'envoyer WhisperSystems des informations qui nous aideront à mieux comprendre la performance de RedPhone. Ces données ne sont jamais visibles à un tiers. Toutes les données métriques d\'appel sont cryptées avant d\'être stocké ou téléchargées sur les serveurs de WhisperSystem. Lorsqu\'elle est activée, les informations suivantes sont collectées lors de chaque appel:</string>
+  <string name="CallMetricsInfo__title">Indicateurs de qualité</string>
   <string name="CallMetricsInfo__device_description">Description de l\'appareil</string>
   <string name="CallMetricsInfo__device_description_explanation">Modèle, le fabricant, opérateur, type de connexion, version de l\'OS, UUID aléatoire persistante</string>
   <string name="CallMetricsInfo__mic_and_codec_performance">Performance du Micro et du codec</string>
+  <string name="CallMetricsInfo__packet_arrival">Packet de l\'arrivé pour l\'histogramme de l\'interval</string>
+  <string name="CallMetricsInfo__packet_arrival_explanation">Fournit des données de connectivité latence gigue</string>
+  <string name="CallMetricsInfo__audio_gap_fill_counts">Ecarts de remplissage Audio</string>
+  <string name="CallMetricsInfo__audio_gap_fill_counts_explanation">Indique quand le data manquant nécessite l\'audio synthétisé </string>
+  <string name="CallMetricsInfo__system_metrics">Indicateurs du système</string>
   <string name="CallMetricsInfo__system_metrics_explanation">Charge CPU, utilisation de la mémoire</string>
   <string name="CallQualityDialog_call_feedback">Évaluation Appel</string>
   <string name="CallQualityDialog_call_quality">La qualité des appels</string>
   <string name="CallQualityDialog_call_quality_rating">évaluation de la qualité des Appels</string>
   <string name="CallQualityDialog__i_would_like_to_help_by_sending_performance_statistics">Envoyer indicateurs de performance</string>
   <string name="CallQualityDialog__i_would_like_to_rate_the_quality_of_my_call_once_it_is_over">Permettez-moi de coter les appels après avoir terminé</string>
+  <string name="CallQualityDialog__provide_call_quality_feedback">Fournir une remarque sur la qualité des appels</string>
   <string name="CallQualityDialog__redphone">RedPhone</string>
   <string name="CallQualityDialog__we_re_making_changes">Nous apportons des changements</string>
   <string name="CallQualityDialog__whispersystems_needs_your_help_pretext">Open WhisperSystems à besoin de votre aide. Comme nous travaillons à améliorer la qualité de nos appels, nous avons besoin de commentaires et mesures de performances pour améliorer le système.</string>
@@ -94,11 +101,14 @@
   <string name="RegistrationProgressActivity_the_verification_code_you_submitted_is_incorrect">Le code de vérification que vous avez soumis est incorrect. S\'il vous plaît essayer de nouveau.</string>
   <string name="RegistrationProgressActivity_too_many_attempts">Trop de tentatives</string>
   <string name="RegistrationProgressActivity_youve_submitted_an_incorrect_verification_code_too_many_times">Vous avez saisi un code de vérification erroné à plusieurs reprises. S\'il vous plaît attendez une minute avant de réessayer.</string>
+  <string name="RegistrationProgressActivity_requesting_call">Demande appel en cours</string>
+  <string name="RegistrationProgressActivity_requesting_incoming_call">Demande en cours d\'une vérification d\'appel entrant..</string>
   <string name="RegistrationProgressActivity_server_error">Erreur de serveur</string>
   <string name="RegistrationProgressActivity_the_server_encountered_an_error">Le serveur a rencontré une erreur. S\'il vous plaît essayer de nouveau.</string>
   <string name="RegistrationProgressActivity_too_many_requests">Trop de demandes!</string>
   <string name="RegistrationProgressActivity_youve_already_requested_a_voice_call">Vous avez déjà demandé récemment un appel vocal. Vous pouvez en demander un autre dans 20 minutes.</string>
   <string name="RegistrationProgressActivity_verifying_voice_code">Vérification du code vocal ...</string>
+  <string name="RegistrationProblemsActivity_possible_problems">Problèmes potentiels</string>
   <string name="RegistrationService_registration_complete">Enregistrement fini</string>
   <string name="RegistrationService_redphone_registration_has_successfully_completed">L\'enregistrement de RedPhone s\'est bien fini.</string>
   <string name="RegistrationService_registration_error">Erreur d\'enregistrement</string>
