@@ -192,8 +192,8 @@
     <string name="preferences__provide_feeback">Provide Feedback</string>
     <string name="preferences__prompt_for_feedback_on_call_quality_after_call_has_ended">Prompt for feedback on call quality after call has ended</string>
     <string name="preferences__securely_upload_metrics_to_improve_audio_quality">Securely upload metrics to improve audio quality</string>
-    <string name="preferences__disable_bluetooth">Disable Bluetooth</string>
-    <string name="preferences__disable_bluetooth_summary">May resolve audio issues on some devices</string>
+    <string name="preferences__disable_bluetooth">Enable Bluetooth</string>
+    <string name="preferences__disable_bluetooth_summary">Disabling Bluetooth may resolve audio issues on some devices</string>
 
     <string name="registration_progress__sms_verification_failed">SMS verification failed.</string>
     <string name="registration_progress__redphone_timed_out_while_waiting_for_an_sms_message_to_verify_your_phone_number">RedPhone timed out while waiting for an SMS message to verify your phone number.</string>
