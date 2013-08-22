@@ -38,7 +38,8 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 
-    <application android:icon="@drawable/redphone_icon"
+    <application android:name="org.thoughtcrime.redphone.ApplicationListener"
+                 android:icon="@drawable/redphone_icon"
                  android:label="@string/app_name"
                  android:theme="@style/Theme.Sherlock.Light.DarkActionBar">
 
