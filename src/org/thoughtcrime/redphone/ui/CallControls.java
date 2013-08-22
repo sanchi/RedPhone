@@ -210,9 +210,11 @@ public class CallControls extends RelativeLayout {
   public void updateAudioButton() {
     audioButton.setAudioMode(AudioUtils.getCurrentAudioMode(getContext()));
 
-    IntentFilter filter = new IntentFilter();
-    filter.addAction(AudioUtils.getScoUpdateAction());
-    handleBluetoothIntent(getContext().registerReceiver(null, filter));
+    if(ApplicationPreferencesActivity.getBluetoothEnabled(getContext())) {
+      IntentFilter filter = new IntentFilter();
+      filter.addAction(AudioUtils.getScoUpdateAction());
+      handleBluetoothIntent(getContext().registerReceiver(null, filter));
+    }
   }
 
 
