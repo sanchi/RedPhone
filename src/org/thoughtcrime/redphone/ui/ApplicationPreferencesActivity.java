@@ -321,7 +321,7 @@ public class ApplicationPreferencesActivity extends SherlockPreferenceActivity {
   }
   public static boolean getBluetoothEnabled(Context context) {
     return PreferenceManager
-      .getDefaultSharedPreferences(context).getBoolean(BLUETOOTH_ENABLED, true);
+      .getDefaultSharedPreferences(context).getBoolean(BLUETOOTH_ENABLED, false);
   }
 
 }
