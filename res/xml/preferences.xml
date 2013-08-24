@@ -42,6 +42,10 @@
                         android:key="pref_min_latency"
                         android:title="@string/preferences__force_minimum_latency"
                         android:summary="@string/preferences__reduce_latency_at_the_expense_of_audio_quality" />
+    <CheckBoxPreference android:defaultValue="false"
+                        android:key="pref_bluetooth_enabled"
+                        android:title="@string/preferences__disable_bluetooth"
+                        android:summary="@string/preferences__disable_bluetooth_summary"/>
   </PreferenceCategory>
 </PreferenceScreen>
 

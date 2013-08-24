@@ -210,9 +210,11 @@ public class CallControls extends RelativeLayout {
   public void updateAudioButton() {
     audioButton.setAudioMode(AudioUtils.getCurrentAudioMode(getContext()));
 
-    IntentFilter filter = new IntentFilter();
-    filter.addAction(AudioUtils.getScoUpdateAction());
-    handleBluetoothIntent(getContext().registerReceiver(null, filter));
+    if(ApplicationPreferencesActivity.getBluetoothEnabled(getContext())) {
+      IntentFilter filter = new IntentFilter();
+      filter.addAction(AudioUtils.getScoUpdateAction());
+      handleBluetoothIntent(getContext().registerReceiver(null, filter));
+    }
   }
 
 
@@ -226,7 +228,8 @@ public class CallControls extends RelativeLayout {
     }
 
     Integer state = intent.getIntExtra(AudioManager.EXTRA_SCO_AUDIO_STATE, -1);
-    if (state.equals(AudioManager.SCO_AUDIO_STATE_CONNECTED)) {
+    if (state.equals(AudioManager.SCO_AUDIO_STATE_CONNECTED)
+      && ApplicationPreferencesActivity.getBluetoothEnabled(getContext())) {
       audioButton.setHeadsetAvailable(true);
     } else if (state.equals(AudioManager.SCO_AUDIO_STATE_DISCONNECTED)) {
       audioButton.setHeadsetAvailable(false);
