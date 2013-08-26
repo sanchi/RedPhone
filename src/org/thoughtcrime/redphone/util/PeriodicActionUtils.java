@@ -56,6 +56,7 @@ public class PeriodicActionUtils {
     }
 
     if (scheduledTime <= System.currentTimeMillis()) {
+      context.sendBroadcast(intent);
       scheduledTime = System.currentTimeMillis() + interval;
       preferences.edit().putLong(prefKey, scheduledTime).commit();
       Log.w("PeriodicActionUtils", "Scheduling for all new time: " + scheduledTime

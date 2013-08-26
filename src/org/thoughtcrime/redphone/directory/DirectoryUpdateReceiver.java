@@ -23,9 +23,11 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import org.thoughtcrime.redphone.Constants;
 import org.thoughtcrime.redphone.signaling.DirectoryResponse;
 import org.thoughtcrime.redphone.signaling.SignalingException;
 import org.thoughtcrime.redphone.signaling.SignalingSocket;
@@ -44,24 +46,34 @@ import java.util.Random;
 public class DirectoryUpdateReceiver extends BroadcastReceiver {
 
   @Override
-  public void onReceive(Context context, Intent intent) {
+  public void onReceive(final Context context, Intent intent) {
     Log.w("DirectoryUpdateReceiver", "Initiating scheduled directory update...");
 
-    try {
-      SignalingSocket signalingSocket = new SignalingSocket(context);
-      DirectoryResponse response      = signalingSocket.getNumberFilter();
+    SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
 
-      if (response != null) {
-        NumberFilter filter = new NumberFilter(response.getFilter(), response.getHashCount());
-        filter.serializeToFile(context);
-      }
-    } catch (SignalingException se) {
-      Log.w("DirectoryUpdateReceiver", se);
-    } catch (Exception e) {
-      Log.w("DirectoryUpdateReceiver", e);
-      return;
+    if (preferences.getBoolean(Constants.REGISTERED_PREFERENCE, false)) {
+      new AsyncTask<Void, Void, Void>() {
+        @Override
+        protected Void doInBackground(Void... params) {
+          try {
+            SignalingSocket signalingSocket = new SignalingSocket(context);
+            DirectoryResponse response      = signalingSocket.getNumberFilter();
+
+            if (response != null) {
+              NumberFilter filter = new NumberFilter(response.getFilter(), response.getHashCount());
+              filter.serializeToFile(context);
+            }
+          } catch (SignalingException se) {
+            Log.w("DirectoryUpdateReceiver", se);
+          } catch (Exception e) {
+            Log.w("DirectoryUpdateReceiver", e);
+          }
+
+          return null;
+        }
+      }.execute();
+
+      PeriodicActionUtils.scheduleUpdate(context, DirectoryUpdateReceiver.class);
     }
-
-    PeriodicActionUtils.scheduleUpdate(context, DirectoryUpdateReceiver.class);
   }
 }
