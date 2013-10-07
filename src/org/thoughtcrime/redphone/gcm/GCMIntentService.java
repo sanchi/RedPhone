@@ -49,7 +49,8 @@ public class GCMIntentService extends GCMBaseIntentService {
       intent.putExtra(Constants.REMOTE_NUMBER, callDetails.getInitiator());
       intent.putExtra(Constants.SESSION, new SessionDescriptor(callDetails.getHost(),
                                                                callDetails.getPort(),
-                                                               callDetails.getSessionId()));
+                                                               callDetails.getSessionId(),
+                                                               callDetails.getVersion()));
       context.startService(intent);
     }
   }
@@ -63,7 +64,8 @@ public class GCMIntentService extends GCMBaseIntentService {
                                                                            .getPlaintext());
 
       return new IncomingCallDetails(signal.getInitiator(), signal.getPort(),
-                                     signal.getSessionId(), signal.getServerName());
+                                     signal.getSessionId(), signal.getServerName(),
+                                     signal.getVersion());
     } catch (InvalidEncryptedSignalException e) {
       Log.w("GCMIntentService", e);
       return null;

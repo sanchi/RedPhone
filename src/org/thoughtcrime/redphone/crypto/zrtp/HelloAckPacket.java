@@ -34,7 +34,7 @@ public class HelloAckPacket extends HandshakePacket {
     super(packet);
   }
 
-  public HelloAckPacket() {
-    super(TYPE, 12);
+  public HelloAckPacket(boolean includeLegacyHeaderBug) {
+    super(TYPE, 12, includeLegacyHeaderBug);
   }
 }

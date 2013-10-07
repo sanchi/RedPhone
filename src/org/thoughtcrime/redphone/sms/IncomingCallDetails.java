@@ -32,12 +32,14 @@ public class IncomingCallDetails {
   private final int port;
   private final long sessionId;
   private final String host;
+  private final int version;
 
-  public IncomingCallDetails(String initiator, int port, long sessionId, String host) {
+  public IncomingCallDetails(String initiator, int port, long sessionId, String host, int version) {
     this.initiator = initiator;
     this.port      = port;
     this.sessionId = sessionId;
     this.host      = host;
+    this.version   = version;
   }
 
   public String getHost() {
@@ -54,5 +56,9 @@ public class IncomingCallDetails {
 
   public long getSessionId() {
     return sessionId;
+  }
+
+  public int getVersion() {
+    return version;
   }
 }

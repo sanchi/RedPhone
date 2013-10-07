@@ -47,32 +47,51 @@ public class HelloPacket extends HandshakePacket {
   private static final int ZID_LENGTH     = 12;
   private static final int MAC_LENGTH     = 8;
 
-  private static final int LENGTH_OFFSET  = MESSAGE_BASE   + MAGIC_LENGTH;
-  private static final int TYPE_OFFSET    = LENGTH_OFFSET  + LENGTH_LENGTH;
-  private static final int VERSION_OFFSET = TYPE_OFFSET    + TYPE_LENGTH;
-  private static final int CLIENT_OFFSET  = VERSION_OFFSET + VERSION_LENGTH;
-  private static final int H3_OFFSET      = CLIENT_OFFSET  + CLIENT_LENGTH;
-  private static final int ZID_OFFSET     = H3_OFFSET      + H3_LENGTH;
-  private static final int FLAGS_OFFSET   = ZID_OFFSET     + ZID_LENGTH;
+  private static final int _LENGTH_OFFSET  = MESSAGE_BASE    + MAGIC_LENGTH;
+  private static final int _TYPE_OFFSET    = _LENGTH_OFFSET  + LENGTH_LENGTH;
+  private static final int _VERSION_OFFSET = _TYPE_OFFSET    + TYPE_LENGTH;
+  private static final int _CLIENT_OFFSET  = _VERSION_OFFSET + VERSION_LENGTH;
+  private static final int _H3_OFFSET      = _CLIENT_OFFSET  + CLIENT_LENGTH;
+  private static final int _ZID_OFFSET     = _H3_OFFSET      + H3_LENGTH;
+  private static final int _FLAGS_OFFSET   = _ZID_OFFSET     + ZID_LENGTH;
 
-  private static final int HC_OFFSET      = FLAGS_OFFSET + 1;
-  private static final int CC_OFFSET      = FLAGS_OFFSET + 2;
-  private static final int AC_OFFSET      = FLAGS_OFFSET + 2;
-  private static final int KC_OFFSET      = FLAGS_OFFSET + 3;
-  private static final int SC_OFFSET      = FLAGS_OFFSET + 3;
+  private static final int _HC_OFFSET      = _FLAGS_OFFSET + 1;
+  private static final int _CC_OFFSET      = _FLAGS_OFFSET + 2;
+  private static final int _AC_OFFSET      = _FLAGS_OFFSET + 2;
+  private static final int _KC_OFFSET      = _FLAGS_OFFSET + 3;
+  private static final int _SC_OFFSET      = _FLAGS_OFFSET + 3;
 
-  private static final int OPTIONS_OFFSET = FLAGS_OFFSET + 4;
+  private static final int _OPTIONS_OFFSET = _FLAGS_OFFSET + 4;
+
+  private int LENGTH_OFFSET  = _LENGTH_OFFSET;
+  private int TYPE_OFFSET    = _TYPE_OFFSET;
+  private int VERSION_OFFSET = _VERSION_OFFSET;
+  private int CLIENT_OFFSET  = _CLIENT_OFFSET;
+  private int H3_OFFSET      = _H3_OFFSET;
+  private int ZID_OFFSET     = _ZID_OFFSET;
+  private int FLAGS_OFFSET   = _FLAGS_OFFSET;
+
+  private int HC_OFFSET      = _HC_OFFSET;
+  private int CC_OFFSET      = _CC_OFFSET;
+  private int AC_OFFSET      = _AC_OFFSET;
+  private int KC_OFFSET      = _KC_OFFSET;
+  private int SC_OFFSET      = _SC_OFFSET;
+
+  private int OPTIONS_OFFSET = _OPTIONS_OFFSET;
 
   public HelloPacket(RtpPacket packet) {
     super(packet);
+    fixOffsetsForHeaderBug();
   }
 
   public HelloPacket(RtpPacket packet, boolean deepCopy) {
     super(packet, deepCopy);
+    fixOffsetsForHeaderBug();
   }
 
-  public HelloPacket(HashChain hashChain, byte[] zid) {
-    super(TYPE, HELLO_MIN_LENGTH + OPTIONAL_VALUES_LENGTH);
+  public HelloPacket(HashChain hashChain, byte[] zid, boolean includeLegacyHeaderBug) {
+    super(TYPE, HELLO_MIN_LENGTH + OPTIONAL_VALUES_LENGTH, includeLegacyHeaderBug);
+    fixOffsetsForHeaderBug();
     setZrtpVersion();
     setClientId();
     setH3(hashChain.getH3());
@@ -184,5 +203,25 @@ public class HelloPacket extends HandshakePacket {
 
   private void setFlags() {
     // Leave flags empty.
+  }
+
+  private void fixOffsetsForHeaderBug() {
+    int headerBugOffset = getHeaderBugOffset();
+
+    LENGTH_OFFSET  += headerBugOffset;
+    TYPE_OFFSET    += headerBugOffset;
+    VERSION_OFFSET += headerBugOffset;
+    CLIENT_OFFSET  += headerBugOffset;
+    H3_OFFSET      += headerBugOffset;
+    ZID_OFFSET     += headerBugOffset;
+    FLAGS_OFFSET   += headerBugOffset;
+
+    HC_OFFSET      += headerBugOffset;
+    CC_OFFSET      += headerBugOffset;
+    AC_OFFSET      += headerBugOffset;
+    KC_OFFSET      += headerBugOffset;
+    SC_OFFSET      += headerBugOffset;
+
+    OPTIONS_OFFSET += headerBugOffset;
   }
 }

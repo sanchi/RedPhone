@@ -34,8 +34,8 @@ public class ConfAckPacket extends HandshakePacket {
     super(packet);
   }
 
-  public ConfAckPacket() {
-    super(TYPE, 12);
+  public ConfAckPacket(boolean includeLegacyHeaderBug) {
+    super(TYPE, 12, includeLegacyHeaderBug);
   }
 
 }

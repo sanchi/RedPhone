@@ -33,7 +33,11 @@ public class ConfirmTwoPacket extends ConfirmPacket {
     super(packet, legacy);
   }
 
-  public ConfirmTwoPacket(byte[] macKey, byte[] cipherKey, HashChain hashChain, boolean legacy) {
-    super(TYPE, macKey, cipherKey, hashChain, legacy);
+  public ConfirmTwoPacket(byte[] macKey, byte[] cipherKey, HashChain hashChain,
+                          boolean includeLegacyConfirmPacketBug,
+                          boolean includeLegacyHeaderBug)
+  {
+    super(TYPE, macKey, cipherKey, hashChain, includeLegacyConfirmPacketBug, includeLegacyHeaderBug);
   }
+
 }

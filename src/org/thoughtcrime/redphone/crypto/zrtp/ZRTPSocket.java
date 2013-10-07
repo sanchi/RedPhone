@@ -184,7 +184,7 @@ public abstract class ZRTPSocket {
   // however, results in compatibility issues with devices that do not have
   // the fix.  We're temporarily introducing a backwards compatibility setting
   // here, where we intentionally do the wrong thing for older devices.  We'll
-  // faze this out after a couple of months.
+  // phase this out after a couple of months.
   protected boolean isLegacyConfirmConnection() {
     RedPhoneClientId clientId = new RedPhoneClientId(getForeignHello().getClientId());
     return clientId.isLegacyConfirmConnectionVersion();

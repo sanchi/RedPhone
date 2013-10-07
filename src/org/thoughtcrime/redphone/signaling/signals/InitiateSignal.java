@@ -42,7 +42,7 @@ public class InitiateSignal extends Signal {
 
   @Override
   protected String getLocation() {
-    return "/session/" + remoteNumber;
+    return "/session/1/" + remoteNumber;
   }
 
   @Override

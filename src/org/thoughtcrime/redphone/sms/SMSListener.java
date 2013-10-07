@@ -58,7 +58,8 @@ public class SMSListener extends BroadcastReceiver {
     intent.putExtra(Constants.REMOTE_NUMBER, call.getInitiator());
     intent.putExtra(Constants.SESSION, new SessionDescriptor(call.getHost(),
                                                              call.getPort(),
-                                                             call.getSessionId()));
+                                                             call.getSessionId(),
+                                                             call.getVersion()));
     context.startService(intent);
   }
 

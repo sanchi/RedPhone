@@ -98,7 +98,8 @@ public class SMSProcessor {
                                         .parseFrom(encryptedSignalMessage.getPlaintext());
 
       return new IncomingCallDetails(signal.getInitiator(), signal.getPort(),
-                                     signal.getSessionId(), signal.getServerName());
+                                     signal.getSessionId(), signal.getServerName(),
+                                     signal.getVersion());
 
     } catch (InvalidEncryptedSignalException e) {
       Log.w("SMSProcessor", e);

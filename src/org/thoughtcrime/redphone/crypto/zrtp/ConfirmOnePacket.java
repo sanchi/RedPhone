@@ -34,7 +34,10 @@ public class ConfirmOnePacket extends ConfirmPacket {
     super(packet, legacy);
   }
 
-  public ConfirmOnePacket(byte[] macKey, byte[] cipherKey, HashChain hashChain, boolean legacy) {
-    super(TYPE, macKey, cipherKey, hashChain, legacy);
+  public ConfirmOnePacket(byte[] macKey, byte[] cipherKey, HashChain hashChain,
+                          boolean includeLegacyConfirmPacketBug,
+                          boolean includeLegacyHeaderBug)
+  {
+    super(TYPE, macKey, cipherKey, hashChain, includeLegacyConfirmPacketBug, includeLegacyHeaderBug);
   }
 }

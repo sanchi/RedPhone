@@ -51,30 +51,48 @@ public abstract class DHPacket extends HandshakePacket {
   protected static final int DH3K_DH_LENGTH = 468;
   protected static final int EC25_DH_LENGTH = 148;
 
-  private static final int LENGTH_OFFSET   = MESSAGE_BASE + 2;
-  private static final int HASH_OFFSET     = MESSAGE_BASE + 12;
-  private static final int RS1_OFFSET      = MESSAGE_BASE + 44;
-  private static final int RS2_OFFSET      = MESSAGE_BASE + 52;
-  private static final int AUX_OFFSET      = MESSAGE_BASE + 60;
-  private static final int PBX_OFFSET      = MESSAGE_BASE + 68;
-  private static final int PVR_OFFSET      = MESSAGE_BASE + 76;
-  private static final int DH3K_MAC_OFFSET = PVR_OFFSET + 384;
-  private static final int EC25_MAC_OFFSET = PVR_OFFSET + 64;
+  private static final int _LENGTH_OFFSET   = MESSAGE_BASE + 2;
+  private static final int _HASH_OFFSET     = MESSAGE_BASE + 12;
+  private static final int _RS1_OFFSET      = MESSAGE_BASE + 44;
+  private static final int _RS2_OFFSET      = MESSAGE_BASE + 52;
+  private static final int _AUX_OFFSET      = MESSAGE_BASE + 60;
+  private static final int _PBX_OFFSET      = MESSAGE_BASE + 68;
+  private static final int _PVR_OFFSET      = MESSAGE_BASE + 76;
+  private static final int _DH3K_MAC_OFFSET = _PVR_OFFSET + 384;
+  private static final int _EC25_MAC_OFFSET = _PVR_OFFSET + 64;
+
+  private int LENGTH_OFFSET   = _LENGTH_OFFSET;
+  private int HASH_OFFSET     = _HASH_OFFSET;
+  private int RS1_OFFSET      = _RS1_OFFSET;
+  private int RS2_OFFSET      = _RS2_OFFSET;
+  private int AUX_OFFSET      = _AUX_OFFSET;
+  private int PBX_OFFSET      = _PBX_OFFSET;
+  private int PVR_OFFSET      = _PVR_OFFSET;
+  private int DH3K_MAC_OFFSET = _DH3K_MAC_OFFSET;
+  private int EC25_MAC_OFFSET = _EC25_MAC_OFFSET;
 
   private final int agreementType;
 
   public DHPacket(RtpPacket packet, int agreementType) {
     super(packet);
     this.agreementType = agreementType;
+    fixOffsetsForHeaderBug();
   }
 
   public DHPacket(RtpPacket packet, int agreementType, boolean deepCopy) {
     super(packet, deepCopy);
     this.agreementType = agreementType;
+    fixOffsetsForHeaderBug();
   }
 
-  public DHPacket(String typeTag, int agreementType, HashChain hashChain, byte[] pvr, RetainedSecretsDerivatives retainedSecrets) {
-    super(typeTag, agreementType == DH3K_AGREEMENT_TYPE ? DH3K_DH_LENGTH : EC25_DH_LENGTH);
+  public DHPacket(String typeTag, int agreementType, HashChain hashChain, byte[] pvr,
+                  RetainedSecretsDerivatives retainedSecrets,
+                  boolean includeLegacyHeaderBug)
+  {
+    super(typeTag,
+          agreementType == DH3K_AGREEMENT_TYPE ? DH3K_DH_LENGTH : EC25_DH_LENGTH,
+          includeLegacyHeaderBug);
+    fixOffsetsForHeaderBug();
 
     setHash(hashChain.getH1());
     setState(retainedSecrets);
@@ -169,5 +187,19 @@ public abstract class DHPacket extends HandshakePacket {
     } catch (NoSuchAlgorithmException e) {
       throw new AssertionError(e);
     }
+  }
+
+  private void fixOffsetsForHeaderBug() {
+    int headerBugOffset = getHeaderBugOffset();
+
+    LENGTH_OFFSET   += headerBugOffset;
+    HASH_OFFSET     += headerBugOffset;
+    RS1_OFFSET      += headerBugOffset;
+    RS2_OFFSET      += headerBugOffset;
+    AUX_OFFSET      += headerBugOffset;
+    PBX_OFFSET      += headerBugOffset;
+    PVR_OFFSET      += headerBugOffset;
+    DH3K_MAC_OFFSET += headerBugOffset;
+    EC25_MAC_OFFSET += headerBugOffset;
   }
 }

@@ -38,7 +38,10 @@ public abstract class DHPartOnePacket extends DHPacket {
     super(packet, agreementType, deepCopy);
   }
 
-  public DHPartOnePacket(int agreementType, HashChain hashChain, byte[] pvr, RetainedSecretsDerivatives retainedSecrets) {
-    super(TYPE, agreementType, hashChain, pvr, retainedSecrets);
+  public DHPartOnePacket(int agreementType, HashChain hashChain, byte[] pvr,
+                         RetainedSecretsDerivatives retainedSecrets,
+                         boolean includeLegacyHeaderBug)
+  {
+    super(TYPE, agreementType, hashChain, pvr, retainedSecrets, includeLegacyHeaderBug);
   }
 }

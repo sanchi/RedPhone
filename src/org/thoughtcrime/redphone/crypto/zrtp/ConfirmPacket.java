@@ -50,24 +50,34 @@ public class ConfirmPacket extends HandshakePacket {
   private static final int CONFIRM_LENGTH   = 76;
   private static final int ENCRYPTED_LENGTH = 40;
 
-  private static final int LENGTH_OFFSET   = MESSAGE_BASE + 2;
-  private static final int HMAC_OFFSET     = MESSAGE_BASE + 12;
-  private static final int IV_OFFSET       = MESSAGE_BASE + 20;
-  private static final int PREIMAGE_OFFSET = MESSAGE_BASE + 36;
-  private static final int CACHE_OFFSET    = MESSAGE_BASE + 72;
+  private static final int _LENGTH_OFFSET   = MESSAGE_BASE + 2;
+  private static final int _HMAC_OFFSET     = MESSAGE_BASE + 12;
+  private static final int _IV_OFFSET       = MESSAGE_BASE + 20;
+  private static final int _PREIMAGE_OFFSET = MESSAGE_BASE + 36;
+  private static final int _CACHE_OFFSET    = MESSAGE_BASE + 72;
 
-  private final boolean legacy;
+  private int LENGTH_OFFSET   = _LENGTH_OFFSET;
+  private int HMAC_OFFSET     = _HMAC_OFFSET;
+  private int IV_OFFSET       = _IV_OFFSET;
+  private int PREIMAGE_OFFSET = _PREIMAGE_OFFSET;
+  private int CACHE_OFFSET    = _CACHE_OFFSET;
 
-  public ConfirmPacket(RtpPacket packet, boolean legacy) {
+  private final boolean includeLegacyConfirmPacketBug;
+
+  public ConfirmPacket(RtpPacket packet, boolean includeLegacyConfirmPacketBug) {
     super(packet);
-    this.legacy = legacy;
+    this.includeLegacyConfirmPacketBug = includeLegacyConfirmPacketBug;
+    fixOffsetsForHeaderBug();
   }
 
   public ConfirmPacket(String type, byte[] macKey, byte[] cipherKey,
-                       HashChain hashChain, boolean legacy)
+                       HashChain hashChain,
+                       boolean includeLegacyConfirmPacketBug,
+                       boolean includeLegacyHeaderBug)
   {
-    super(type, CONFIRM_LENGTH);
-    this.legacy = legacy;
+    super(type, CONFIRM_LENGTH, includeLegacyHeaderBug);
+    this.includeLegacyConfirmPacketBug = includeLegacyConfirmPacketBug;
+    fixOffsetsForHeaderBug();
     setPreimage(hashChain.getH0());
     setCacheTime();
     setIv();
@@ -136,7 +146,7 @@ public class ConfirmPacket extends HandshakePacket {
   private void setIv() {
     try {
       byte[] iv = new byte[16];
-      if (!legacy) { // Temporary implementation bug compatibility issue.  See note in ZRTPSocket.
+      if (!includeLegacyConfirmPacketBug) { // Temporary implementation bug compatibility issue.  See note in ZRTPSocket.
         SecureRandom.getInstance("SHA1PRNG").nextBytes(iv);
       }
       System.arraycopy(iv, 0, this.data, IV_OFFSET, iv.length);
@@ -183,5 +193,15 @@ public class ConfirmPacket extends HandshakePacket {
     byte[] cacheTime = new byte[4];
     System.arraycopy(this.data, CACHE_OFFSET, cacheTime, 0, cacheTime.length);
     return Conversions.byteArray4ToLong(cacheTime, 0);
+  }
+
+  private void fixOffsetsForHeaderBug() {
+    int headerBugOffset = getHeaderBugOffset();
+
+    LENGTH_OFFSET   += headerBugOffset;
+    HMAC_OFFSET     += headerBugOffset;
+    IV_OFFSET       += headerBugOffset;
+    PREIMAGE_OFFSET += headerBugOffset;
+    CACHE_OFFSET    += headerBugOffset;
   }
 }

@@ -38,8 +38,11 @@ public class DH3KDHPartTwoPacket extends DHPartTwoPacket {
     super(packet, DHPacket.DH3K_AGREEMENT_TYPE, deepCopy);
   }
 
-  public DH3KDHPartTwoPacket(HashChain hashChain, byte[] pvr, RetainedSecretsDerivatives retainedSecrets) {
-    super(DHPacket.DH3K_AGREEMENT_TYPE, hashChain, pvr, retainedSecrets);
+  public DH3KDHPartTwoPacket(HashChain hashChain, byte[] pvr,
+                             RetainedSecretsDerivatives retainedSecrets,
+                             boolean includeLegacyHeaderBug)
+  {
+    super(DHPacket.DH3K_AGREEMENT_TYPE, hashChain, pvr, retainedSecrets, includeLegacyHeaderBug);
   }
 
   @Override

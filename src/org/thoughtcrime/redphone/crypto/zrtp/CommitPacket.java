@@ -35,16 +35,27 @@ public class CommitPacket extends HandshakePacket {
   public  static final String TYPE          = "Commit  ";
   private static final int    COMMIT_LENGTH = 116;
 
-  private static final int LENGTH_OFFSET    = MESSAGE_BASE + 2;
-  private static final int HASH_OFFSET      = MESSAGE_BASE + 12;
-  private static final int ZID_OFFSET       = MESSAGE_BASE + 44;
-  private static final int HASH_SPEC_OFFSET = MESSAGE_BASE + 56;
-  private static final int CIPHER_OFFSET    = MESSAGE_BASE + 60;
-  private static final int AUTH_OFFSET      = MESSAGE_BASE + 64;
-  private static final int AGREEMENT_OFFSET = MESSAGE_BASE + 68;
-  private static final int SAS_OFFSET       = MESSAGE_BASE + 72;
-  private static final int HVI_OFFSET       = MESSAGE_BASE + 76;
-  private static final int MAC_OFFSET       = MESSAGE_BASE + 108;
+  private static final int _LENGTH_OFFSET    = MESSAGE_BASE + 2;
+  private static final int _HASH_OFFSET      = MESSAGE_BASE + 12;
+  private static final int _ZID_OFFSET       = MESSAGE_BASE + 44;
+  private static final int _HASH_SPEC_OFFSET = MESSAGE_BASE + 56;
+  private static final int _CIPHER_OFFSET    = MESSAGE_BASE + 60;
+  private static final int _AUTH_OFFSET      = MESSAGE_BASE + 64;
+  private static final int _AGREEMENT_OFFSET = MESSAGE_BASE + 68;
+  private static final int _SAS_OFFSET       = MESSAGE_BASE + 72;
+  private static final int _HVI_OFFSET       = MESSAGE_BASE + 76;
+  private static final int _MAC_OFFSET       = MESSAGE_BASE + 108;
+
+  private int LENGTH_OFFSET    = _LENGTH_OFFSET;
+  private int HASH_OFFSET      = _HASH_OFFSET;
+  private int ZID_OFFSET       = _ZID_OFFSET;
+  private int HASH_SPEC_OFFSET = _HASH_SPEC_OFFSET;
+  private int CIPHER_OFFSET    = _CIPHER_OFFSET;
+  private int AUTH_OFFSET      = _AUTH_OFFSET;
+  private int AGREEMENT_OFFSET = _AGREEMENT_OFFSET;
+  private int SAS_OFFSET       = _SAS_OFFSET;
+  private int HVI_OFFSET       = _HVI_OFFSET;
+  private int MAC_OFFSET       = _MAC_OFFSET;
 
   private static final byte[] HASH_SPEC      = {'S', '2', '5', '6'};
   private static final byte[] CIPHER_SPEC    = {'A', 'E', 'S', '1'};
@@ -53,17 +64,21 @@ public class CommitPacket extends HandshakePacket {
 
   public CommitPacket(RtpPacket packet) {
     super(packet);
+    fixOffsetsForHeaderBug();
   }
 
   public CommitPacket(RtpPacket packet, boolean deepCopy) {
     super(packet, deepCopy);
+    fixOffsetsForHeaderBug();
   }
 
   public CommitPacket(HashChain hashChain, byte[] helloBytes,
-                      DHPartTwoPacket dhPacket, byte[] zid)
+                      DHPartTwoPacket dhPacket, byte[] zid,
+                      boolean includeLegacyHeaderBug)
     throws InvalidPacketException
   {
-    super(TYPE, COMMIT_LENGTH);
+    super(TYPE, COMMIT_LENGTH, includeLegacyHeaderBug);
+    fixOffsetsForHeaderBug();
     setHash(hashChain.getH2());
     setZID(zid);
     setSpec(dhPacket.getAgreementSpec());
@@ -132,6 +147,21 @@ public class CommitPacket extends HandshakePacket {
     System.arraycopy(this.data, AGREEMENT_OFFSET, ka, 0, ka.length);
 
     return ka;
+  }
+
+  private void fixOffsetsForHeaderBug() {
+    int headerBugOffset = getHeaderBugOffset();
+
+    LENGTH_OFFSET    += headerBugOffset;
+    HASH_OFFSET      += headerBugOffset;
+    ZID_OFFSET       += headerBugOffset;
+    HASH_SPEC_OFFSET += headerBugOffset;
+    CIPHER_OFFSET    += headerBugOffset;
+    AUTH_OFFSET      += headerBugOffset;
+    AGREEMENT_OFFSET += headerBugOffset;
+    SAS_OFFSET       += headerBugOffset;
+    HVI_OFFSET       += headerBugOffset;
+    MAC_OFFSET       += headerBugOffset;
   }
 
 }

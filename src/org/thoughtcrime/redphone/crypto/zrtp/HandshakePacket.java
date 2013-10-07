@@ -45,39 +45,49 @@ import javax.crypto.spec.SecretKeySpec;
 
 public class HandshakePacket extends RtpPacket {
 
-  private static final int PREFIX_OFFSET  = 0;
-  private static final int PREFIX_VALUE   = 0x20;
-  private static final int COOKIE_OFFSET  = 4;
+  private   static final int PREFIX_OFFSET =  0;
+  private   static final int COOKIE_OFFSET =  4;
+  protected static final int MESSAGE_BASE  = 12;
 
-  protected static final int MESSAGE_BASE = 12 + RtpPacket.HEADER_LENGTH;
-  private static final int LENGTH_OFFSET  = MESSAGE_BASE + 2;
+  private static final int _MAGIC_OFFSET   = MESSAGE_BASE + 0;
+  private static final int _LENGTH_OFFSET  = MESSAGE_BASE + 2;
+  private static final int _TYPE_OFFSET    = MESSAGE_BASE + 4;
 
-  private static final int MAGIC_VALUE    = 0x505a;
-  private static final int MAGIC_OFFSET   = MESSAGE_BASE + 0;
-  private static final int TYPE_OFFSET    = MESSAGE_BASE + 4;
+  private int MAGIC_OFFSET  = _MAGIC_OFFSET;
+  private int LENGTH_OFFSET = _LENGTH_OFFSET;
+  private int TYPE_OFFSET   = _TYPE_OFFSET;
 
-  private static final int ZRTP_HEADERS_AND_FOOTER_LENGTH = 16;
+  private static final int  PREFIX_VALUE                   =       0x10;
+  private static final int  LEGACY_HEADER_BUG_PREFIX_VALUE =       0x20;
+  private static final int  MAGIC_VALUE                    =     0x505a;
+  private static final long COOKIE_VALUE                   = 0x5a525450;
+
+  private static final int ZRTP_CRC_LENGTH = 4;
 
   public HandshakePacket(RtpPacket packet) {
     super(packet.getPacket(), packet.getPacketLength());
+    fixOffsetsForHeaderBug();
   }
 
   public HandshakePacket(RtpPacket packet, boolean deepCopy) {
     super(packet.getPacket(), packet.getPacketLength(), deepCopy);
+    fixOffsetsForHeaderBug();
   }
 
-  public HandshakePacket(String type, int length) {
-    super(length + ZRTP_HEADERS_AND_FOOTER_LENGTH);
+  public HandshakePacket(String type, int length, boolean includeLegacyHeaderBug) {
+    super(length + ZRTP_CRC_LENGTH + (includeLegacyHeaderBug ? RtpPacket.HEADER_LENGTH : 0));
 
-    setLength(length);
-    setPrefix();
+    setPrefix(includeLegacyHeaderBug);
     setCookie();
+    fixOffsetsForHeaderBug();
+
     setMagic();
+    setLength(length);
     setType(type);
   }
 
   public byte[] getMessageBytes() throws InvalidPacketException {
-    if (this.getPacketLength() < LENGTH_OFFSET + 3)
+    if (this.getPacketLength() < (LENGTH_OFFSET + 3))
       throw new InvalidPacketException("Packet length shorter than length header.");
 
     int messagePacketLength = this.getLength();
@@ -85,18 +95,19 @@ public class HandshakePacket extends RtpPacket {
     if (messagePacketLength + 4 > this.getPacketLength())
       throw new InvalidPacketException("Encoded packet length longer than length of packet.");
 
-    byte[] messageBytes     = new byte[messagePacketLength];
-    System.arraycopy(this.data, MESSAGE_BASE, messageBytes, 0, messagePacketLength);
+    byte[] messageBytes = new byte[messagePacketLength];
+    System.arraycopy(this.data, getHeaderBugOffset() + MESSAGE_BASE, messageBytes, 0, messagePacketLength);
 
     return messageBytes;
   }
 
-  private void setCookie() {
-    Conversions.longTo4ByteArray(this.data, COOKIE_OFFSET, 0x5a525450);
+  private void setPrefix(boolean includeLegacyHeaderBug) {
+    if (includeLegacyHeaderBug) data[PREFIX_OFFSET] = LEGACY_HEADER_BUG_PREFIX_VALUE;
+    else                        data[PREFIX_OFFSET] = PREFIX_VALUE;
   }
 
-  private void setPrefix() {
-    data[PREFIX_OFFSET] = PREFIX_VALUE;
+  private void setCookie() {
+    Conversions.longTo4ByteArray(this.data, COOKIE_OFFSET, COOKIE_VALUE);
   }
 
   private int getLength() {
@@ -111,7 +122,7 @@ public class HandshakePacket extends RtpPacket {
     try {
       Mac mac = Mac.getInstance("HmacSHA256");
       mac.init(new SecretKeySpec(key, "HmacSHA256"));
-      mac.update(this.data, MESSAGE_BASE, messageLength);
+      mac.update(this.data, getHeaderBugOffset() + MESSAGE_BASE, messageLength);
       return mac.doFinal();
     } catch (NoSuchAlgorithmException e) {
       throw new IllegalArgumentException(e);
@@ -155,20 +166,21 @@ public class HandshakePacket extends RtpPacket {
     }
   }
 
-  private long calculateCRC() {
+  private long calculateCRC(byte[] data, int packetLength) {
     CRC32 crc = new CRC32();
-    crc.update(this.data, 0, this.getPacketLength()-4);
+    crc.update(data, 0, packetLength-4);
     return crc.getValue();
   }
 
   public boolean verifyCRC() {
-    long myCRC    = calculateCRC();
-    long theirCRC = Conversions.byteArray4ToLong(this.data, this.getPacketLength()-4);
+    long myCRC    = calculateCRC(this.data, getPacketLength());
+    long theirCRC = Conversions.byteArray4ToLong(this.data, getPacketLength()-4);
     return myCRC == theirCRC;
   }
 
   public void setCRC() {
-    Conversions.longTo4ByteArray(this.data, this.getPacketLength()-4, calculateCRC());
+    Conversions.longTo4ByteArray(this.data, getPacketLength()-4,
+                                 calculateCRC(this.data, this.getPacketLength()));
   }
 
   public String getType() {
@@ -185,6 +197,45 @@ public class HandshakePacket extends RtpPacket {
 
   private void setType(String type) {
     type.getBytes(0, type.length(), this.data, TYPE_OFFSET);
+  }
+
+  // NOTE <10-09-2013> :: The RedPhone ZRTP packet format had two problems with it:
+  //
+  // 1) The wrong bit was set in the 'version' byte (0x20 instead of 0x10).
+  //
+  // 2) Each handshake packet included 12 extra null bytes in between the ZRTP header
+  //    and the ZRTP 'message'.  These don't cause any problems or have any security
+  //    implications, but it's definitely incorrect.  In order not to break backwards
+  //    compatibility, we have to intentionally do the wrong thing when it looks like
+  //    we're talking with old clients.
+  //
+  // The initiator indicates that it's a "new" client by setting a version of 1 in the
+  // initiate signal.  The responder indicates that it's a "new" client by either setting
+  // the "new/correct" version byte (0x10) on the handshake packets it sends, or the
+  // "old/incorrect" version byte (0x20).
+  //
+  /// This is a complete mess and it fucks up most of the handshake packet code.  Eventually
+  //  we'll phase this out.
+  protected int getHeaderBugOffset() {
+    if (isLegacyHeaderBugPresent()) {
+      Log.w("HandshakePacket", "Returning offset for legacy handshake bug...");
+      return RtpPacket.HEADER_LENGTH;
+    } else {
+      Log.w("HandshakePacket", "Not including legacy handshake bug...");
+      return 0;
+    }
+  }
+
+  public boolean isLegacyHeaderBugPresent() {
+    return data[PREFIX_OFFSET] == LEGACY_HEADER_BUG_PREFIX_VALUE;
+  }
+
+  private void fixOffsetsForHeaderBug() {
+    int headerBugOffset = getHeaderBugOffset();
+
+    MAGIC_OFFSET  += headerBugOffset;
+    LENGTH_OFFSET += headerBugOffset;
+    TYPE_OFFSET   += headerBugOffset;
   }
 
 }

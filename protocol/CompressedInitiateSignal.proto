@@ -8,4 +8,5 @@ message CompressedInitiateSignal {
   optional uint64 sessionId = 2;
   optional uint32 port = 3;
   optional string serverName = 4;
+  optional uint32 version = 5;
 }

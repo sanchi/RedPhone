@@ -33,19 +33,22 @@ public class SessionDescriptor implements Parcelable {
   public int relayPort;
   public long sessionId;
   public String serverName;
+  public int version;
 
   public SessionDescriptor() {}
 
-  public SessionDescriptor(String serverName, int relayPort, long sessionId) {
+  public SessionDescriptor(String serverName, int relayPort, long sessionId, int version) {
     this.serverName = serverName;
     this.relayPort  = relayPort;
     this.sessionId  = sessionId;
+    this.version    = version;
   }
 
   public SessionDescriptor(Parcel in) {
     this.relayPort  = in.readInt();
     this.sessionId  = in.readLong();
     this.serverName = in.readString();
+    this.version    = in.readInt();
   }
 
   public String getFullServerName() {
@@ -61,12 +64,13 @@ public class SessionDescriptor implements Parcelable {
 
     return this.relayPort == that.relayPort &&
            this.sessionId == that.sessionId &&
-           this.serverName.equals(that.serverName);
+           this.serverName.equals(that.serverName) &&
+           this.version == that.version;
   }
 
   @Override
   public int hashCode() {
-    return this.relayPort ^ ((int)this.sessionId) ^ this.serverName.hashCode();
+    return this.relayPort ^ ((int)this.sessionId) ^ this.serverName.hashCode() ^ this.version;
   }
 
   @Override
@@ -79,6 +83,7 @@ public class SessionDescriptor implements Parcelable {
     dest.writeInt(relayPort);
     dest.writeLong(sessionId);
     dest.writeString(serverName);
+    dest.writeInt(version);
   }
 
   public static final Parcelable.Creator<SessionDescriptor> CREATOR =

@@ -38,8 +38,11 @@ public abstract class DHPartTwoPacket extends DHPacket {
     super(packet, agreementType, deepCopy);
   }
 
-  public DHPartTwoPacket(int agreementType, HashChain hashChain, byte[] pvr, RetainedSecretsDerivatives retainedSecrets) {
-    super(TYPE, agreementType, hashChain, pvr, retainedSecrets);
+  public DHPartTwoPacket(int agreementType, HashChain hashChain, byte[] pvr,
+                         RetainedSecretsDerivatives retainedSecrets,
+                         boolean includeLegacyHeaderBug)
+  {
+    super(TYPE, agreementType, hashChain, pvr, retainedSecrets, includeLegacyHeaderBug);
   }
 
   public abstract byte[] getAgreementSpec();

@@ -18,6 +18,7 @@
 package org.thoughtcrime.redphone.crypto.zrtp;
 
 import android.content.Context;
+import android.util.Log;
 
 import org.thoughtcrime.redphone.crypto.SecureRtpSocket;
 import org.thoughtcrime.redphone.crypto.zrtp.retained.ResponderRetainedSecretsCalculator;
@@ -43,12 +44,16 @@ public class ZRTPResponderSocket extends ZRTPSocket {
   private DHPartTwoPacket foreignDH;
 
   private RetainedSecretsCalculator retainedSecretsCalculator;
+  private boolean includeLegacyHeaderBug;
 
   public ZRTPResponderSocket(Context context, SecureRtpSocket socket,
-                             byte[] localZid, String foreignNumber)
+                             byte[] localZid, String foreignNumber,
+                             boolean includeLegacyHeaderBug)
   {
     super(context, socket, localZid, foreignNumber, EXPECTING_HELLO);
-    this.localHello = new HelloPacket(hashChain, localZid);
+    Log.w("ZRTPResponderSocket", "includeLegacyHeaderBug: " + includeLegacyHeaderBug);
+    this.includeLegacyHeaderBug = includeLegacyHeaderBug;
+    this.localHello             = new HelloPacket(hashChain, localZid, includeLegacyHeaderBug);
   }
 
   @Override
@@ -56,7 +61,7 @@ public class ZRTPResponderSocket extends ZRTPSocket {
     foreignHello = new HelloPacket(packet, true);
 
     setState(EXPECTING_COMMIT);
-    sendFreshPacket(new HelloAckPacket());
+    sendFreshPacket(new HelloAckPacket(includeLegacyHeaderBug));
   }
 
   @Override
@@ -68,8 +73,8 @@ public class ZRTPResponderSocket extends ZRTPSocket {
     RetainedSecretsDerivatives derivatives = retainedSecretsCalculator.getRetainedSecretsDerivatives();
 
     switch (getKeyAgreementType()) {
-    case KA_TYPE_EC25: localDH = new EC25DHPartOnePacket(hashChain, getPublicKey(), derivatives); break;
-    case KA_TYPE_DH3K: localDH = new DH3KDHPartOnePacket(hashChain, getPublicKey(), derivatives); break;
+    case KA_TYPE_EC25: localDH = new EC25DHPartOnePacket(hashChain, getPublicKey(), derivatives, includeLegacyHeaderBug); break;
+    case KA_TYPE_DH3K: localDH = new DH3KDHPartOnePacket(hashChain, getPublicKey(), derivatives, includeLegacyHeaderBug); break;
     }
 
     foreignHello.verifyMac(foreignCommit.getHash());
@@ -116,7 +121,8 @@ public class ZRTPResponderSocket extends ZRTPSocket {
     setState(EXPECTING_CONFIRM_TWO);
     sendFreshPacket(new ConfirmOnePacket(masterSecret.getResponderMacKey(),
                                          masterSecret.getResponderZrtpKey(),
-                                         this.hashChain, isLegacyConfirmConnection()));
+                                         this.hashChain, isLegacyConfirmConnection(),
+                                         includeLegacyHeaderBug));
   }
 
   @Override
@@ -130,7 +136,7 @@ public class ZRTPResponderSocket extends ZRTPSocket {
     foreignDH.verifyMac(preimage);
 
     setState(HANDSHAKE_COMPLETE);
-    sendFreshPacket(new ConfAckPacket());
+    sendFreshPacket(new ConfAckPacket(includeLegacyHeaderBug));
 
     boolean continuity = retainedSecretsCalculator.hasContinuity(foreignDH.getDerivativeSecretOne(),
                                                                  foreignDH.getDerivativeSecretTwo());

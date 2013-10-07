@@ -26,6 +26,10 @@ public final class CompressedInitiateSignalProtocol {
     // optional string serverName = 4;
     boolean hasServerName();
     String getServerName();
+    
+    // optional uint32 version = 5;
+    boolean hasVersion();
+    int getVersion();
   }
   public static final class CompressedInitiateSignal extends
       com.google.protobuf.GeneratedMessage
@@ -140,11 +144,22 @@ public final class CompressedInitiateSignalProtocol {
       }
     }
     
+    // optional uint32 version = 5;
+    public static final int VERSION_FIELD_NUMBER = 5;
+    private int version_;
+    public boolean hasVersion() {
+      return ((bitField0_ & 0x00000010) == 0x00000010);
+    }
+    public int getVersion() {
+      return version_;
+    }
+    
     private void initFields() {
       initiator_ = "";
       sessionId_ = 0L;
       port_ = 0;
       serverName_ = "";
+      version_ = 0;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -170,6 +185,9 @@ public final class CompressedInitiateSignalProtocol {
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
         output.writeBytes(4, getServerNameBytes());
       }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        output.writeUInt32(5, version_);
+      }
       getUnknownFields().writeTo(output);
     }
     
@@ -194,6 +212,10 @@ public final class CompressedInitiateSignalProtocol {
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(4, getServerNameBytes());
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(5, version_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -327,6 +349,8 @@ public final class CompressedInitiateSignalProtocol {
         bitField0_ = (bitField0_ & ~0x00000004);
         serverName_ = "";
         bitField0_ = (bitField0_ & ~0x00000008);
+        version_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000010);
         return this;
       }
       
@@ -381,6 +405,10 @@ public final class CompressedInitiateSignalProtocol {
           to_bitField0_ |= 0x00000008;
         }
         result.serverName_ = serverName_;
+        if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
+          to_bitField0_ |= 0x00000010;
+        }
+        result.version_ = version_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -408,6 +436,9 @@ public final class CompressedInitiateSignalProtocol {
         }
         if (other.hasServerName()) {
           setServerName(other.getServerName());
+        }
+        if (other.hasVersion()) {
+          setVersion(other.getVersion());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -458,6 +489,11 @@ public final class CompressedInitiateSignalProtocol {
             case 34: {
               bitField0_ |= 0x00000008;
               serverName_ = input.readBytes();
+              break;
+            }
+            case 40: {
+              bitField0_ |= 0x00000010;
+              version_ = input.readUInt32();
               break;
             }
           }
@@ -580,6 +616,27 @@ public final class CompressedInitiateSignalProtocol {
         onChanged();
       }
       
+      // optional uint32 version = 5;
+      private int version_ ;
+      public boolean hasVersion() {
+        return ((bitField0_ & 0x00000010) == 0x00000010);
+      }
+      public int getVersion() {
+        return version_;
+      }
+      public Builder setVersion(int value) {
+        bitField0_ |= 0x00000010;
+        version_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearVersion() {
+        bitField0_ = (bitField0_ & ~0x00000010);
+        version_ = 0;
+        onChanged();
+        return this;
+      }
+      
       // @@protoc_insertion_point(builder_scope:redphone.CompressedInitiateSignal)
     }
     
@@ -606,11 +663,11 @@ public final class CompressedInitiateSignalProtocol {
   static {
     java.lang.String[] descriptorData = {
       "\n\036CompressedInitiateSignal.proto\022\010redpho" +
-      "ne\"b\n\030CompressedInitiateSignal\022\021\n\tinitia" +
+      "ne\"s\n\030CompressedInitiateSignal\022\021\n\tinitia" +
       "tor\030\001 \001(\t\022\021\n\tsessionId\030\002 \001(\004\022\014\n\004port\030\003 \001" +
-      "(\r\022\022\n\nserverName\030\004 \001(\tBO\n+org.thoughtcri" +
-      "me.redphone.signaling.signalsB Compresse" +
-      "dInitiateSignalProtocol"
+      "(\r\022\022\n\nserverName\030\004 \001(\t\022\017\n\007version\030\005 \001(\rB" +
+      "O\n+org.thoughtcrime.redphone.signaling.s" +
+      "ignalsB CompressedInitiateSignalProtocol"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -622,7 +679,7 @@ public final class CompressedInitiateSignalProtocol {
           internal_static_redphone_CompressedInitiateSignal_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_redphone_CompressedInitiateSignal_descriptor,
-              new java.lang.String[] { "Initiator", "SessionId", "Port", "ServerName", },
+              new java.lang.String[] { "Initiator", "SessionId", "Port", "ServerName", "Version", },
               org.thoughtcrime.redphone.signaling.signals.CompressedInitiateSignalProtocol.CompressedInitiateSignal.class,
               org.thoughtcrime.redphone.signaling.signals.CompressedInitiateSignalProtocol.CompressedInitiateSignal.Builder.class);
           return null;
