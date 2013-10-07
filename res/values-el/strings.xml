@@ -162,6 +162,8 @@
   <string name="preferences__provide_feeback">Παροχή σχολίoυ</string>
   <string name="preferences__prompt_for_feedback_on_call_quality_after_call_has_ended">Προτροπή για ενημέρωση σχετικά με την ποιότητα της κλήσης μετά την κλήση που έχει τελειώσει</string>
   <string name="preferences__securely_upload_metrics_to_improve_audio_quality">Ασφαλής μεταφορτώση μετρήσεων για τη βελτίωση της ποιότητας του ήχου</string>
+  <string name="preferences__disable_bluetooth">Ενεργοποίηση Bluetooth</string>
+  <string name="preferences__disable_bluetooth_summary">Απενεργοποιώντας το Bluetooth μπορεί να λύσει προβλήματα με τον ήχο σε μερικές συσκεύες</string>
   <string name="registration_progress__sms_verification_failed">Η SMS επαλήθευση απέτυχε. </string>
   <string name="registration_progress__redphone_timed_out_while_waiting_for_an_sms_message_to_verify_your_phone_number">Το RedPhone διακοπηκε, ενώ περιμένετε ένα μήνυμα SMS για να επαληθεύθη ο αριθμός του τηλεφώνου σας.</string>
   <string name="registration_progress__edit_number">Επεξεργασια αριθμου</string>

@@ -162,6 +162,8 @@
   <string name="preferences__provide_feeback">توفير ملاحظات</string>
   <string name="preferences__prompt_for_feedback_on_call_quality_after_call_has_ended">مطالبة بملاحظات حول جودة المكالمة بعد انتهائها</string>
   <string name="preferences__securely_upload_metrics_to_improve_audio_quality">قم بتحديث آمن للقياسات لتحسين جودة الصوت</string>
+  <string name="preferences__disable_bluetooth">تمكينBluetooth </string>
+  <string name="preferences__disable_bluetooth_summary">تعطيل Bluetooth يمكنه حل مشكلة الصوت لبعض الأجهزة</string>
   <string name="registration_progress__sms_verification_failed">فشل التحقق من رسالة نصّية.</string>
   <string name="registration_progress__redphone_timed_out_while_waiting_for_an_sms_message_to_verify_your_phone_number">لقد إنتهى وقت RedPhone خلال إنتظاررسالة نصّية للتحقق من رقم هاتفك.</string>
   <string name="registration_progress__edit_number">تعديل رقم</string>

@@ -161,6 +161,8 @@
   <string name="preferences__provide_feeback">Posreduj povratne informacije</string>
   <string name="preferences__prompt_for_feedback_on_call_quality_after_call_has_ended">Ob koncu klica vprašaj za povratne informacije o njegovi kvaliteti</string>
   <string name="preferences__securely_upload_metrics_to_improve_audio_quality">Varno naloži podatke za izboljšavo kvalitete zvoka</string>
+  <string name="preferences__disable_bluetooth">Vključi Bluetooth</string>
+  <string name="preferences__disable_bluetooth_summary">Izklop Bluetootha lahko odpravi težave z zvokom na nekaterih napravah</string>
   <string name="registration_progress__sms_verification_failed">SMS verifikacija ni bila uspešna.</string>
   <string name="registration_progress__redphone_timed_out_while_waiting_for_an_sms_message_to_verify_your_phone_number">Časovna omejitev za SMS potrditev vaše telefonske številke je potekla.</string>
   <string name="registration_progress__edit_number">Uredi številko</string>

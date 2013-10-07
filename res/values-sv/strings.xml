@@ -162,6 +162,8 @@
   <string name="preferences__provide_feeback">Ge feedback</string>
   <string name="preferences__prompt_for_feedback_on_call_quality_after_call_has_ended">Fråga efter feedback om samtalskvalitét efter samtal avslutats</string>
   <string name="preferences__securely_upload_metrics_to_improve_audio_quality">Ladda säkert upp data för att förbättra ljudkvalitén</string>
+  <string name="preferences__disable_bluetooth">Aktivera Bluetooth</string>
+  <string name="preferences__disable_bluetooth_summary">Att inaktivera Bluetooth kan lösa ljudproblem på vissa enheter</string>
   <string name="registration_progress__sms_verification_failed">SMS verifikation misslyckades.</string>
   <string name="registration_progress__redphone_timed_out_while_waiting_for_an_sms_message_to_verify_your_phone_number">RedPhone pausade under väntan på ett SMS meddelande för att verifiera ditt telefonnummer.</string>
   <string name="registration_progress__edit_number">Ändra Nummer</string>

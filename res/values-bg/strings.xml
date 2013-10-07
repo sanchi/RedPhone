@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources>
-  <string name="app_name">RedPhone</string>
+  <string name="app_name">Редфон</string>
   <string name="RedPhone_id_like_to_call_you_securely_using_redphone_you_can_install_redphone_from_the_play_store_s">Бих искал да ви се обадя засекретено с RedPhone. Можете да инсталирате RedPhone от Play Store:% S</string>
   <string name="RedPhone_answering">Отговор...</string>
   <string name="RedPhone_ending_call">Край на разговора</string>
@@ -162,6 +162,8 @@
   <string name="preferences__provide_feeback">Дайте обратна връзка</string>
   <string name="preferences__prompt_for_feedback_on_call_quality_after_call_has_ended">Питай за обратна връзка относно качеството на разговора след  приключването му</string>
   <string name="preferences__securely_upload_metrics_to_improve_audio_quality">Изпратете защитено показатели за подобряване на качеството на звука</string>
+  <string name="preferences__disable_bluetooth">Стартирай блутут</string>
+  <string name="preferences__disable_bluetooth_summary">Забраняването на Bluetooth  може да реши аудио проблемите на някои устройства</string>
   <string name="registration_progress__sms_verification_failed">Проверката с SMS се провали.</string>
   <string name="registration_progress__redphone_timed_out_while_waiting_for_an_sms_message_to_verify_your_phone_number">Времето изтече, докато се чакаше за SMS съобщение за проверка на  телефонния Ви номер.</string>
   <string name="registration_progress__edit_number">Редактиране на номер</string>

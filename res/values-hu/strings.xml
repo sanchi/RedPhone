@@ -41,6 +41,8 @@
   <string name="CallQualityDialog_call_quality_rating">Hívásminőség értékelés</string>
   <string name="CallQualityDialog__provide_call_quality_feedback">Hívásminőség visszajelzés küldés</string>
   <string name="CallQualityDialog__redphone">RedPhone</string>
+  <string name="CallQualityDialog__linktext">Tudj meg többet az adatgyűjtésről</string>
+  <string name="CallQualityDialog__please_rate_the_audio_quality_of_the_call_below">Kérjük értékeld a hívás minőségét</string>
   <string name="CallQualityDialog__submit">Beküldés</string>
   <string name="CallQualityDialog__done">Kész</string>
   <string name="CallScreen_incoming_call">Bejövő hívás...</string>
@@ -73,7 +75,9 @@
   <string name="RegistrationProgressActivity_edit_s">%s szerkesztés</string>
   <string name="RegistrationProgressActivity_registration_complete">A regisztráció sikeres!</string>
   <string name="RegistrationProgressActivity_possible_problems">Lehetséges problémák.</string>
+  <string name="RegistrationProgressActivity_you_must_enter_the_code_you_received_first">Előbb add meg a kapott kódot...</string>
   <string name="RegistrationProgressActivity_connecting">Kapcsolódás</string>
+  <string name="RegistrationProgressActivity_connecting_for_verification">Kapcsolódás a hitelesítéshez...</string>
   <string name="RegistrationProgressActivity_network_error">Hálózati hiba!</string>
   <string name="RegistrationProgressActivity_verification_failed">Ellenőrzés sikertelen!</string>
   <string name="RegistrationProgressActivity_too_many_attempts">Túl sok próbálkozás</string>
@@ -127,6 +131,8 @@
   <string name="preferences__enable_call_metrics_upload">Adatküldés</string>
   <string name="preferences__enable_call_quality_dialog">Visszajelzés küldés</string>
   <string name="preferences__provide_feeback">Visszajelzés küldés</string>
+  <string name="preferences__disable_bluetooth">Bluetooth engedélyezés</string>
+  <string name="preferences__disable_bluetooth_summary">A Bluetooth kikapcsolása bizonyos eszközöknél megszünteti a hang problémákat</string>
   <string name="registration_progress__sms_verification_failed">Az SMS ellenőrzés sikertelen.</string>
   <string name="registration_progress__redphone_timed_out_while_waiting_for_an_sms_message_to_verify_your_phone_number">A RedPhone időtúllépésbe került miközben a telefonszámod ellenőrzésének érdekében a beérkező SMS-re várt.</string>
   <string name="registration_progress__edit_number">Szám szerkesztés</string>

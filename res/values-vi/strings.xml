@@ -162,6 +162,8 @@
   <string name="preferences__provide_feeback">Cung cấp phản hồi</string>
   <string name="preferences__prompt_for_feedback_on_call_quality_after_call_has_ended">Nhắc nhở gửi phản hồi về chất lượng cuộc gọi khi cuộc gọi đã kết thúc</string>
   <string name="preferences__securely_upload_metrics_to_improve_audio_quality">Tải lên ngầm an toàn nhằm cải thiện chất lượng audio</string>
+  <string name="preferences__disable_bluetooth">Bật chế độ Bluetooth</string>
+  <string name="preferences__disable_bluetooth_summary">Tắt chế độ Bluetooth có thể dẫn đến trục trặc về audio trên một số thiết bị</string>
   <string name="registration_progress__sms_verification_failed">Thất bại khi xác nhận thông qua SMS.</string>
   <string name="registration_progress__redphone_timed_out_while_waiting_for_an_sms_message_to_verify_your_phone_number">Thời gian hạn định khi RedPhone chờ tín hiệu từ tin nhắn SMS để xác nhận số điện thoại của bạn.</string>
   <string name="registration_progress__edit_number">Chỉnh sửa số</string>
