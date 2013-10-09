@@ -34,6 +34,8 @@ public class SecureRtpPacket extends RtpPacket {
 
   public SecureRtpPacket(int payloadLength) {
     super(payloadLength + MAC_SIZE);
+    setVersion();
+    setTimeStamp(System.currentTimeMillis());
   }
 
   public SecureRtpPacket(RtpPacket packet) {

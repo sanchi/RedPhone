@@ -184,6 +184,10 @@ public class HandshakePacket extends RtpPacket {
   }
 
   public String getType() {
+    if (this.data[PREFIX_OFFSET] != 0x10 && this.data[PREFIX_OFFSET] != 0x20) {
+      return ConfAckPacket.TYPE;
+    }
+
     try {
       return new String(data, TYPE_OFFSET, 8, "UTF-8");
     } catch (UnsupportedEncodingException e) {

@@ -28,8 +28,9 @@ import org.thoughtcrime.redphone.util.Conversions;
  * @author Stuart O. Anderson
  */
 public class RtpPacket {
-  public final static int PACKET_VERSION   = 2;
-  protected static final int HEADER_LENGTH = 12;
+
+  private   static final int PACKET_VERSION =  2;
+  protected static final int HEADER_LENGTH  = 12;
 
   protected byte data[];
   protected int packetLength;

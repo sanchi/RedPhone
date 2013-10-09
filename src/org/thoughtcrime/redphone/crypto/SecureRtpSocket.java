@@ -75,13 +75,13 @@ public class SecureRtpSocket {
     socket.send(packet);
   }
 
-  public HandshakePacket receiveHandshakePacket() throws IOException {
+  public HandshakePacket receiveHandshakePacket(boolean verifyCRC) throws IOException {
     RtpPacket barePacket = socket.receive();
     if (barePacket == null)
       return null;
 
     HandshakePacket handshakePacket = new HandshakePacket(barePacket);
-    if (handshakePacket.verifyCRC())
+    if (!verifyCRC || handshakePacket.verifyCRC())
       return handshakePacket;
     else {
       Log.w("SecureRedPhoneSocket", "Bad CRC!");

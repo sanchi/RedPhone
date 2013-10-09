@@ -19,17 +19,18 @@ package org.thoughtcrime.redphone.crypto.zrtp;
 
 import android.content.Context;
 import android.util.Log;
-import android.util.Pair;
 
 import org.spongycastle.jce.interfaces.ECPublicKey;
 import org.spongycastle.math.ec.ECPoint;
 import org.thoughtcrime.redphone.Release;
 import org.thoughtcrime.redphone.crypto.SecureRtpSocket;
 import org.thoughtcrime.redphone.crypto.zrtp.retained.RetainedSecrets;
-import org.thoughtcrime.redphone.database.RetainedSecretsDatabase;
 import org.thoughtcrime.redphone.database.DatabaseFactory;
+import org.thoughtcrime.redphone.database.RetainedSecretsDatabase;
 import org.thoughtcrime.redphone.util.Conversions;
 
+import javax.crypto.interfaces.DHPublicKey;
+import javax.crypto.spec.DHParameterSpec;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.InvalidAlgorithmParameterException;
@@ -39,9 +40,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.Security;
 import java.security.spec.ECGenParameterSpec;
-
-import javax.crypto.interfaces.DHPublicKey;
-import javax.crypto.spec.DHParameterSpec;
 
 /**
  * The base ZRTP socket implementation.
@@ -296,7 +294,7 @@ public abstract class ZRTPSocket {
   public void negotiateStart() throws NegotiationFailedException {
     try {
       while (state == EXPECTING_HELLO) {
-        HandshakePacket packet = socket.receiveHandshakePacket();
+        HandshakePacket packet = socket.receiveHandshakePacket(true);
 
         if (packet == null) {
           resendPacketIfTimeout();
@@ -320,7 +318,7 @@ public abstract class ZRTPSocket {
     try {
       while (state != HANDSHAKE_COMPLETE && state != TERMINATED) {
 
-        HandshakePacket packet = socket.receiveHandshakePacket();
+        HandshakePacket packet = socket.receiveHandshakePacket(state != EXPECTING_CONFIRM_ACK);
 
         if( packet != null ) {
           Log.w("ZRTPSocket", "Received packet: " + (packet != null ? packet.getType() : "null"));
