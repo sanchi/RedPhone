@@ -25,7 +25,7 @@
   <string name="RedPhone_codec_failed_to_initialize">Inicializacija kodeka neuspešna</string>
   <string name="RedPhoneService_missed_redphone_call">Zgrešen klic na RedPhone</string>
   <string name="MicrophoneReader_microphone_failed_to_initialize_try_changing_audio_call_mode_in_settings">Inicializacija mikrofona neuspešna. Poskusite spremeniti način zvočnega klicanja v nastavitvah.</string>
-  <string name="RobustAudioTrack_audiotrack_did_not_initialize">\"AudioTrack\" se ni inicializiral.</string>
+  <string name="RobustAudioTrack_audiotrack_did_not_initialize">AudioTrack se ni pognal</string>
   <string name="AboutActivity_about_redphone">O programu RedPhone</string>
   <string name="AboutActivity_redphone_beta_s">RedPhone Beta %s</string>
   <string name="ApplicationPreferencesActivity_redphone_settings">Nastavitve RedPhone</string>
@@ -55,6 +55,7 @@
   <string name="CallQualityDialog__i_would_like_to_rate_the_quality_of_my_call_once_it_is_over">Dovoli oceno kvalitete klicev po njihovem zaključku</string>
   <string name="CallQualityDialog__provide_call_quality_feedback">Posreduj povratne informacije o kvaliteti klica</string>
   <string name="CallQualityDialog__redphone">RedPhone</string>
+  <string name="CallQualityDialog__we_re_making_changes">Ustvarjamo spremembe</string>
   <string name="CallQualityDialog__whispersystems_needs_your_help_pretext">Open WhisperSystems potrebuje vašo pomoč. Za zagotavljanje čim boljše kvalitete vaših klicev potrebujemo povratne informacije in karakteristike delovanja aplikacije na vaši napravi.</string>
   <string name="CallQualityDialog__linktext">Več o zbiranju podatkov</string>
   <string name="CallQualityDialog__whispersystems_needs_your_help_posttext">.\n\nZa izboljšenje aplikacije RedPhone označite spodaj.</string>

@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources>
   <string name="app_name">RedPhone</string>
-  <string name="RedPhone_id_like_to_call_you_securely_using_redphone_you_can_install_redphone_from_the_play_store_s">我想邀請你使用紅鋒安全免費網絡電話。你可以從谷歌應用商店下載安裝紅鋒安全免費網絡電話，點擊此鏈接下載：%s</string>
+  <string name="RedPhone_id_like_to_call_you_securely_using_redphone_you_can_install_redphone_from_the_play_store_s">我想用RedPhone加密電話軟體與你通話，你可以到Google play去下載安裝，請點這裡下載:%s</string>
   <string name="RedPhone_answering">應答中...</string>
   <string name="RedPhone_ending_call">結束通話</string>
   <string name="RedPhone_dialing">撥號中...</string>
@@ -14,7 +14,7 @@
   <string name="RedPhone_handshake_failed_exclamation">握手失敗！</string>
   <string name="RedPhone_recipient_unavailable">對方沒注冊</string>
   <string name="RedPhone_performing_handshake">握手中...</string>
-  <string name="RedPhone_server_failed_exclamation">服務器失敗！</string>
+  <string name="RedPhone_server_failed_exclamation">服務器異常！</string>
   <string name="RedPhone_client_failed">客戶端失敗！</string>
   <string name="RedPhone_login_failed_exclamation">登錄失敗！</string>
   <string name="RedPhone_message_from_the_server">來自服務器的消息</string>
@@ -162,6 +162,8 @@
   <string name="preferences__provide_feeback">提供意見</string>
   <string name="preferences__prompt_for_feedback_on_call_quality_after_call_has_ended">在通話結束後，提示反饋通話質量</string>
   <string name="preferences__securely_upload_metrics_to_improve_audio_quality">安全上傳測量數據以提高音頻質量</string>
+  <string name="preferences__disable_bluetooth">啟動藍芽耳機</string>
+  <string name="preferences__disable_bluetooth_summary">如果使用靜音保留功能將關閉藍芽裝置</string>
   <string name="registration_progress__sms_verification_failed">簡訊驗證失敗。</string>
   <string name="registration_progress__redphone_timed_out_while_waiting_for_an_sms_message_to_verify_your_phone_number">RedPhone等待簡訊驗證超時。</string>
   <string name="registration_progress__edit_number">編輯號碼</string>

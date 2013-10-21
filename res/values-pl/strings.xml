@@ -65,6 +65,9 @@
   <string name="CallQualityDialog__select_the_issues_that_affected_this_call">Wybierz problemy, które wpływały na tą rozmowę</string>
   <string name="CallQualityDialog__done">Zrobione</string>
   <string name="CallScreen_incoming_call">Połączenie przychodzące...</string>
+  <string name="CallScreen_audio_menu_handset">Urządzenie</string>
+  <string name="CallScreen_audio_menu_speaker">Głośnik</string>
+  <string name="CallScreen_audio_menu_headset">Bluetooth</string>
   <string name="ContactsListActivity_loading">Ładowanie...</string>
   <string name="ContactsListActivity_no_contacts_found">Nie znaleziono kontaktów.</string>
   <string name="CreateAccountActivity_register_your_redphone">Zarejestrój twój RedPhone</string>
@@ -159,6 +162,8 @@
   <string name="preferences__provide_feeback">Dostarcz Feedback</string>
   <string name="preferences__prompt_for_feedback_on_call_quality_after_call_has_ended">Proś o dane zwrotne o jakości rozmowy, po zakończeniu rozmowy</string>
   <string name="preferences__securely_upload_metrics_to_improve_audio_quality">Wyślij bezpiecznie dane statystyczne, aby zwiększyć jakość połączenia</string>
+  <string name="preferences__disable_bluetooth">Włącz Bluetooth</string>
+  <string name="preferences__disable_bluetooth_summary">Wyłączenie Bluetooth może rozwiązać problemy z dźwiękiem na niektórych urządzeniach.</string>
   <string name="registration_progress__sms_verification_failed">Weryfikacja SMS nie powiodła się.</string>
   <string name="registration_progress__redphone_timed_out_while_waiting_for_an_sms_message_to_verify_your_phone_number">Upłynął czas oczekiwania na wiadomość weryfikującą SMS od RedPhone do identyfikacji twojego numeru telefonu.</string>
   <string name="registration_progress__edit_number">Edytuj numer</string>

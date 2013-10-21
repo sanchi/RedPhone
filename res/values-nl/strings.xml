@@ -162,6 +162,8 @@
   <string name="preferences__provide_feeback">Geef terugkoppeling</string>
   <string name="preferences__prompt_for_feedback_on_call_quality_after_call_has_ended">Geef terugkoppeling over de oproepkwaliteit nadat de oproep is beëindigd</string>
   <string name="preferences__securely_upload_metrics_to_improve_audio_quality">Upload meetgegevens beveiligd om de audio kwaliteit te verbeteren</string>
+  <string name="preferences__disable_bluetooth">Zet Bluetooth aan</string>
+  <string name="preferences__disable_bluetooth_summary">Bluetooth uitschakelen lost audioproblemen op voor sommige apparaten</string>
   <string name="registration_progress__sms_verification_failed">SMS verificatie mislukt.</string>
   <string name="registration_progress__redphone_timed_out_while_waiting_for_an_sms_message_to_verify_your_phone_number">RedPhone ondervond een time-out tijdens het wachten op een SMS-bericht om uw telefoonnummer te verifiëren.</string>
   <string name="registration_progress__edit_number">Bewerk Nummer</string>
