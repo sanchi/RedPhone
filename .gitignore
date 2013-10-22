@@ -9,3 +9,6 @@ RedPhone.iml
 out/
 local.properties
 ant.properties
+.gradle
+build
+signing.properties

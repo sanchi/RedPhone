@@ -18,6 +18,7 @@
 package org.thoughtcrime.redphone.ui;
 
 
+import android.app.Activity;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
@@ -34,7 +35,7 @@ import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.TextView;
-import com.actionbarsherlock.app.SherlockActivity;
+
 import com.google.thoughtcrimegson.Gson;
 import org.thoughtcrime.redphone.R;
 import org.thoughtcrime.redphone.monitor.CallQualityConfig;
@@ -66,7 +67,7 @@ import static org.thoughtcrime.redphone.monitor.stream.EncryptedStreamUtils.getP
  * @author Stuart O. Anderson
  */
 
-public class CallQualityDialog extends SherlockActivity  {
+public class CallQualityDialog extends Activity {
   private static final String METRIC_DATA_TYPE = "user-feedback";
   private static final int NUM_QUESTIONS_TO_DISPLAY = 3;
   private static final float DEFAULT_RATING = 1.5f;

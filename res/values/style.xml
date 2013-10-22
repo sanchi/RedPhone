@@ -72,4 +72,23 @@
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:windowFullscreen">true</item>
     </style>
+
+
+    <!-- For holo themed dialogs -->
+
+    <style name="TextSecureDialogWindowTitle">
+        <item name="android:textSize">22sp</item>
+        <item name="android:textColor">@color/redphone_holo_blue_light</item>
+    </style>
+
+    <style name="TextSecureDialogButtonBar">
+        <item name="android:background">@null</item>
+        <item name="android:dividerPadding">0dp</item>
+    </style>
+
+    <style name="TextSecureBorderlessButtonSmall">
+        <item name="android:textSize">14sp</item>
+    </style>
+
+
 </resources>

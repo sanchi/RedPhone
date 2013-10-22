@@ -1,5 +1,6 @@
 package org.thoughtcrime.redphone.ui;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -11,7 +12,7 @@ import org.thoughtcrime.redphone.R;
  *
  * @author Stuart O. Anderson
  */
-public class CallMetricsInfoActivity extends SherlockActivity {
+public class CallMetricsInfoActivity extends Activity {
 
   @Override
   public void onCreate(Bundle bundle) {
