@@ -5,6 +5,10 @@ An application that provides encrypted voice calls for Android.
 
 RedPhone is an application that enables encrypted voice communication between RedPhone users.  RedPhone integrates with the system dialer to provide a frictionless call experience, but uses ZRTP to setup an encrypted VoIP channel for the actual call.  RedPhone was designed specifically for mobile devices, using audio codecs and buffer algorithms tuned to the characteristics of mobile networks, and using push notifications to maximally preserve your device's battery life while still remaining responsive.
 
+Current BitHub Payment Per Commit:
+=================
+![Current Price](https://bithub.herokuapp.com/v1/status/payment/commit)
+
 Bug tracker
 -----------
 
