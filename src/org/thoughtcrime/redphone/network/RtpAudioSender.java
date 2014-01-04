@@ -36,6 +36,9 @@ import java.util.LinkedList;
  * @author Stuart O. Anderson
  */
 public class RtpAudioSender {
+  // TODO: fix this with a proper codec negotiation
+  public final static int payloadType = 96;
+
   public final static int audioChunksPerPacket = 2;
   private int packetSequenceNumber = 0;
   private SecureRtpSocket socket;
@@ -95,6 +98,8 @@ public class RtpAudioSender {
     }
 
     outPacket.setPayload(payloadBuffer, payloadOffset);
+
+    outPacket.setPayloadType(payloadType);
 
     outPacket.setSequenceNumber(packetSequenceNumber);
     socket.send(outPacket);
